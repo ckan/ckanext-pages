@@ -1,0 +1,4 @@
+ckanext-pages
+=============
+
+simple cms
