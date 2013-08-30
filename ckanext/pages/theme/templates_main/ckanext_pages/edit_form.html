@@ -1,0 +1,19 @@
+{% import 'macros/form.html' as form %}
+
+{{ form.input('title', id='field-title', label=_('Title'), placeholder=_('My Page'), value=data.title, error=errors.title, classes=['control-full', 'control-large']) }}
+
+{{ form.input('name', id='field-name', label=_('Name'), placeholder=_('my-page'), value=data.name, error=errors.name, classes=['control-full']) }}
+
+
+    <div class="control-group">
+      <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
+      <div class="controls">
+        <select id="field-private" name="private">
+          {% for option in [(true, _('Private')), (false, _('Public'))] %}
+          <option value="{{ option[0] }}" {% if option[0] == data.private %}selected="selected"{% endif %}>{{ option[1] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+{{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('My Content'), value=data.content, error=errors.content) }}

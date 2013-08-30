@@ -1,0 +1,42 @@
+{% extends "page.html" %}
+
+
+{% block page_header %}{% endblock %}
+
+{% block page_primary_action %}
+  {% if h.check_access('ckanext_pages_update', {}) %}
+    {% link_for _('Add page'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='', class_='btn btn-primary', icon='plus-sign-alt' %}
+  {% endif %}
+{% endblock %}
+
+
+{% block subtitle %}{{ _('Pages') }} - {{ c.group_dict.display_name }}{% endblock %}
+
+{% block primary_content_inner %}
+
+  <article class="module">
+    <div class="module-content">
+	  <h1>Pages</h1>
+    {% for page in c.pages_dict %}
+      <div>
+        <p><strong><a href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + page.name) }}" >{{ page.title }}</a></strong><br/>
+      {{ h.markdown_extract(page.content) }}</p>
+      </div>
+    {% endfor %}
+    </div>
+  </article>
+{% endblock %}
+
+{% block secondary_content %}
+<div class="module module-narrow module-shallow">
+  <h2 class="module-heading">
+    <i class="icon-info-sign"></i>
+    {{ _('What are Pages?') }}
+  </h2>
+  <div class="module-content">
+    {% trans %}
+      <p>Pages are are simple way to add extra pages to your ckan instance. You can assign an order to them </p>
+    {% endtrans %}
+  </div>
+</div>
+{% endblock %}

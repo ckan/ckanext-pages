@@ -25,8 +25,13 @@ def init_db(model):
         @classmethod
         def pages(cls, **kw):
             '''Finds a single entity in the register.'''
+            order = kw.pop('order', False)
+
             query = model.Session.query(cls).autoflush(False)
-            return query.filter_by(**kw)
+            query = query.filter_by(**kw)
+            if order:
+                query = query.order_by(cls.order).filter(cls.order != '')
+            return query.all()
 
     global Page
     Page = _Page
@@ -39,7 +44,7 @@ def init_db(model):
                     name text,
                     content text,
                     lang text,
-                    active boolean,
+                    "order" text,
                     private boolean,
                     group_id text,
                     user_id text NOT NULL,
@@ -62,7 +67,7 @@ def init_db(model):
         sa.Column('name', types.UnicodeText, default=u''),
         sa.Column('content', types.UnicodeText, default=u''),
         sa.Column('lang', types.UnicodeText, default=u''),
-        sa.Column('active',types.Boolean,default=True),
+        sa.Column('order', types.UnicodeText, default=u''),
         sa.Column('private',types.Boolean,default=True),
         sa.Column('group_id', types.UnicodeText, default=None),
         sa.Column('user_id', types.UnicodeText, default=u''),

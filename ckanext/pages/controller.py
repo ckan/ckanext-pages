@@ -58,10 +58,8 @@ class PagesController(p.toolkit.BaseController):
             if p.toolkit.request.method == 'POST':
                 p.toolkit.get_action('ckanext_pages_delete')({}, {'org_id': p.toolkit.c.group_dict['id'], 'page': page})
                 p.toolkit.redirect_to(controller=self.controller, action='org_show', id=id, page='')
-            p.toolkit.c.page_dict = p.toolkit.get_action('ckanext_pages_show')(
-                data_dict={'org_id': p.toolkit.c.group_dict['id'],
-                           'page': page,}
-            )
+            else:
+                p.toolkit.abort(404, _('Page Not Found'))
         except p.toolkit.NotAuthorized:
             p.toolkit.abort(401, _('Unauthorized to delete page'))
         except p.toolkit.ObjectNotFound:
@@ -159,7 +157,7 @@ class PagesController(p.toolkit.BaseController):
 
         if p.toolkit.request.method == 'POST' and not data:
             data = p.toolkit.request.POST
-            items = ['title', 'name', 'content']
+            items = ['title', 'name', 'content', 'private']
             # update config from form
             for item in items:
                 if item in data:
@@ -210,6 +208,24 @@ class PagesController(p.toolkit.BaseController):
         )
         return p.toolkit.render('ckanext_pages/pages_list.html')
 
+    def pages_delete(self, page):
+        page = page[1:]
+        if 'cancel' in p.toolkit.request.params:
+            p.toolkit.redirect_to(controller=self.controller, action='pages_edit', page='/' + page)
+
+
+        try:
+            if p.toolkit.request.method == 'POST':
+                p.toolkit.get_action('ckanext_pages_delete')({}, {'page': page})
+                p.toolkit.redirect_to(controller=self.controller, action='pages_show', page='')
+            else:
+                p.toolkit.abort(404, _('Page Not Found'))
+        except p.toolkit.NotAuthorized:
+            p.toolkit.abort(401, _('Unauthorized to delete page'))
+        except p.toolkit.ObjectNotFound:
+            p.toolkit.abort(404, _('Group not found'))
+        return p.toolkit.render('ckanext_pages/confirm_delete.html', {'page': page})
+
 
     def pages_edit(self, page=None, data=None, errors=None, error_summary=None):
         if page:
@@ -223,7 +239,8 @@ class PagesController(p.toolkit.BaseController):
 
         if p.toolkit.request.method == 'POST' and not data:
             data = p.toolkit.request.POST
-            items = ['title', 'name', 'content']
+            items = ['title', 'name', 'content', 'private', 'order']
+
             # update config from form
             for item in items:
                 if item in data:
