@@ -3,14 +3,20 @@
 {% if type == 'org' %}
   {% set action_url = h.url_for('organization_pages_edit', id=id, page='/' + page) %}
   {% set cancel_url = h.url_for('organization_pages', id=id, page='') %}
+  {% set slug_prefix = cancel_url ~ '/' %}
+  {% set slug_domain = h.url_for('organization_pages', id=id, page='', qualified=true) %}
   {% set hide_field_order = true %}
 {% elif type == 'group' %}
   {% set action_url = h.url_for('group_pages_edit', id=id, page='/' + page) %}
   {% set cancel_url = h.url_for('group_pages', id=id, page='') %}
+  {% set slug_prefix = cancel_url ~ '/' %}
+  {% set slug_domain = h.url_for('group_pages', id=id, page='', qualified=true) %}
   {% set hide_field_order = true %}
 {% else %}
   {% set action_url = h.url_for('pages_edit', page='/' + page) %}
   {% set cancel_url = h.url_for('pages_show', page='') %}
+  {% set slug_prefix = cancel_url ~ '/' %}
+  {% set slug_domain = h.url_for('pages_show', page='', qualified=true) %}
 {% endif %}
 
 {% set data = data or {} %}
@@ -22,11 +28,15 @@
   <h1>{{ _('Edit page') }}</h1>
 {% endif %}
 
-<form class="dataset-form dataset-resource-form form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form resource-form">
+<form class="form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form">
 
-  {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. Page Title'), value=data.title, error=errors.title, classes=['control-full', 'control-large']) }}
+  {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. Page Title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
 
-  {{ form.input('name', id='field-name', label=_('Name'), placeholder=_('my-name'), value=data.name, error=errors.name, classes=['control-full']) }}
+  {% set domain = slug_domain|replace("http://", "")|replace("https://", "") %}
+  {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain~'/', 'data-module-placeholder': '<page>'} %}
+  {{ form.prepend('name', id='field-name', label=_('URL'), prepend=slug_prefix, placeholder=_('eg. my-page'), value=data.name, error=errors.name, attrs=attrs) }}
+
+  {#{{ form.input('name', id='field-name', label=_('Name'), placeholder=_('my-name'), value=data.name, error=errors.name, classes=['control-full']) }}#}
 
   <div class="control-group">
     <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
