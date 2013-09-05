@@ -7,22 +7,6 @@
 {% endblock %}
 
 {% block primary_content_inner %}
-  {% set pages_total = c.pages_dict|length %}
   <h1 class="hide-heading">{{ _('Pages') }}</h1>
-  <h2>{{ _('1 page') if pages_total == 1 else _('{0} pages').format(pages_total) }}</h2>
-  <hr>
-  <ul class="dataset-list unstyled">
-    {% for page in c.pages_dict %}
-      <li class="dataset-item">
-        <h3 class="dataset-heading">
-          <a href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + page.name) }}" >{{ page.title }}</a>
-        </h3>
-        {% if page.content %}
-          {{ h.markdown_extract(page.content) }}
-        {% else %}
-          <p class="empty">{{ _('This page currently has no content') }}</p>
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
+  {% snippet 'ckanext_pages/snippets/pages_list.html', pages=c.pages_dict %}
 {% endblock %}
