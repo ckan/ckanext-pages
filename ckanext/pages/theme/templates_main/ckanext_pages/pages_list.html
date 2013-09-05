@@ -1,7 +1,4 @@
-{% extends "page.html" %}
-
-
-{% block page_header %}{% endblock %}
+{% extends 'ckanext_pages/edit_base.html' %} 
 
 {% block page_primary_action %}
   {% if h.check_access('ckanext_pages_update', {}) %}
@@ -9,34 +6,23 @@
   {% endif %}
 {% endblock %}
 
-
-{% block subtitle %}{{ _('Pages') }} - {{ c.group_dict.display_name }}{% endblock %}
-
 {% block primary_content_inner %}
-
-  <article class="module">
-    <div class="module-content">
-	  <h1>Pages</h1>
+  {% set pages_total = c.pages_dict|length %}
+  <h1 class="hide-heading">{{ _('Pages') }}</h1>
+  <h2>{{ _('1 page') if pages_total == 1 else _('{0} pages').format(pages_total) }}</h2>
+  <hr>
+  <ul class="dataset-list unstyled">
     {% for page in c.pages_dict %}
-      <div>
-        <p><strong><a href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + page.name) }}" >{{ page.title }}</a></strong><br/>
-      {{ h.markdown_extract(page.content) }}</p>
-      </div>
+      <li class="dataset-item">
+        <h3 class="dataset-heading">
+          <a href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + page.name) }}" >{{ page.title }}</a>
+        </h3>
+        {% if page.content %}
+          {{ h.markdown_extract(page.content) }}
+        {% else %}
+          <p class="empty">{{ _('This page currently has no content') }}</p>
+        {% endif %}
+      </li>
     {% endfor %}
-    </div>
-  </article>
-{% endblock %}
-
-{% block secondary_content %}
-<div class="module module-narrow module-shallow">
-  <h2 class="module-heading">
-    <i class="icon-info-sign"></i>
-    {{ _('What are Pages?') }}
-  </h2>
-  <div class="module-content">
-    {% trans %}
-      <p>Pages are are simple way to add extra pages to your ckan instance. You can assign an order to them </p>
-    {% endtrans %}
-  </div>
-</div>
+  </ul>
 {% endblock %}

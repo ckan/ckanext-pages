@@ -1,19 +1,17 @@
-{% extends "page.html" %}
+{% extends 'page.html' %}
 
-{% block subtitle %}{{ _('Pages') }} {% endblock %}
+{% block subtitle %}{{ c.page.title }}{% endblock %}
 
 {% block primary %}
-  <article class="module">
-    <div class="module-content">
-      <h1 class="page-heading">{{ c.page.title }}</h1>
-	  {% if c.page.content %}
-  		{{ h.render_markdown(c.page.content) }}
-  	  {% else %}
-		<p class="empty">{{ _('No Content') }}</p>
-	  {% endif %}
-    {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='/' + c.page.name, class_='btn btn-primary', icon='edit' %}
-    </div>
-  </article>
+  <section class="module-content">
+    {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
+    <h1 class="page-heading">{{ c.page.title }}</h1>
+    {% if c.page.content %}
+      {{ h.render_markdown(c.page.content) }}
+    {% else %}
+      <p class="empty">{{ _('This page currently has no content') }}</p>
+    {% endif %}
+  </section>
 {% endblock %}
 
 {% block secondary %}{% endblock %}
