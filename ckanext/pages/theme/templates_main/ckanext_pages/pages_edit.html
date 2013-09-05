@@ -2,12 +2,6 @@
 
 {% block subtitle %}{{ _('Edit Page')}} {% endblock %}
 
-{% block page_primary_action %}
-  {% if h.check_access('ckanext_pages_update', {}) and page %}
-    {% link_for _('Back to all pages'), controller='ckanext.pages.controller:PagesController', action='pages_show', page='', class_='btn', icon='arrow-left' %}
-  {% endif %}
-{% endblock %}
-
 {% block primary_content_inner %}
   {% snippet 'ckanext_pages/base_form.html', page=page, data=data, errors=errors %}
 {% endblock %}

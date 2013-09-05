@@ -2,11 +2,11 @@
 
 {% if type == 'org' %}
   {% set action_url = h.url_for('organization_pages_edit', id=id, page='/' + page) %}
-  {% set cancel_url = h.url_for('organization_pages_list', id=id, page='') %}
+  {% set cancel_url = h.url_for('organization_pages', id=id, page='') %}
   {% set hide_field_order = true %}
 {% elif type == 'group' %}
   {% set action_url = h.url_for('group_pages_edit', id=id, page='/' + page) %}
-  {% set cancel_url = h.url_for('group_pages_list', id=id, page='') %}
+  {% set cancel_url = h.url_for('group_pages', id=id, page='') %}
   {% set hide_field_order = true %}
 {% else %}
   {% set action_url = h.url_for('pages_edit', page='/' + page) %}
