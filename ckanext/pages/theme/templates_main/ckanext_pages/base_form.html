@@ -1,16 +1,28 @@
 {% import 'macros/form.html' as form %}
 
-{% set data = data or {} %}
-{% set errors = errors or {} %}
-{% set action = form_action or h.url_for('pages_edit', page='/' + page) %}
-
-{% if not page %}
-  <h1>Add page</h1>
+{% if type == 'org' %}
+  {% set action_url = h.url_for('organization_pages_edit', id=id, page='/' + page) %}
+  {% set cancel_url = h.url_for('organization_pages_list', id=id, page='') %}
+  {% set hide_field_order = true %}
+{% elif type == 'group' %}
+  {% set action_url = h.url_for('group_pages_edit', id=id, page='/' + page) %}
+  {% set cancel_url = h.url_for('group_pages_list', id=id, page='') %}
+  {% set hide_field_order = true %}
 {% else %}
-  <h1>Edit page</h1>
+  {% set action_url = h.url_for('pages_edit', page='/' + page) %}
+  {% set cancel_url = h.url_for('pages_show', page='') %}
 {% endif %}
 
-<form class="dataset-form dataset-resource-form form-horizontal" method="post" action="{{ action }}" data-module="basic-form resource-form">
+{% set data = data or {} %}
+{% set errors = errors or {} %}
+
+{% if not page %}
+  <h1>{{ _('Add page') }}</h1>
+{% else %}
+  <h1>{{ _('Edit page') }}</h1>
+{% endif %}
+
+<form class="dataset-form dataset-resource-form form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form resource-form">
 
   {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. Page Title'), value=data.title, error=errors.title, classes=['control-full', 'control-large']) }}
 
@@ -26,22 +38,25 @@
       </select>
     </div>
   </div>
-  <div class="control-group">
-    <label for="field-order" class="control-label">{{ _('Menu Order') }}</label>
-    <div class="controls">
-      <select id="field-order" name="order">
-        {% for option in [('',''), ('1','1'), ('2', '2'), ('3', '3') , ('4', '4')] %}
-        <option value="{{ option[0] }}" {% if option[0] == data.order %}selected="selected"{% endif %}>{{ option[1] }}</option>
-        {% endfor %}
-      </select>
+
+  {% if not hide_field_order %}
+    <div class="control-group">
+      <label for="field-order" class="control-label">{{ _('Menu Order') }}</label>
+      <div class="controls">
+        <select id="field-order" name="order">
+          {% for option in [('',''), ('1','1'), ('2', '2'), ('3', '3') , ('4', '4')] %}
+          <option value="{{ option[0] }}" {% if option[0] == data.order %}selected="selected"{% endif %}>{{ option[1] }}</option>
+          {% endfor %}
+        </select>
+      </div>
     </div>
-  </div>
+  {% endif %}
 
   {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('My content'), value=data.content, error=errors.content) }}
 
   <div class="form-actions">
     {% if not page %}
-      <a class="btn pull-left" href="{% url_for 'pages_show', page='' %}">{{ _('Cancel') }}</a>
+      <a class="btn pull-left" href="{{ cancel_url }}">{{ _('Cancel') }}</a>
       <button class="btn btn-primary" name="save" value="save" type="submit">{{ _('Add') }}</button>
     {% else %}
 
