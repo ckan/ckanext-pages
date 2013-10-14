@@ -4,7 +4,9 @@
 
 {% block primary %}
   <section class="module-content">
-    {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
+    {% if h.check_access('ckanext_pages_update') %}
+      {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
+    {% endif %}
     <h1 class="page-heading">{{ c.page.title }}</h1>
     {% if c.page.content %}
       {{ h.render_markdown(c.page.content) }}
