@@ -258,6 +258,11 @@ class PagesController(p.toolkit.BaseController):
                                  errors, error_summary)
             p.toolkit.redirect_to(p.toolkit.url_for('pages_show', page='/' + _page['name']))
 
+        try:
+            p.toolkit.check_access('ckanext_pages_update', {'user': p.toolkit.c.user or p.toolkit.c.author})
+        except p.toolkit.NotAuthorized:
+            p.toolkit.abort(401, _('Unauthorized to create or edit a page'))
+
         if not data:
             data = _page
 
