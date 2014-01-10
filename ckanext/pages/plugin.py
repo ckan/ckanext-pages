@@ -48,6 +48,22 @@ def build_pages_nav_main(*args):
 
     return output
 
+def get_recent_blog_posts(number=5, exclude=None):
+    blog_list = p.toolkit.get_action('ckanext_pages_list')(
+        None, {'order_publish_date': True, 'private': False,
+               'page_type': 'blog'}
+    )
+
+    new_list = []
+    for blog in blog_list:
+        if exclude and blog['name'] == exclude:
+            continue
+        new_list.append(blog)
+        if len(new_list) == number:
+            break
+
+    return new_list
+
 
 
 class PagesPlugin(p.SingletonPlugin):
@@ -68,13 +84,15 @@ class PagesPlugin(p.SingletonPlugin):
         if self.organization_pages:
             p.toolkit.add_template_directory(config, 'theme/templates_organization')
 
+        p.toolkit.add_resource('theme/public', 'ckanext-pages')
 
     def configure(self, config):
         return
 
     def get_helpers(self):
         return {
-            'build_nav_main': build_pages_nav_main
+            'build_nav_main': build_pages_nav_main,
+            'get_recent_blog_posts': get_recent_blog_posts
         }
 
     def after_map(self, map):
@@ -103,6 +121,8 @@ class PagesPlugin(p.SingletonPlugin):
                     action='pages_edit', ckan_icon='edit', controller=controller)
         map.connect('pages_show', '/pages{page:/.*|}',
                     action='pages_show', ckan_icon='file', controller=controller, highlight_actions='pages_edit pages_show')
+        map.connect('pages_upload', '/pages_upload',
+                    action='pages_upload', controller=controller)
         return map
 
     def get_actions(self):
@@ -111,6 +131,7 @@ class PagesPlugin(p.SingletonPlugin):
             'ckanext_pages_update': actions.pages_update,
             'ckanext_pages_delete': actions.pages_delete,
             'ckanext_pages_list': actions.pages_list,
+            'ckanext_pages_upload': actions.pages_upload,
         }
         if self.organization_pages:
             org_actions={
@@ -136,6 +157,7 @@ class PagesPlugin(p.SingletonPlugin):
             'ckanext_pages_update': auth.pages_update,
             'ckanext_pages_delete': auth.pages_delete,
             'ckanext_pages_list': auth.pages_list,
+            'ckanext_pages_upload': auth.pages_upload,
             'ckanext_org_pages_show': auth.org_pages_show,
             'ckanext_org_pages_update': auth.org_pages_update,
             'ckanext_org_pages_delete': auth.org_pages_delete,

@@ -14,6 +14,12 @@
       <li class="dataset-item">
         <h3 class="dataset-heading">
           <a href="{{ url }}" >{{ page.title }}</a>
+          {% if page.page_type == 'blog' %} 
+          <span class="label label-info"> {{ page.page_type }} </span>
+          {% endif %}
+          {% if page.publish_date %}
+             <small> {{ h.render_datetime(page.publish_date) }} </small>
+          {% endif %}
         </h3>
         {% if page.content %}
           {{ h.markdown_extract(page.content) }}
@@ -26,3 +32,4 @@
 {% else %}
   <p class="empty">{{ _('There are currently no pages here') }}</p>
 {% endif %}
+

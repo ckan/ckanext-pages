@@ -200,7 +200,7 @@ class PagesController(p.toolkit.BaseController):
         if _page is None:
             return self._pages_list_pages()
         p.toolkit.c.page = _page
-        return p.toolkit.render('ckanext_pages/page.html')
+        return p.toolkit.render('ckanext_pages/%s.html' % _page.get('page_type'))
 
     def _pages_list_pages(self):
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
@@ -239,7 +239,8 @@ class PagesController(p.toolkit.BaseController):
 
         if p.toolkit.request.method == 'POST' and not data:
             data = p.toolkit.request.POST
-            items = ['title', 'name', 'content', 'private', 'order']
+            items = ['title', 'name', 'content', 'private',
+                     'order', 'publish_date', 'page_type']
 
             # update config from form
             for item in items:
@@ -275,5 +276,17 @@ class PagesController(p.toolkit.BaseController):
         return p.toolkit.render('ckanext_pages/pages_edit.html',
                                extra_vars=vars)
 
+    def pages_upload(self):
+        if not p.toolkit.request.method == 'POST':
+            p.toolkit.abort(409, _('Only Posting is availiable'))
+
+        try:
+            url = p.toolkit.get_action('ckanext_pages_upload')(None, dict(p.toolkit.request.POST))
+        except p.toolkit.NotAuthorized:
+            p.toolkit.abort(401, _('Unauthorized to upload file %s') % id)
+
+        return """<script type='text/javascript'>
+                      window.parent.CKEDITOR.tools.callFunction(%s, '%s');
+                  </script>""" % (p.toolkit.request.GET['CKEditorFuncNum'], url['url'])
 
 

@@ -3,6 +3,8 @@ import datetime
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
 import ckan.new_authz as new_authz
+import ckan.lib.uploader as uploader
+import ckan.lib.helpers as h
 
 import db
 def page_name_validator(key, data, errors, context):
@@ -24,6 +26,7 @@ schema = {
     'name': [p.toolkit.get_validator('not_empty'), unicode,
              p.toolkit.get_validator('name_validator'), page_name_validator],
     'content': [p.toolkit.get_validator('ignore_missing'), unicode],
+    'page_type': [p.toolkit.get_validator('ignore_missing'), unicode],
   #  'lang': [p.toolkit.get_validator('not_empty'), unicode],
     'order': [p.toolkit.get_validator('ignore_missing'),
               unicode],
@@ -33,6 +36,8 @@ schema = {
     'user_id': [p.toolkit.get_validator('ignore_missing'), unicode],
     'created': [p.toolkit.get_validator('ignore_missing'),
                 p.toolkit.get_validator('isodate')],
+    'publish_date': [p.toolkit.get_validator('ignore_missing'),
+                     p.toolkit.get_validator('isodate')],
 }
 
 
@@ -53,9 +58,13 @@ def _pages_list(context, data_dict):
         db.init_db(context['model'])
     org_id = data_dict.get('org_id')
     ordered = data_dict.get('order')
+    order_publish_date = data_dict.get('order_publish_date')
+    page_type = data_dict.get('page_type')
     private = data_dict.get('private', True)
     if ordered:
         search['order'] = True
+    if order_publish_date:
+        search['order_publish_date'] = True
     if not org_id:
         search['group_id'] = None
         try:
@@ -76,7 +85,9 @@ def _pages_list(context, data_dict):
     return [{'title': pg.title,
              'content': pg.content,
              'name': pg.name,
+             'publish_date': pg.publish_date,
              'group_id': pg.group_id,
+             'page_type': pg.page_type,
             } for pg in out]
 
 
@@ -111,7 +122,8 @@ def _pages_update(context, data_dict):
         out = db.Page()
         out.group_id = org_id
         out.name = page
-    items = ['title', 'content', 'name', 'private', 'order']
+    items = ['title', 'content', 'name', 'private',
+             'order', 'page_type', 'publish_date', 'content']
     for item in items:
         setattr(out, item, data.get(item))
 
@@ -122,6 +134,24 @@ def _pages_update(context, data_dict):
     session.add(out)
     session.commit()
 
+def pages_upload(context, data_dict):
+
+    try:
+        p.toolkit.check_access('ckanext_pages_upload', context, data_dict)
+    except p.toolkit.NotAuthorized:
+        p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
+
+    upload = uploader.Upload('page_images')
+    upload.update_data_dict(data_dict, 'image_url',
+                            'upload', 'clear_upload')
+    upload.upload()
+    image_url = data_dict.get('image_url')
+    if image_url:
+        image_url = h.url_for_static(
+           'uploads/page_images/%s' % image_url,
+            qualified = True
+        )
+    return {'url': image_url}
 
 def pages_show(context, data_dict):
     try:

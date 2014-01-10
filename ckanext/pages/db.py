@@ -4,6 +4,10 @@ import uuid
 import sqlalchemy as sa
 from sqlalchemy.orm import class_mapper
 
+try:
+    RowProxy = sa.engine.result.RowProxy
+except AttributeError:
+    RowProxy = sa.engine.base.RowProxy
 
 pages_table = None
 Page = None
@@ -26,11 +30,16 @@ def init_db(model):
         def pages(cls, **kw):
             '''Finds a single entity in the register.'''
             order = kw.pop('order', False)
+            order_publish_date = kw.pop('order_publish_date', False)
 
             query = model.Session.query(cls).autoflush(False)
             query = query.filter_by(**kw)
             if order:
                 query = query.order_by(cls.order).filter(cls.order != '')
+            elif order_publish_date:
+                query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)
+            else:
+                query = query.order_by(cls.created.desc())
             return query.all()
 
     global Page
@@ -59,6 +68,16 @@ def init_db(model):
         pass
     model.Session.commit()
 
+    sql_upgrade_01 = ''' ALTER TABLE ckanext_pages add column publish_date timestamp, add column page_type Text;
+                      UPDATE ckanext_pages set page_type = 'page'; '''
+
+    conn = model.Session.connection()
+    try:
+        conn.execute(sql_upgrade_01)
+    except sa.exc.ProgrammingError:
+        pass
+    model.Session.commit()
+
     types = sa.types
     global pages_table
     pages_table = sa.Table('ckanext_pages', model.meta.metadata,
@@ -71,6 +90,8 @@ def init_db(model):
         sa.Column('private',types.Boolean,default=True),
         sa.Column('group_id', types.UnicodeText, default=None),
         sa.Column('user_id', types.UnicodeText, default=u''),
+        sa.Column('publish_date', types.DateTime),
+        sa.Column('page_type', types.DateTime),
         sa.Column('created', types.DateTime, default=datetime.datetime.utcnow),
         sa.Column('modified', types.DateTime, default=datetime.datetime.utcnow),
     )
@@ -85,7 +106,7 @@ def table_dictize(obj, context, **kw):
     '''Get any model object and represent it as a dict'''
     result_dict = {}
 
-    if isinstance(obj, sa.engine.base.RowProxy):
+    if isinstance(obj, RowProxy):
         fields = obj.keys()
     else:
         ModelClass = obj.__class__

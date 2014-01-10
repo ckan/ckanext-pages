@@ -11,6 +11,7 @@ def anyone(context, data_dict):
     return {'success': True}
 # Starting from 2.2 you need to explicitly flag auth functions that allow
 # anonymous access
+
 if p.toolkit.check_ckan_version(min_version='2.2'):
     anyone = p.toolkit.auth_allow_anonymous_access(anyone)
 
@@ -47,12 +48,20 @@ def page_privacy(context, data_dict):
     else:
         return {'success': True}
 
+# Starting from 2.2 you need to explicitly flag auth functions that allow
+# anonymous access
+
+if p.toolkit.check_ckan_version(min_version='2.2'):
+    anyone = p.toolkit.auth_allow_anonymous_access(anyone)
+    page_privacy = p.toolkit.auth_allow_anonymous_access(page_privacy)
+
 
 
 pages_show = page_privacy
 pages_update = sysadmin
 pages_delete = sysadmin
 pages_list = anyone
+pages_upload = sysadmin
 org_pages_show = page_privacy
 org_pages_update = org_admin
 org_pages_delete = org_admin

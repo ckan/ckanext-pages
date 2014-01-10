@@ -28,6 +28,8 @@
   <h1>{{ _('Edit page') }}</h1>
 {% endif %}
 
+{% resource 'ckanext-pages/main' %}
+
 <form class="form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form">
 
   {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. Page Title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
@@ -35,6 +37,8 @@
   {% set domain = slug_domain|replace("http://", "")|replace("https://", "") %}
   {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain~'/', 'data-module-placeholder': '<page>'} %}
   {{ form.prepend('name', id='field-name', label=_('URL'), prepend=slug_prefix, placeholder=_('eg. my-page'), value=data.name, error=errors.name, attrs=attrs) }}
+
+  {{ form.input('publish_date', id='field-publish_date', label=_('Publish Date'), placeholder=_('2005-01-01'), value=data.publish_date, error=errors.publish_date, classes=[], attrs={'data-module': 'datepicker', 'data-date-format': 'yyyy-mm-dd'}) }}
 
   {#{{ form.input('name', id='field-name', label=_('Name'), placeholder=_('my-name'), value=data.name, error=errors.name, classes=['control-full']) }}#}
 
@@ -54,7 +58,7 @@
       <label for="field-order" class="control-label">{{ _('Menu Order') }}</label>
       <div class="controls">
         <select id="field-order" name="order">
-          {% for option in [('',''), ('1','1'), ('2', '2'), ('3', '3') , ('4', '4')] %}
+            {% for option in [('', _('Not in Menu')), ('1','1'), ('2', '2'), ('3', '3') , ('4', '4')] %}
           <option value="{{ option[0] }}" {% if option[0] == data.order %}selected="selected"{% endif %}>{{ option[1] }}</option>
           {% endfor %}
         </select>
@@ -62,7 +66,25 @@
     </div>
   {% endif %}
 
-  {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('My content'), value=data.content, error=errors.content) }}
+  <div class="control-group">
+    <label for="field-page_type" class="control-label">{{ _('Page Type') }}</label>
+    <div class="controls">
+      <select id="field-page_type" name="page_type">
+        {% for option in [('page','Page'), ('blog', 'Blog')] %}
+           <option value="{{ option[0] }}" {% if option[0] == data.page_type %}selected="selected"{% endif %}>{{ option[1] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+
+  {# form.markdown('content', id='field-content', label=_('Content'), placeholder=_('My content'), value=data.content, error=errors.content) #}
+
+   <div class="control-group">
+      <label for="field-content-ck" class="control-label">{{ _('Content') }}</label>
+   </div>
+   <textarea id="field-content-ck" name="content" cols="40" rows="5" placeholder="{{_('My content')}}" data-module="ckedit" data-module-site_url="{{ h.dump_json(h.url('/', locale='default', qualified=true)) }}"> {{ data.content }}</textarea>
+
 
   <div class="form-actions">
     {% if not page %}

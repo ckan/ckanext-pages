@@ -9,7 +9,7 @@
     {% endif %}
     <h1 class="page-heading">{{ c.page.title }}</h1>
     {% if c.page.content %}
-      {{ h.render_markdown(c.page.content) }}
+      {{ c.page.content|safe }}
     {% else %}
       <p class="empty">{{ _('This page currently has no content') }}</p>
     {% endif %}
