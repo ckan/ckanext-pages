@@ -33,7 +33,9 @@
                 <h3 class="dataset-heading">
                     <a href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + post.name) }}">{{ post.title or post.name }}</a>
                     <br>
-                    <small> {{ h.render_datetime(c.page.publish_date) }} </small>
+                    {% if post.publish_date %}
+                        <small> {{ h.render_datetime(post.publish_date) }} </small>
+                    {% endif %}
                 </h3>
             </div>
             <div class="blog-content">
