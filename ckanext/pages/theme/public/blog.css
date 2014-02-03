@@ -1,23 +1,15 @@
-
-
-.blog-title {
-    background-color: #F6F6F6;
-    border: 1px solid #DDDDDD;
-    border-radius: 3px;
-    padding: 5px 5px 0px 5px;
-    margin-top: 10px;
-    overflow: hidden;
+.blog .primary .date {
+	display:block;
+	margin-top:-15px;
+	margin-bottom:15px;
 }
 
-.blog-title small {
-    font-size: 12px;
+.secondary .blog-title small {
+  font-size: 12px;
 }
-
-.blog-content {
-    background-color: #FFFFFF;
-    border: 1px solid #DDDDDD;
-    padding: 5px;
-    border-radius: 3px;
-    margin-top: -5px;
-    overflow: hidden;
+.secondary .blog-content {
+  border-bottom: 1px dotted #DDDDDD;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+}
 }
