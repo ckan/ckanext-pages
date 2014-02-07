@@ -6,7 +6,7 @@ import ckan.lib.helpers as h
 
 import actions
 import auth
-import xml.etree.ElementTree as ET
+from HTMLParser import HTMLParser
 
 log = logging.getLogger(__name__)
 
@@ -53,6 +53,15 @@ def build_pages_nav_main(*args):
 
     return output
 
+class HTMLFirstImage(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.first_image = None
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'img' and not self.first_image:
+            self.first_image = dict(attrs)['src']
+
 def get_recent_blog_posts(number=5, exclude=None):
     blog_list = p.toolkit.get_action('ckanext_pages_list')(
         None, {'order_publish_date': True, 'private': False,
@@ -66,15 +75,13 @@ def get_recent_blog_posts(number=5, exclude=None):
         new_list.append(blog)
         if len(new_list) == number:
             break
-        try:
-            parsed_xml = ET.fromstring(blog['content'])
-        except ET.ParseError:
-            continue
 
-        image_tag = parsed_xml.find('img')
-        if image_tag is not None:
-            image = image_tag.attrib['src']
-            blog['image'] = image
+        parser = HTMLFirstImage()
+        parser.feed(blog['content'])
+        img = parser.first_image
+
+        if img:
+            blog['image'] = img
 
     return new_list
 
