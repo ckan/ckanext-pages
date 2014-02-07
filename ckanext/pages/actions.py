@@ -20,6 +20,14 @@ def page_name_validator(key, data, errors, context):
         errors[key].append(
             p.toolkit._('Page name already exists in database'))
 
+def not_empty_if_blog(key, data, errors, context):
+    value = data.get(key)
+    if data.get(('page_type',), '') == 'blog':
+        if value is df.missing or not value:
+            errors[key].append('Publish Date Must be supplied')
+
+
+
 schema = {
     'id': [p.toolkit.get_validator('ignore_empty'), unicode],
     'title': [p.toolkit.get_validator('not_empty'), unicode],
@@ -36,7 +44,8 @@ schema = {
     'user_id': [p.toolkit.get_validator('ignore_missing'), unicode],
     'created': [p.toolkit.get_validator('ignore_missing'),
                 p.toolkit.get_validator('isodate')],
-    'publish_date': [p.toolkit.get_validator('ignore_missing'),
+    'publish_date': [not_empty_if_blog,
+                     p.toolkit.get_validator('ignore_missing'),
                      p.toolkit.get_validator('isodate')],
 }
 
@@ -63,6 +72,8 @@ def _pages_list(context, data_dict):
     private = data_dict.get('private', True)
     if ordered:
         search['order'] = True
+    if page_type:
+        search['page_type'] = page_type
     if order_publish_date:
         search['order_publish_date'] = True
     if not org_id:

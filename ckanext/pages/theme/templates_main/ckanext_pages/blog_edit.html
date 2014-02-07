@@ -1,0 +1,8 @@
+{% extends 'ckanext_pages/blog_edit_base.html' %}
+
+{% block subtitle %}{{ _('Edit Article')}} {% endblock %}
+
+{% block primary_content_inner %}
+  {% snippet 'ckanext_pages/base_form.html', page=page, data=data, errors=errors, type='blog'%}
+{% endblock %}
+

@@ -1,19 +1,17 @@
-{% extends 'page.html' %}
+{% extends 'ckanext_pages/edit_base.html' %}
 
-{% block page_header %}{% endblock %}
+{% block subtitle %}{{ _('Blog Articles') }}{% endblock %}
 
 {% block secondary_content %}
-
   <div class="module module-narrow module-shallow">
     <h2 class="module-heading">
       <i class="icon-info-sign"></i>
-      {{ _('What are Pages?') }}
+      {{ _('Blog') }}
     </h2>
     <div class="module-content">
       {% trans %}
-        <p>Pages are are simple way to add extra pages to your ckan instance. You can assign an order to them.</p>
+        <p>Add blog articles to CKAN here.</p>
       {% endtrans %}
     </div>
   </div>
-
 {% endblock %}

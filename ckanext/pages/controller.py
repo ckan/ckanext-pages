@@ -187,37 +187,44 @@ class PagesController(p.toolkit.BaseController):
         return p.toolkit.render('ckanext_pages/group_page_edit.html',
                                extra_vars=vars)
 
+    def blog_show(self, page=None):
+        return self.pages_show(page, page_type='blog')
 
-    def pages_show(self, page=None):
+    def pages_show(self, page=None, page_type='page'):
+        p.toolkit.c.page_type = page_type
         if page:
             page = page[1:]
         if not page:
-            return self._pages_list_pages()
+            return self._pages_list_pages(page_type)
         _page = p.toolkit.get_action('ckanext_pages_show')(
             data_dict={'org_id': None,
-                       'page': page,}
+                       'page': page}
         )
         if _page is None:
-            return self._pages_list_pages()
+            return self._pages_list_pages(p)
         p.toolkit.c.page = _page
-        return p.toolkit.render('ckanext_pages/%s.html' % _page.get('page_type'))
+        return p.toolkit.render('ckanext_pages/%s.html' % page_type)
 
-    def _pages_list_pages(self):
+    def _pages_list_pages(self, page_type):
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
-            data_dict={'org_id': None}
+            data_dict={'org_id': None, 'page_type': page_type}
         )
+        if page_type == 'blog':
+            return p.toolkit.render('ckanext_pages/blog_list.html')
         return p.toolkit.render('ckanext_pages/pages_list.html')
 
-    def pages_delete(self, page):
+    def blog_delete(self, page):
+        return self.pages_delete(page, page_type='blog')
+
+    def pages_delete(self, page, page_type='pages'):
         page = page[1:]
         if 'cancel' in p.toolkit.request.params:
-            p.toolkit.redirect_to(controller=self.controller, action='pages_edit', page='/' + page)
-
+            p.toolkit.redirect_to(controller=self.controller, action='%s_edit' % page_type, page='/' + page)
 
         try:
             if p.toolkit.request.method == 'POST':
                 p.toolkit.get_action('ckanext_pages_delete')({}, {'page': page})
-                p.toolkit.redirect_to(controller=self.controller, action='pages_show', page='')
+                p.toolkit.redirect_to(controller=self.controller, action='%s_show' % page_type, page='')
             else:
                 p.toolkit.abort(404, _('Page Not Found'))
         except p.toolkit.NotAuthorized:
@@ -227,7 +234,10 @@ class PagesController(p.toolkit.BaseController):
         return p.toolkit.render('ckanext_pages/confirm_delete.html', {'page': page})
 
 
-    def pages_edit(self, page=None, data=None, errors=None, error_summary=None):
+    def blog_edit(self, page=None, data=None, errors=None, error_summary=None):
+        return self.pages_edit(page=page, data=data, errors=errors, error_summary=error_summary, page_type='blog')
+
+    def pages_edit(self, page=None, data=None, errors=None, error_summary=None, page_type='pages'):
         if page:
             page = page[1:]
         _page = p.toolkit.get_action('ckanext_pages_show')(
@@ -240,7 +250,7 @@ class PagesController(p.toolkit.BaseController):
         if p.toolkit.request.method == 'POST' and not data:
             data = p.toolkit.request.POST
             items = ['title', 'name', 'content', 'private',
-                     'order', 'publish_date', 'page_type']
+                     'order', 'publish_date']
 
             # update config from form
             for item in items:
@@ -248,6 +258,8 @@ class PagesController(p.toolkit.BaseController):
                     _page[item] = data[item]
             _page['org_id'] = None
             _page['page'] = page
+            _page['page_type'] = 'page' if page_type == 'pages' else page_type
+
             try:
                 junk = p.toolkit.get_action('ckanext_pages_update')(
                     data_dict=_page
@@ -256,8 +268,9 @@ class PagesController(p.toolkit.BaseController):
                 errors = e.error_dict
                 error_summary = e.error_summary
                 return self.pages_edit('/' + page, data,
-                                 errors, error_summary)
-            p.toolkit.redirect_to(p.toolkit.url_for('pages_show', page='/' + _page['name']))
+                                       errors, error_summary, page_type=page_type)
+            p.toolkit.redirect_to(p.toolkit.url_for('%s_show' % page_type,
+                                                    page='/' + _page['name']))
 
         try:
             p.toolkit.check_access('ckanext_pages_update', {'user': p.toolkit.c.user or p.toolkit.c.author})
@@ -273,8 +286,8 @@ class PagesController(p.toolkit.BaseController):
         vars = {'data': data, 'errors': errors,
                 'error_summary': error_summary, 'page': page}
 
-        return p.toolkit.render('ckanext_pages/pages_edit.html',
-                               extra_vars=vars)
+        return p.toolkit.render('ckanext_pages/%s_edit.html' % page_type,
+                                extra_vars=vars)
 
     def pages_upload(self):
         if not p.toolkit.request.method == 'POST':

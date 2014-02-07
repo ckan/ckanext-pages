@@ -5,7 +5,7 @@
 {% block primary_content %}
   <section class="module-content">
     {% if h.check_access('ckanext_pages_update') %}
-      {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
+      {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='blog_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
     {% endif %}
     <h1 class="page-heading">{{ c.page.title }}</h1>
       {% if c.page.publish_date %}
@@ -30,7 +30,7 @@
         {% for post in posts %}
             <div class="blog-title">
                 <h3 class="dataset-heading">
-                    <a href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + post.name) }}">{{ post.title or post.name }}</a>
+                    <a href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + post.name) }}">{{ post.title or post.name }}</a>
                     <br>
                     {% if post.publish_date %}
                         <small> {{ h.render_datetime(post.publish_date) }} </small>

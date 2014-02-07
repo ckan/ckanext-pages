@@ -6,6 +6,7 @@ import ckan.lib.helpers as h
 
 import actions
 import auth
+import xml.etree.ElementTree as ET
 
 log = logging.getLogger(__name__)
 
@@ -32,13 +33,17 @@ def build_pages_nav_main(*args):
 
     page_name = ''
 
-    if (p.toolkit.c.action == 'pages_show'
+    if (p.toolkit.c.action in ('pages_show', 'blog_show')
        and p.toolkit.c.controller == 'ckanext.pages.controller:PagesController'):
         page_name = p.toolkit.c.environ['routes.url'].current().split('/')[-1]
 
     for page in pages_list:
-        link = h.link_to(page.get('title'),
-                         h.url_for('/pages/' + str(page['name'])))
+        if page['page_type'] == 'blog':
+            link = h.link_to(page.get('title'),
+                             h.url_for('/blog/' + str(page['name'])))
+        else:
+            link = h.link_to(page.get('title'),
+                             h.url_for('/pages/' + str(page['name'])))
 
         if page['name'] == page_name:
             li = h.literal('<li class="active">') + link + h.literal('</li>')
@@ -61,6 +66,11 @@ def get_recent_blog_posts(number=5, exclude=None):
         new_list.append(blog)
         if len(new_list) == number:
             break
+        parsed_xml = ET.fromstring(blog['content'])
+        image_tag = parsed_xml.find('img')
+        if image_tag is not None:
+            image = image_tag.attrib['src']
+            blog['image'] = image
 
     return new_list
 
@@ -124,6 +134,13 @@ class PagesPlugin(p.SingletonPlugin):
                     action='pages_show', ckan_icon='file', controller=controller, highlight_actions='pages_edit pages_show')
         map.connect('pages_upload', '/pages_upload',
                     action='pages_upload', controller=controller)
+
+        map.connect('blog_delete', '/blog_delete{page:/.*|}',
+                    action='blog_delete', ckan_icon='delete', controller=controller)
+        map.connect('blog_edit', '/blog_edit{page:/.*|}',
+                    action='blog_edit', ckan_icon='edit', controller=controller)
+        map.connect('blog_show', '/blog{page:/.*|}',
+                    action='blog_show', ckan_icon='file', controller=controller, highlight_actions='blog_edit blog_show')
         return map
 
     def get_actions(self):

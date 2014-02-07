@@ -1,22 +1,26 @@
 {% set pages_total = pages|length %}
 {% set action = '{0}_show'.format(type) %}
 
-<h2>{{ _('1 page') if pages_total == 1 else _('{0} pages').format(pages_total) }}</h2>
-<hr>
+
+{% if type == 'blog' %}
+  <h2>{{ _('1 blog article') if pages_total == 1 else _('{0} blog articles').format(pages_total) }}</h2>
+{% else %}
+  <h2>{{ _('1 page') if pages_total == 1 else _('{0} pages').format(pages_total) }}</h2>
+{% endif %}
+
 {% if pages %}
   <ul class="dataset-list unstyled">
     {% for page in pages %}
-      {% if type %}
+      {% if id %} {# this is for orgs and groups #}
         {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action=action, id=id, page='/' + page.name) %}
+      {% elif type == 'blog' %}
+        {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + page.name) %}
       {% else %}
         {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + page.name) %}
       {% endif %}
       <li class="dataset-item">
         <h3 class="dataset-heading">
           <a href="{{ url }}" >{{ page.title }}</a>
-          {% if page.page_type == 'blog' %} 
-          <span class="label label-info"> {{ page.page_type }} </span>
-          {% endif %}
           {% if page.publish_date %}
              <small> {{ h.render_datetime(page.publish_date) }} </small>
           {% endif %}
@@ -30,6 +34,10 @@
     {% endfor %}
   </ul>
 {% else %}
-  <p class="empty">{{ _('There are currently no pages here') }}</p>
+    {% if type == 'blog' %}
+      <p class="empty">{{ _('There are currently no blog articles here') }}</p>
+    {% else %}
+      <p class="empty">{{ _('There are currently no pages here') }}</p>
+    {% endif %}
 {% endif %}
 
