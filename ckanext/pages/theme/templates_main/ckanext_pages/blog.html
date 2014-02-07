@@ -41,7 +41,7 @@
                 {{ h.markdown_extract(post.content) }}
                 {% if post.publish_date %}
                    <br>
-                   <a class="btn btn-small btn-primary more" href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + post.name) }}">{{ _('More') }}</a>
+                   <a class="btn btn-small btn-primary more" href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + post.name) }}">{{ _('More') }}</a>
                 {% endif %}
             </div>
         {% endfor %}

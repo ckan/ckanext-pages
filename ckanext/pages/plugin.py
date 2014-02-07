@@ -66,7 +66,11 @@ def get_recent_blog_posts(number=5, exclude=None):
         new_list.append(blog)
         if len(new_list) == number:
             break
-        parsed_xml = ET.fromstring(blog['content'])
+        try:
+            parsed_xml = ET.fromstring(blog['content'])
+        except ET.ParseError:
+            continue
+
         image_tag = parsed_xml.find('img')
         if image_tag is not None:
             image = image_tag.attrib['src']
