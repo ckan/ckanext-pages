@@ -14,7 +14,6 @@ this.ckan.module('ckedit', function (jQuery, _) {
       config.toolbarGroups = [
         { name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
         { name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
-        { name: 'links' },
         { name: 'insert' },
         { name: 'forms' },
         { name: 'tools' },
@@ -22,7 +21,7 @@ this.ckan.module('ckedit', function (jQuery, _) {
         { name: 'others' },
         '/',
         { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-        { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
+        { name: 'paragraph',   groups: [ 'list', 'blocks', 'align', 'bidi' ] },
         { name: 'styles' },
       ];
 
@@ -36,7 +35,7 @@ this.ckan.module('ckedit', function (jQuery, _) {
       // Make dialogs simpler.
       config.removeDialogTabs = 'image:advanced;link:advanced';
       config.filebrowserUploadUrl = this.options.site_url + 'pages_upload';
-      config.extraPlugins = 'div';
+      config.extraPlugins = 'divarea,ckanview';
 
       var editor = $(this.el).ckeditor(config);
     },
