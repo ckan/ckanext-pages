@@ -1,4 +1,5 @@
 import ckan.plugins as p
+import ckan.lib.helpers as helpers
 
 _ = p.toolkit._
 
@@ -190,6 +191,56 @@ class PagesController(p.toolkit.BaseController):
     def blog_show(self, page=None):
         return self.pages_show(page, page_type='blog')
 
+    def _inject_views_into_page(self, _page):
+
+        try:
+            from lxml import html
+        except ImportError:
+            return
+        # this is a good proxy to a version of CKAN with views enabled.
+        if not p.plugin_loaded('image_view'):
+            return
+
+        root = html.fromstring(_page['content'])
+        for element in root.findall('.//iframe'):
+            embed_element = element.attrib.pop('data-ckan-view-embed', None)
+            if not embed_element:
+                continue
+            element.tag = 'div'
+            error = None
+
+            try:
+                iframe_src = element.attrib.pop('src', '')
+                width = element.attrib.pop('width', '80') + 'px'
+                height = element.attrib.pop('height', '80') + 'px'
+                align = element.attrib.pop('align', 'none')
+                style = "width: %s; height: %s; float: %s; overflow: auto; vertical-align:middle; position:relative" % (width, height, align)
+                element.attrib['style'] = style
+                element.attrib['class'] = 'pages-embed'
+                view = p.toolkit.get_action('resource_view_show')({}, {'id': iframe_src[-36:]})
+                context = {}
+                resource = p.toolkit.get_action('resource_show')(context, {'id': view['resource_id']})
+                package_id = context['resource'].resource_group.package_id
+                package = p.toolkit.get_action('package_show')(context, {'id': package_id})
+            except p.toolkit.ObjectNotFound:
+                error = _('ERROR: View not found {view_id}'.format(view_id=iframe_src ))
+
+            if error:
+                resource_view_html = '<h4> %s </h4>' % error
+            elif not helpers.resource_view_is_iframed(view):
+                resource_view_html = helpers.rendered_resource_view(view, resource, package)
+            else:
+                src = helpers.url_for(qualified=True, controller='package', action='resource_view', id=package['name'], resource_id=resource['id'], view_id=view['id'])
+                message = _('Your browser does not support iframes.')
+                resource_view_html = '<iframe src="{src}" frameborder="0" width="100%" height="100%" style="display:block"> <p>{message}</p> </iframe>'.format(src=src, message=message)
+
+            view_element = html.fromstring(resource_view_html)
+            element.append(view_element)
+
+        _page['content'] = html.tostring(root)
+
+
+
     def pages_show(self, page=None, page_type='page'):
         p.toolkit.c.page_type = page_type
         if page:
@@ -203,6 +254,8 @@ class PagesController(p.toolkit.BaseController):
         if _page is None:
             return self._pages_list_pages(p)
         p.toolkit.c.page = _page
+        self._inject_views_into_page(_page)
+
         return p.toolkit.render('ckanext_pages/%s.html' % page_type)
 
     def _pages_list_pages(self, page_type):

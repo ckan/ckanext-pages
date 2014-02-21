@@ -36,6 +36,7 @@ this.ckan.module('ckedit', function (jQuery, _) {
       config.removeDialogTabs = 'image:advanced;link:advanced';
       config.filebrowserUploadUrl = this.options.site_url + 'pages_upload';
       config.extraPlugins = 'divarea,ckanview';
+      config.height = '400px';
 
       var editor = $(this.el).ckeditor(config);
     },

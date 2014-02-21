@@ -85,8 +85,6 @@ def get_recent_blog_posts(number=5, exclude=None):
 
     return new_list
 
-
-
 class PagesPlugin(p.SingletonPlugin):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
