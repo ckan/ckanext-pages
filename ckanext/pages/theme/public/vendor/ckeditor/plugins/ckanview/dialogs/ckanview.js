@@ -83,6 +83,12 @@
 				newFakeImage.setStyles( extraStyles );
         var width = iframeNode.getAttribute('width') || "80"
         var height = iframeNode.getAttribute('height') || "80"
+        if (width.charAt(width.length-1) === '%') {
+          width = '960';
+        }
+        if (height.charAt(height.length-1) === '%') {
+          height = '400';
+        }
 				newFakeImage.setAttributes( {'src': 'http://placehold.it/' + width + 'x' + height +'&text=CKAN+View'} );
 
 				if ( this.fakeImage ) {

@@ -16,6 +16,7 @@
 					'background-position: center center;' +
 					'background-repeat: no-repeat;' +
 					'border: 2px solid #a9a9a9;' +
+					'display: block;' +
 					'width: 80px;' +
 					'height: 80px;' +
 				'}'
@@ -77,6 +78,12 @@
 
               var width = element.attributes.width || "80";
               var height = element.attributes.height || "80";
+              if (width.charAt(width.length-1) === '%') {
+                width = '960';
+              }
+              if (height.charAt(height.length-1) === '%') {
+                height = '400';
+              }
 				      fake_element.attributes['data-ckan-view-embed'] ='true';
 				      fake_element.attributes['src'] = 'http://placehold.it/' + width + 'x' + height +'&text=CKAN+View';
 							return fake_element;

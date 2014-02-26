@@ -211,8 +211,12 @@ class PagesController(p.toolkit.BaseController):
 
             try:
                 iframe_src = element.attrib.pop('src', '')
-                width = element.attrib.pop('width', '80') + 'px'
-                height = element.attrib.pop('height', '80') + 'px'
+                width = element.attrib.pop('width', '80')
+                if not width.endswith('%') or width.endswith('px'):
+                    width = width + 'px'
+                height = element.attrib.pop('height', '80')
+                if not height.endswith('%') or height.endswith('px'):
+                    height = height + 'px'
                 align = element.attrib.pop('align', 'none')
                 style = "width: %s; height: %s; float: %s; overflow: auto; vertical-align:middle; position:relative" % (width, height, align)
                 element.attrib['style'] = style
