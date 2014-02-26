@@ -26,9 +26,6 @@
 		var isRemove = this.getValue() === '',
 			isCheckbox = this instanceof CKEDITOR.ui.dialog.checkbox,
 			value = this.getValue();
-    console.log(this.att);
-    console.log(this.id);
-    console.log(value);
 		if ( isRemove )
 			iframeNode.removeAttribute( this.att || this.id );
 		else if ( isCheckbox )
