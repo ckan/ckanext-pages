@@ -1,5 +1,6 @@
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
+from pylons import config
 
 _ = p.toolkit._
 
@@ -305,14 +306,9 @@ class PagesController(p.toolkit.BaseController):
             _page = {}
 
         if p.toolkit.request.method == 'POST' and not data:
-            data = p.toolkit.request.POST
-            items = ['title', 'name', 'content', 'private',
-                     'order', 'publish_date']
+            data = dict(p.toolkit.request.POST)
+            _page.update(data)
 
-            # update config from form
-            for item in items:
-                if item in data:
-                    _page[item] = data[item]
             _page['org_id'] = None
             _page['page'] = page
             _page['page_type'] = 'page' if page_type == 'pages' else page_type
@@ -340,8 +336,11 @@ class PagesController(p.toolkit.BaseController):
         errors = errors or {}
         error_summary = error_summary or {}
 
+        form_snippet = config.get('ckanext.pages.form', 'ckanext_pages/base_form.html')
+
         vars = {'data': data, 'errors': errors,
-                'error_summary': error_summary, 'page': page}
+                'error_summary': error_summary, 'page': page,
+                'form_snippet': form_snippet}
 
         return p.toolkit.render('ckanext_pages/%s_edit.html' % page_type,
                                 extra_vars=vars)

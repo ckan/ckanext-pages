@@ -1,4 +1,5 @@
 import datetime
+import json
 
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
@@ -93,14 +94,20 @@ def _pages_list(context, data_dict):
         if not member:
             search['private'] = False
     out = db.Page.pages(**search)
-    return [{'title': pg.title,
-             'content': pg.content,
-             'name': pg.name,
-             'publish_date': pg.publish_date,
-             'group_id': pg.group_id,
-             'page_type': pg.page_type,
-            } for pg in out]
-
+    out_list = []
+    for pg in out:
+        pg_row = {'title': pg.title,
+                  'content': pg.content,
+                  'name': pg.name,
+                  'publish_date': pg.publish_date,
+                  'group_id': pg.group_id,
+                  'page_type': pg.page_type,
+                 }
+        extras = pg.extras
+        if extras:
+            pg_row.update(json.loads(pg.extras))
+        out_list.append(pg_row)
+    return out_list
 
 def _pages_delete(context, data_dict):
     if db.pages_table is None:
@@ -137,6 +144,13 @@ def _pages_update(context, data_dict):
              'order', 'page_type', 'publish_date', 'content']
     for item in items:
         setattr(out, item, data.get(item))
+
+    extras = {}
+    extra_keys = set(schema.keys()) - set(items + ['id', 'created'])
+    for key in extra_keys:
+        if key in data:
+            extras[key] = data.get(key)
+    out.extras = json.dumps(extras)
 
     out.modified = datetime.datetime.utcnow()
     out.user_id = p.toolkit.c.userobj.id

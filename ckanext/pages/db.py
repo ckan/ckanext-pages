@@ -1,5 +1,6 @@
 import datetime
 import uuid
+import json
 
 import sqlalchemy as sa
 from sqlalchemy.orm import class_mapper
@@ -69,11 +70,21 @@ def init_db(model):
     model.Session.commit()
 
     sql_upgrade_01 = ''' ALTER TABLE ckanext_pages add column publish_date timestamp, add column page_type Text;
-                      UPDATE ckanext_pages set page_type = 'page'; '''
+                       UPDATE ckanext_pages set page_type = 'page'; '''
 
     conn = model.Session.connection()
     try:
         conn.execute(sql_upgrade_01)
+    except sa.exc.ProgrammingError:
+        pass
+    model.Session.commit()
+
+    sql_upgrade_02 = ''' ALTER TABLE ckanext_pages add column extras Text;
+                         UPDATE ckanext_pages set extras = '{}'; '''
+
+    conn = model.Session.connection()
+    try:
+        conn.execute(sql_upgrade_02)
     except sa.exc.ProgrammingError:
         pass
     model.Session.commit()
@@ -94,6 +105,7 @@ def init_db(model):
         sa.Column('page_type', types.DateTime),
         sa.Column('created', types.DateTime, default=datetime.datetime.utcnow),
         sa.Column('modified', types.DateTime, default=datetime.datetime.utcnow),
+        sa.Column('extras', types.UnicodeText, default=u'{}'),
     )
 
     model.meta.mapper(
@@ -120,7 +132,9 @@ def table_dictize(obj, context, **kw):
         if name == 'continuity_id':
             continue
         value = getattr(obj, name)
-        if value is None:
+        if name == 'extras' and value:
+            result_dict.update(json.loads(value))
+        elif value is None:
             result_dict[name] = value
         elif isinstance(value, dict):
             result_dict[name] = value
