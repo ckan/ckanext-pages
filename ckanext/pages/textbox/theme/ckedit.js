@@ -14,6 +14,7 @@ this.ckan.module('textbox', function (jQuery, _) {
       config.toolbarGroups = [
         { name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
         { name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
+        { name: 'links' },
         { name: 'insert' },
         { name: 'forms' },
         { name: 'tools' },
