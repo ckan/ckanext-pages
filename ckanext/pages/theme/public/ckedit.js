@@ -37,6 +37,7 @@ this.ckan.module('ckedit', function (jQuery, _) {
       config.filebrowserUploadUrl = this.options.site_url + 'pages_upload';
       config.extraPlugins = 'divarea,ckanview';
       config.height = '400px';
+      config.customConfig = false;
 
       var editor = $(this.el).ckeditor(config);
     },

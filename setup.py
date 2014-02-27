@@ -24,6 +24,7 @@ setup(
 	"""
         [ckan.plugins]
         pages=ckanext.pages.plugin:PagesPlugin
+        textboxview=ckanext.pages.plugin:TextBoxView
 
 	""",
 )

@@ -1,5 +1,7 @@
 import logging
 from pylons import config
+import ckan.plugins.toolkit as toolkit
+ignore_missing = toolkit.get_validator('ignore_missing')
 
 import ckan.plugins as p
 import ckan.lib.helpers as h
@@ -194,3 +196,37 @@ class PagesPlugin(p.SingletonPlugin):
             'ckanext_group_pages_delete': auth.group_pages_delete,
             'ckanext_group_pages_list': auth.group_pages_list,
        }
+
+class TextBoxView(p.SingletonPlugin):
+
+    p.implements(p.IConfigurer, inherit=True)
+    p.implements(p.IResourceView, inherit=True)
+
+    def update_config(self, config):
+        p.toolkit.add_resource('textbox/theme', 'textbox')
+        p.toolkit.add_template_directory(config, 'textbox/templates')
+
+    def info(self):
+        schema = {
+            'content': [ignore_missing],
+        }
+
+        return {'name': 'wysiwyg',
+                'title': 'Text Box',
+                'icon': 'pencil',
+                'iframed': False,
+                'schema': schema,
+                }
+
+    def can_view(self, data_dict):
+        return True
+
+    def view_template(self, context, data_dict):
+        return 'textbox_view.html'
+
+    def form_template(self, context, data_dict):
+        return 'textbox_form.html'
+
+    def setup_template_variables(self, context, data_dict):
+        return
+

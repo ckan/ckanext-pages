@@ -1,0 +1,6 @@
+   <div class="control-group">
+      <label for="field-content-ck" class="control-label">{{ _('Content') }}</label>
+   </div>
+   <textarea id="field-content-ck" name="content" placeholder="{{_('My content')}}" data-module="textbox" style="height:400px" data-module-site_url="{{ h.dump_json(h.url('/', locale='default', qualified=true)) }}"> {{ data.content }}</textarea>
+
+   {% resource 'textbox/main' %}
