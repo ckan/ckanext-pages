@@ -5,29 +5,29 @@
 
 {% if type == 'org' %}
   {% set action_url = h.url_for('organization_pages_edit', id=id, page='/' + page) %}
-  {% set cancel_url = h.url_for('organization_pages', id=id, page='') %}
+  {% set cancel_url = h.url_for('organization_pages_index', id=id) %}
   {% set slug_prefix = cancel_url ~ '/' %}
-  {% set slug_domain = h.url_for('organization_pages', id=id, page='', qualified=true) %}
+  {% set slug_domain = h.url_for('organization_pages_index', id=id, qualified=true) %}
   {% set hide_field_order = true %}
 {% elif type == 'group' %}
   {% set action_url = h.url_for('group_pages_edit', id=id, page='/' + page) %}
-  {% set cancel_url = h.url_for('group_pages', id=id, page='') %}
+  {% set cancel_url = h.url_for('group_pages_index', id=id) %}
   {% set slug_prefix = cancel_url ~ '/' %}
-  {% set slug_domain = h.url_for('group_pages', id=id, page='', qualified=true) %}
+  {% set slug_domain = h.url_for('group_pages_index', id=id, qualified=true) %}
   {% set hide_field_order = true %}
 {% elif type == 'blog' %}
   {% set action_url = h.url_for('blog_edit', page='/' + page) %}
-  {% set cancel_url = h.url_for('blog_show', page='') %}
+  {% set cancel_url = h.url_for('blog_index') %}
   {% set slug_prefix = cancel_url ~ '/' %}
-  {% set slug_domain = h.url_for('blog_show', page='', qualified=true) %}
+  {% set slug_domain = h.url_for('blog_index', qualified=true) %}
   {% if page %}
      {% set delete_url = h.url_for('blog_delete', page='/' + data.name) %}
   {% endif %}
 {% else %}
   {% set action_url = h.url_for('pages_edit', page='/' + page) %}
-  {% set cancel_url = h.url_for('pages_show', page='') %}
+  {% set cancel_url = h.url_for('pages_index') %}
   {% set slug_prefix = cancel_url ~ '/' %}
-  {% set slug_domain = h.url_for('pages_show', page='', qualified=true) %}
+  {% set slug_domain = h.url_for('pages_index', qualified=true) %}
   {% if page %}
      {% set delete_url = h.url_for('pages_delete', page='/' + data.name) %}
   {% endif %}

@@ -59,7 +59,7 @@ class PagesController(p.toolkit.BaseController):
         try:
             if p.toolkit.request.method == 'POST':
                 p.toolkit.get_action('ckanext_pages_delete')({}, {'org_id': p.toolkit.c.group_dict['id'], 'page': page})
-                p.toolkit.redirect_to(controller=self.controller, action='org_show', id=id, page='')
+                p.toolkit.redirect_to('organization_pages_index', id=id)
             else:
                 p.toolkit.abort(404, _('Page Not Found'))
         except p.toolkit.NotAuthorized:
@@ -189,6 +189,9 @@ class PagesController(p.toolkit.BaseController):
         return p.toolkit.render('ckanext_pages/group_page_edit.html',
                                extra_vars=vars)
 
+    def blog_index(self):
+        return self._pages_list_pages('blog')
+
     def blog_show(self, page=None):
         return self.pages_show(page, page_type='blog')
 
@@ -263,6 +266,9 @@ class PagesController(p.toolkit.BaseController):
 
         return p.toolkit.render('ckanext_pages/%s.html' % page_type)
 
+    def pages_index(self):
+        return self._pages_list_pages('page')
+
     def _pages_list_pages(self, page_type):
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
             data_dict={'org_id': None, 'page_type': page_type}
@@ -282,7 +288,7 @@ class PagesController(p.toolkit.BaseController):
         try:
             if p.toolkit.request.method == 'POST':
                 p.toolkit.get_action('ckanext_pages_delete')({}, {'page': page})
-                p.toolkit.redirect_to(controller=self.controller, action='%s_show' % page_type, page='')
+                p.toolkit.redirect_to('%s_index' % page_type)
             else:
                 p.toolkit.abort(404, _('Page Not Found'))
         except p.toolkit.NotAuthorized:
