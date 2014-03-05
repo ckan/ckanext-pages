@@ -11,3 +11,9 @@
   {% snippet 'ckanext_pages/snippets/pages_list.html', pages=c.page.items, type='blog' %}
   {{ c.page.pager() }}
 {% endblock %}
+
+{% block main_content %}
+   <div class="wrapper no-nav">
+     {{ self.primary_content() }}
+   </div>
+{% endblock %}
