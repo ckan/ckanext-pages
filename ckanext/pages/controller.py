@@ -273,6 +273,13 @@ class PagesController(p.toolkit.BaseController):
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
             data_dict={'org_id': None, 'page_type': page_type}
         )
+        p.toolkit.c.page = helpers.Page(
+            collection=p.toolkit.c.pages_dict,
+            page=p.toolkit.request.params.get('page', 1),
+            url=helpers.pager_url,
+            items_per_page=21
+        )
+
         if page_type == 'blog':
             return p.toolkit.render('ckanext_pages/blog_list.html')
         return p.toolkit.render('ckanext_pages/pages_list.html')
