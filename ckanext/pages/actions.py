@@ -6,6 +6,7 @@ import ckan.lib.navl.dictization_functions as df
 import ckan.new_authz as new_authz
 import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
+from HTMLParser import HTMLParser
 
 import db
 def page_name_validator(key, data, errors, context):
@@ -27,7 +28,14 @@ def not_empty_if_blog(key, data, errors, context):
         if value is df.missing or not value:
             errors[key].append('Publish Date Must be supplied')
 
+class HTMLFirstImage(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.first_image = None
 
+    def handle_starttag(self, tag, attrs):
+        if tag == 'img' and not self.first_image:
+            self.first_image = dict(attrs)['src']
 
 schema = {
     'id': [p.toolkit.get_validator('ignore_empty'), unicode],
@@ -96,6 +104,9 @@ def _pages_list(context, data_dict):
     out = db.Page.pages(**search)
     out_list = []
     for pg in out:
+        parser = HTMLFirstImage()
+        parser.feed(pg.content)
+        img = parser.first_image
         pg_row = {'title': pg.title,
                   'content': pg.content,
                   'name': pg.name,
@@ -103,6 +114,8 @@ def _pages_list(context, data_dict):
                   'group_id': pg.group_id,
                   'page_type': pg.page_type,
                  }
+        if img:
+            pg_row['image'] = img
         extras = pg.extras
         if extras:
             pg_row.update(json.loads(pg.extras))

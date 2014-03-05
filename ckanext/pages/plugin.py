@@ -8,7 +8,6 @@ import ckan.lib.helpers as h
 
 import actions
 import auth
-from HTMLParser import HTMLParser
 
 log = logging.getLogger(__name__)
 
@@ -55,21 +54,12 @@ def build_pages_nav_main(*args):
 
     return output
 
-class HTMLFirstImage(HTMLParser):
-    def __init__(self):
-        HTMLParser.__init__(self)
-        self.first_image = None
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'img' and not self.first_image:
-            self.first_image = dict(attrs)['src']
 
 def get_recent_blog_posts(number=5, exclude=None):
     blog_list = p.toolkit.get_action('ckanext_pages_list')(
         None, {'order_publish_date': True, 'private': False,
                'page_type': 'blog'}
     )
-
     new_list = []
     for blog in blog_list:
         if exclude and blog['name'] == exclude:
@@ -77,13 +67,6 @@ def get_recent_blog_posts(number=5, exclude=None):
         new_list.append(blog)
         if len(new_list) == number:
             break
-
-        parser = HTMLFirstImage()
-        parser.feed(blog['content'])
-        img = parser.first_image
-
-        if img:
-            blog['image'] = img
 
     return new_list
 
