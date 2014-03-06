@@ -1,5 +1,10 @@
 {% extends 'page.html' %}
 
+{% block styles %}
+  {{ super() }}
+  {% resource 'pages-theme/styles/pages.css' %}
+{% endblock %}
+
 {% block page_header %}{% endblock %}
 
 {% block secondary_content %}

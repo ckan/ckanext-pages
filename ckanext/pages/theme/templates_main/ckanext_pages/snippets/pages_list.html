@@ -16,7 +16,7 @@
 {% endif %}
 
 {% if pages %}
-  <ul class="dataset-list unstyled">
+  
     {% for page in pages %}
       {% if id %} {# this is for orgs and groups #}
         {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action=action, id=id, page='/' + page.name) %}
@@ -25,21 +25,43 @@
       {% else %}
         {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + page.name) %}
       {% endif %}
-      <li class="dataset-item">
-        <h3 class="dataset-heading">
-          <a href="{{ url }}" >{{ page.title }}</a>
-          {% if page.publish_date %}
-             <small> {{ h.render_datetime(page.publish_date) }} </small>
+      <div class="row page-list-item dataset-item">
+      {% if page.image %}
+        <div class="span3 image">
+          <a style="background-image:url({{ page.image }})" href="{{ url }}">
+          </a>
+        </div>
+        <div class="span9">
+           <h3 class="dataset-heading">
+              <a href="{{ url }}" >{{ page.title }}</a>
+              {% if page.publish_date %}
+                 <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
+              {% endif %}
+            </h3>
+            {% if page.content %}
+              {{ h.markdown_extract(page.content) }}
+            {% else %}
+              <p class="empty">{{ _('This page currently has no content') }}</p>
+            {% endif %}
+        </div>
+      {% else %}
+        <div class="span12">
+          <h3 class="dataset-heading">
+            <a href="{{ url }}" >{{ page.title }}</a>
+            {% if page.publish_date %}
+               <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
+            {% endif %}
+          </h3>
+          {% if page.content %}
+            {{ h.markdown_extract(page.content) }}
+          {% else %}
+            <p class="empty">{{ _('This page currently has no content') }}</p>
           {% endif %}
-        </h3>
-        {% if page.content %}
-          {{ h.markdown_extract(page.content) }}
-        {% else %}
-          <p class="empty">{{ _('This page currently has no content') }}</p>
-        {% endif %}
-      </li>
+        </div>
+      {% endif %}
+      </div>
     {% endfor %}
-  </ul>
+  
 {% else %}
     {% if type == 'blog' %}
       <p class="empty">{{ _('There are currently no blog articles here') }}</p>
