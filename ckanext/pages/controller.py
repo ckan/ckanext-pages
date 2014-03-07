@@ -270,8 +270,11 @@ class PagesController(p.toolkit.BaseController):
         return self._pages_list_pages('page')
 
     def _pages_list_pages(self, page_type):
+        data_dict={'org_id': None, 'page_type': page_type}
+        if page_type == 'blog':
+            data_dict['order_publish_date'] = True
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
-            data_dict={'org_id': None, 'page_type': page_type}
+            data_dict=data_dict
         )
         p.toolkit.c.page = helpers.Page(
             collection=p.toolkit.c.pages_dict,
@@ -320,6 +323,7 @@ class PagesController(p.toolkit.BaseController):
 
         if p.toolkit.request.method == 'POST' and not data:
             data = dict(p.toolkit.request.POST)
+
             _page.update(data)
 
             _page['org_id'] = None
