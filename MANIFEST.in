@@ -1,0 +1,2 @@
+recursive-include    ckanext/pages/textbox        *
+recursive-include    ckanext/pages/theme          *
