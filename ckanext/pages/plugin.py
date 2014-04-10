@@ -204,7 +204,7 @@ class TextBoxView(p.SingletonPlugin):
         }
 
         return {'name': 'wysiwyg',
-                'title': 'Text Box',
+                'title': 'Free Text',
                 'icon': 'pencil',
                 'iframed': False,
                 'schema': schema,
