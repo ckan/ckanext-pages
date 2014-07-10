@@ -196,16 +196,20 @@ class PagesController(p.toolkit.BaseController):
         return self.pages_show(page, page_type='blog')
 
     def _inject_views_into_page(self, _page):
-
-        try:
-            from lxml import html
-        except ImportError:
-            return
         # this is a good proxy to a version of CKAN with views enabled.
         if not p.plugin_loaded('image_view'):
             return
 
-        root = html.fromstring(_page['content'])
+        try:
+            import lxml
+            import lxml.html
+            root = lxml.html.fromstring(_page['content'])
+        # Return if any errors are found while parsing the content
+        except (ImportError,
+                lxml.etree.XMLSyntaxError,
+                lxml.etree.ParserError):
+            return
+
         for element in root.findall('.//iframe'):
             embed_element = element.attrib.pop('data-ckan-view-embed', None)
             if not embed_element:
@@ -242,10 +246,10 @@ class PagesController(p.toolkit.BaseController):
                 message = _('Your browser does not support iframes.')
                 resource_view_html = '<iframe src="{src}" frameborder="0" width="100%" height="100%" style="display:block"> <p>{message}</p> </iframe>'.format(src=src, message=message)
 
-            view_element = html.fromstring(resource_view_html)
+            view_element = lxml.html.fromstring(resource_view_html)
             element.append(view_element)
 
-        _page['content'] = html.tostring(root)
+        _page['content'] = lxml.html.tostring(root)
 
 
 
