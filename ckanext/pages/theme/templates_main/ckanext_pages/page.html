@@ -11,7 +11,7 @@
     {% if c.page.content %}
       <div class="ckanext-pages-content">
           <div>
-              {{c.page.content}}
+              {{c.page.content|safe}}
           </div>
           <!-- {{ h.render_markdown(c.page.content) }} -->
       </div>

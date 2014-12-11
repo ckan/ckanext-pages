@@ -85,12 +85,9 @@ def table_dictize(obj, context, **kw):
     '''Get any model object and represent it as a dict'''
     result_dict = {}
 
-    if isinstance(obj, sa.engine.base.RowProxy):
-        fields = obj.keys()
-    else:
-        ModelClass = obj.__class__
-        table = class_mapper(ModelClass).mapped_table
-        fields = [field.name for field in table.c]
+    ModelClass = obj.__class__
+    table = class_mapper(ModelClass).mapped_table
+    fields = [field.name for field in table.c]
 
     for field in fields:
         name = field
@@ -120,4 +117,3 @@ def table_dictize(obj, context, **kw):
                                        context.get('metadata_modified', ''))
 
     return result_dict
-
