@@ -10,10 +10,13 @@
     <h1 class="page-heading">{{ c.page.title }}</h1>
     {% if c.page.content %}
       <div class="ckanext-pages-content">
+        {% if h.wysiwyg() %}
           <div>
               {{c.page.content|safe}}
           </div>
-          <!-- {{ h.render_markdown(c.page.content) }} -->
+        {% else %}
+          {{ h.render_markdown(c.page.content) }}
+        {% endif %}
       </div>
     {% else %}
       <p class="empty">{{ _('This page currently has no content') }}</p>

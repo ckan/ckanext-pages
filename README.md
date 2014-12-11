@@ -30,4 +30,8 @@ ckanext.pages.organization_menu = False
 
 By default these are all set to True, like on a default install.
 
+If you want to use the WYSIWYG editor instead of Markdown:
 
+```
+ckanext.pages.wysiwyg = True
+```

@@ -48,6 +48,8 @@ def build_pages_nav_main(*args):
 
     return output
 
+def is_wysiwyg_enabled():
+    return p.toolkit.asbool(config.get('ckanext.pages.wysiwyg', False))
 
 
 class PagesPlugin(p.SingletonPlugin):
@@ -76,7 +78,8 @@ class PagesPlugin(p.SingletonPlugin):
 
     def get_helpers(self):
         return {
-            'build_nav_main': build_pages_nav_main
+            'build_nav_main': build_pages_nav_main,
+            'wysiwyg': is_wysiwyg_enabled
         }
 
     def after_map(self, map):
