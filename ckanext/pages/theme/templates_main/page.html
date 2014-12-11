@@ -1,0 +1,12 @@
+{% ckan_extends %}
+
+{% block styles %}
+    {{ super() }}
+
+    {% resource 'pages/css/medium-editor.css' %}
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    {% resource 'pages/js/medium-editor.js' %}
+{% endblock %}

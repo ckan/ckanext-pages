@@ -68,6 +68,8 @@ class PagesPlugin(p.SingletonPlugin):
         if self.organization_pages:
             p.toolkit.add_template_directory(config, 'theme/templates_organization')
 
+        p.toolkit.add_resource('fanstatic', 'pages')
+
 
     def configure(self, config):
         return
