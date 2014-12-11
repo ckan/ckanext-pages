@@ -1,4 +1,5 @@
 {% import 'macros/form.html' as form %}
+{% import 'macros/wysiwyg.html' as wysiwyg %}
 
 {% if type == 'org' %}
   {% set action_url = h.url_for('organization_pages_edit', id=id, page='/' + page) %}
@@ -62,7 +63,9 @@
     </div>
   {% endif %}
 
-  {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('My content'), value=data.content, error=errors.content) }}
+  {{ wysiwyg.editor('content', id='field-content', label=_('Content'), placeholder=_('My content'), value=data.content, error=errors.content) }}
+
+  <!-- {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('My content'), value=data.content, error=errors.content) }}-->
 
   <div class="form-actions">
     {% if not page %}

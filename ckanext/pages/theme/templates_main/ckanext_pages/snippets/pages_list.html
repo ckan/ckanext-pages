@@ -16,7 +16,10 @@
           <a href="{{ url }}" >{{ page.title }}</a>
         </h3>
         {% if page.content %}
-          {{ h.markdown_extract(page.content) }}
+          <div>
+            {{c.page.content}}
+          </div>
+          <!-- {{ h.markdown_extract(page.content) }}-->
         {% else %}
           <p class="empty">{{ _('This page currently has no content') }}</p>
         {% endif %}

@@ -1,0 +1,11 @@
+{% macro editor(name, id='', label='', value='', placeholder='', error="", classes=[], attrs={}, is_required=false) %}
+    <div class="control-group wysiwyg">
+        <label for="field-{{name}}-editor">{{label}}</label>
+        <div class="controls">
+            <div class="editable" id='field-{{name}}-editor' data-placeholder="{{ placeholder }}">
+                {{value}}
+            </div>
+            <input type="hidden" name="{{ name }}" value="{{ value }}" />
+        </div>
+    </div>
+{% endmacro %}
