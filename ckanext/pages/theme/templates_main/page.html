@@ -3,6 +3,10 @@
 {% block styles %}
     {{ super() }}
 
+    <!--[if IE]>
+    <script src="{{ h.url_for_static('/classList.min.js') }}"></script>
+    <![endif]-->
+
     {% resource 'pages/css/medium-editor.css' %}
 {% endblock %}
 

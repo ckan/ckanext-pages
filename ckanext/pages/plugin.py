@@ -71,7 +71,7 @@ class PagesPlugin(p.SingletonPlugin):
             p.toolkit.add_template_directory(config, 'theme/templates_organization')
 
         p.toolkit.add_resource('fanstatic', 'pages')
-
+        p.toolkit.add_public_directory(config, 'public')
 
     def configure(self, config):
         return
