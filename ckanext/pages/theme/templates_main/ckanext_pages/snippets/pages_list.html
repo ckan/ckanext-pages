@@ -18,7 +18,7 @@
         {% if page.content %}
           {% if h.wysiwyg() %}
           <div>
-            {{page.content|safe|truncate}}
+            {{page.content|striptags|truncate}}
           </div>
           {% else %}
             {{ h.markdown_extract(page.content) }}
