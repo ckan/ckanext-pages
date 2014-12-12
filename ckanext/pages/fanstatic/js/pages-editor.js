@@ -1,5 +1,15 @@
 $(document).ready(function(){
-    var editor = new MediumEditor('.editable');
+    var editor = new MediumEditor('.editable', {
+            buttons: ['bold',
+                'italic',
+                'quote',
+                'header1',
+                'header2',
+                'anchor',
+                'unorderedlist',
+                'pre'
+            ],
+    });
 
     //editor.serialize()['field-content-editor']['value']
     //$(editor.elements[0])
