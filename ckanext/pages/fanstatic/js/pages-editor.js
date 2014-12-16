@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var editor = new MediumEditor('.editable', {
+    editor = new MediumEditor('.editable', {
             buttons: ['bold',
                 'italic',
                 'quote',
@@ -11,11 +11,10 @@ $(document).ready(function(){
             ],
     });
 
-    //editor.serialize()['field-content-editor']['value']
-    //$(editor.elements[0])
-
     $('form').submit(function(){
-        input = $(editor.elements[0]).next('input')
-        input.val(editor.serialize()['field-content-editor']['value'])
+        for (var i=0; i<editor.elements.length; i++){
+            input = $(editor.elements[i]).next('input')
+            input.val(editor.serialize()['field-content-editor']['value'])
+        }
     });
 });
