@@ -14,7 +14,7 @@ $(document).ready(function(){
     $('form').submit(function(){
         for (var i=0; i<editor.elements.length; i++){
             input = $(editor.elements[i]).next('input')
-            input.val(editor.serialize()['field-content-editor']['value'])
+            input.val(editor.serialize()[editor.elements[i].id]['value'])
         }
     });
 });
