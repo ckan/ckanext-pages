@@ -35,3 +35,28 @@ c.anchor&&c.anchor.id;a["data-cke-saved-href"]="#"+(c.anchor&&c.anchor.name||e||
 "style");e("advRel","rel")}e=d.getSelection();a.href=a["data-cke-saved-href"];if(this._.selectedElement){d=this._.selectedElement;i=d.data("cke-saved-href");f=d.getHtml();d.setAttributes(a);d.removeAttributes(b);c.adv&&(c.adv.advName&&CKEDITOR.plugins.link.synAnchorSelector)&&d.addClass(d.getChildCount()?"cke_anchor":"cke_anchor_empty");if(i==f||c.type=="email"&&f.indexOf("@")!=-1){d.setHtml(c.type=="email"?c.email.address:a["data-cke-saved-href"]);e.selectElement(d)}delete this._.selectedElement}else{e=
 e.getRanges()[0];if(e.collapsed){d=new CKEDITOR.dom.text(c.type=="email"?c.email.address:a["data-cke-saved-href"],d.document);e.insertNode(d);e.selectNodeContents(d)}d=new CKEDITOR.style({element:"a",attributes:a});d.type=CKEDITOR.STYLE_INLINE;d.applyToRange(e);e.select()}},onLoad:function(){n.config.linkShowAdvancedTab||this.hidePage("advanced");n.config.linkShowTargetTab||this.hidePage("target")},onFocus:function(){var a=this.getContentElement("info","linkType");if(a&&a.getValue()=="url"){a=this.getContentElement("info",
 "url");a.select()}}}});
+/* Here we are latching on an event ... in this case, the dialog open event 
+ * taken from http://handsomedogstudio.com/ckeditor-set-default-target-blank */
+CKEDITOR.on('dialogDefinition', function(ev) {
+  try {
+    /* this just gets the name of the dialog */
+    var dialogName = ev.data.name;
+    /* this just gets the contents of the opened dialog */
+    var dialogDefinition = ev.data.definition;
+
+    /* Make sure that the dialog opened is the link plugin ... otherwise do nothing */
+    if(dialogName == 'link') {
+      /* Getting the contents of the Target tab */
+      var informationTab = dialogDefinition.getContents('target');
+      /* Getting the contents of the dropdown field "Target" so we can set it */
+      var targetField = informationTab.get('linkTargetType');
+      /* Now that we have the field, we just set the default to _blank
+         A good modification would be to check the value of the URL field
+         and if the field does not start with "mailto:" or a relative path,
+         then set the value to "_blank" */
+      targetField['default'] = '_blank';
+    }
+  } catch(exception) {
+    alert('Error ' + ev.message);
+  }
+});
