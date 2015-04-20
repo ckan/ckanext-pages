@@ -35,7 +35,7 @@ sudo -u postgres psql -c 'CREATE DATABASE datastore_test WITH OWNER ckan_default
 
 echo "Installing ckanext-pages and its requirements..."
 python setup.py develop
-pip install -r dev-requirements.txt
+#pip install -r dev-requirements.txt
 
 echo "Moving test.ini into a subdir..."
 mkdir subdir
