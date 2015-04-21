@@ -1,4 +1,6 @@
 import ckan.plugins as p
+import ckan.lib.helpers as helpers
+from pylons import config
 
 _ = p.toolkit._
 
@@ -57,7 +59,7 @@ class PagesController(p.toolkit.BaseController):
         try:
             if p.toolkit.request.method == 'POST':
                 p.toolkit.get_action('ckanext_pages_delete')({}, {'org_id': p.toolkit.c.group_dict['id'], 'page': page})
-                p.toolkit.redirect_to(controller=self.controller, action='org_show', id=id, page='')
+                p.toolkit.redirect_to('organization_pages_index', id=id)
             else:
                 p.toolkit.abort(404, _('Page Not Found'))
         except p.toolkit.NotAuthorized:
@@ -187,37 +189,120 @@ class PagesController(p.toolkit.BaseController):
         return p.toolkit.render('ckanext_pages/group_page_edit.html',
                                extra_vars=vars)
 
+    def blog_index(self):
+        return self._pages_list_pages('blog')
 
-    def pages_show(self, page=None):
+    def blog_show(self, page=None):
+        return self.pages_show(page, page_type='blog')
+
+    def _inject_views_into_page(self, _page):
+        # this is a good proxy to a version of CKAN with views enabled.
+        if not p.plugin_loaded('image_view'):
+            return
+
+        try:
+            import lxml
+            import lxml.html
+            root = lxml.html.fromstring(_page['content'])
+        # Return if any errors are found while parsing the content
+        except (ImportError,
+                lxml.etree.XMLSyntaxError,
+                lxml.etree.ParserError):
+            return
+
+        for element in root.findall('.//iframe'):
+            embed_element = element.attrib.pop('data-ckan-view-embed', None)
+            if not embed_element:
+                continue
+            element.tag = 'div'
+            error = None
+
+            try:
+                iframe_src = element.attrib.pop('src', '')
+                width = element.attrib.pop('width', '80')
+                if not width.endswith('%') and not width.endswith('px'):
+                    width = width + 'px'
+                height = element.attrib.pop('height', '80')
+                if not height.endswith('%') and not height.endswith('px'):
+                    height = height + 'px'
+                align = element.attrib.pop('align', 'none')
+                style = "width: %s; height: %s; float: %s; overflow: auto; vertical-align:middle; position:relative" % (width, height, align)
+                element.attrib['style'] = style
+                element.attrib['class'] = 'pages-embed'
+                view = p.toolkit.get_action('resource_view_show')({}, {'id': iframe_src[-36:]})
+                context = {}
+                resource = p.toolkit.get_action('resource_show')(context, {'id': view['resource_id']})
+                package_id = context['resource'].resource_group.package_id
+                package = p.toolkit.get_action('package_show')(context, {'id': package_id})
+            except p.toolkit.ObjectNotFound:
+                error = _('ERROR: View not found {view_id}'.format(view_id=iframe_src ))
+
+            if error:
+                resource_view_html = '<h4> %s </h4>' % error
+            elif not helpers.resource_view_is_iframed(view):
+                resource_view_html = helpers.rendered_resource_view(view, resource, package)
+            else:
+                src = helpers.url_for(qualified=True, controller='package', action='resource_view', id=package['name'], resource_id=resource['id'], view_id=view['id'])
+                message = _('Your browser does not support iframes.')
+                resource_view_html = '<iframe src="{src}" frameborder="0" width="100%" height="100%" style="display:block"> <p>{message}</p> </iframe>'.format(src=src, message=message)
+
+            view_element = lxml.html.fromstring(resource_view_html)
+            element.append(view_element)
+
+        _page['content'] = lxml.html.tostring(root)
+
+
+
+    def pages_show(self, page=None, page_type='page'):
+        p.toolkit.c.page_type = page_type
         if page:
             page = page[1:]
         if not page:
-            return self._pages_list_pages()
+            return self._pages_list_pages(page_type)
         _page = p.toolkit.get_action('ckanext_pages_show')(
             data_dict={'org_id': None,
-                       'page': page,}
+                       'page': page}
         )
         if _page is None:
-            return self._pages_list_pages()
+            return self._pages_list_pages(p)
         p.toolkit.c.page = _page
-        return p.toolkit.render('ckanext_pages/page.html')
+        self._inject_views_into_page(_page)
 
-    def _pages_list_pages(self):
+        return p.toolkit.render('ckanext_pages/%s.html' % page_type)
+
+    def pages_index(self):
+        return self._pages_list_pages('page')
+
+    def _pages_list_pages(self, page_type):
+        data_dict={'org_id': None, 'page_type': page_type}
+        if page_type == 'blog':
+            data_dict['order_publish_date'] = True
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
-            data_dict={'org_id': None}
+            data_dict=data_dict
         )
+        p.toolkit.c.page = helpers.Page(
+            collection=p.toolkit.c.pages_dict,
+            page=p.toolkit.request.params.get('page', 1),
+            url=helpers.pager_url,
+            items_per_page=21
+        )
+
+        if page_type == 'blog':
+            return p.toolkit.render('ckanext_pages/blog_list.html')
         return p.toolkit.render('ckanext_pages/pages_list.html')
 
-    def pages_delete(self, page):
+    def blog_delete(self, page):
+        return self.pages_delete(page, page_type='blog')
+
+    def pages_delete(self, page, page_type='pages'):
         page = page[1:]
         if 'cancel' in p.toolkit.request.params:
-            p.toolkit.redirect_to(controller=self.controller, action='pages_edit', page='/' + page)
-
+            p.toolkit.redirect_to(controller=self.controller, action='%s_edit' % page_type, page='/' + page)
 
         try:
             if p.toolkit.request.method == 'POST':
                 p.toolkit.get_action('ckanext_pages_delete')({}, {'page': page})
-                p.toolkit.redirect_to(controller=self.controller, action='pages_show', page='')
+                p.toolkit.redirect_to('%s_index' % page_type)
             else:
                 p.toolkit.abort(404, _('Page Not Found'))
         except p.toolkit.NotAuthorized:
@@ -227,7 +312,10 @@ class PagesController(p.toolkit.BaseController):
         return p.toolkit.render('ckanext_pages/confirm_delete.html', {'page': page})
 
 
-    def pages_edit(self, page=None, data=None, errors=None, error_summary=None):
+    def blog_edit(self, page=None, data=None, errors=None, error_summary=None):
+        return self.pages_edit(page=page, data=data, errors=errors, error_summary=error_summary, page_type='blog')
+
+    def pages_edit(self, page=None, data=None, errors=None, error_summary=None, page_type='pages'):
         if page:
             page = page[1:]
         _page = p.toolkit.get_action('ckanext_pages_show')(
@@ -238,15 +326,14 @@ class PagesController(p.toolkit.BaseController):
             _page = {}
 
         if p.toolkit.request.method == 'POST' and not data:
-            data = p.toolkit.request.POST
-            items = ['title', 'name', 'content', 'private', 'order']
+            data = dict(p.toolkit.request.POST)
 
-            # update config from form
-            for item in items:
-                if item in data:
-                    _page[item] = data[item]
+            _page.update(data)
+
             _page['org_id'] = None
             _page['page'] = page
+            _page['page_type'] = 'page' if page_type == 'pages' else page_type
+
             try:
                 junk = p.toolkit.get_action('ckanext_pages_update')(
                     data_dict=_page
@@ -255,8 +342,9 @@ class PagesController(p.toolkit.BaseController):
                 errors = e.error_dict
                 error_summary = e.error_summary
                 return self.pages_edit('/' + page, data,
-                                 errors, error_summary)
-            p.toolkit.redirect_to(p.toolkit.url_for('pages_show', page='/' + _page['name']))
+                                       errors, error_summary, page_type=page_type)
+            p.toolkit.redirect_to(p.toolkit.url_for('%s_show' % page_type,
+                                                    page='/' + _page['name']))
 
         try:
             p.toolkit.check_access('ckanext_pages_update', {'user': p.toolkit.c.user or p.toolkit.c.author})
@@ -269,11 +357,26 @@ class PagesController(p.toolkit.BaseController):
         errors = errors or {}
         error_summary = error_summary or {}
 
+        form_snippet = config.get('ckanext.pages.form', 'ckanext_pages/base_form.html')
+
         vars = {'data': data, 'errors': errors,
-                'error_summary': error_summary, 'page': page}
+                'error_summary': error_summary, 'page': page,
+                'form_snippet': form_snippet}
 
-        return p.toolkit.render('ckanext_pages/pages_edit.html',
-                               extra_vars=vars)
+        return p.toolkit.render('ckanext_pages/%s_edit.html' % page_type,
+                                extra_vars=vars)
 
+    def pages_upload(self):
+        if not p.toolkit.request.method == 'POST':
+            p.toolkit.abort(409, _('Only Posting is availiable'))
+
+        try:
+            url = p.toolkit.get_action('ckanext_pages_upload')(None, dict(p.toolkit.request.POST))
+        except p.toolkit.NotAuthorized:
+            p.toolkit.abort(401, _('Unauthorized to upload file %s') % id)
+
+        return """<script type='text/javascript'>
+                      window.parent.CKEDITOR.tools.callFunction(%s, '%s');
+                  </script>""" % (p.toolkit.request.GET['CKEditorFuncNum'], url['url'])
 
 

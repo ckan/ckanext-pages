@@ -8,5 +8,12 @@
 
 {% block primary_content_inner %}
   <h1 class="hide-heading">{{ _('Pages') }}</h1>
-  {% snippet 'ckanext_pages/snippets/pages_list.html', pages=c.pages_dict %}
+  {% snippet 'ckanext_pages/snippets/pages_list.html', pages=c.page.items %}
+  {{ c.page.pager() }}
+{% endblock %}
+
+{% block main_content %}
+   <div class="wrapper no-nav">
+     {{ self.primary_content() }}
+   </div>
 {% endblock %}

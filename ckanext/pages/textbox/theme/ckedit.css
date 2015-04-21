@@ -1,0 +1,11 @@
+/* This is used as boottrap takes over some ckedit styling */
+input.cke_dialog_ui_input_text, input.cke_dialog_ui_input_password, textarea.cke_dialog_ui_input_textarea 
+{
+    color: #000000;
+    height: auto;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+    line-height: auto;
+}
+
