@@ -1,5 +1,6 @@
 from ckan.plugins import toolkit
 from ckan.new_tests import factories, helpers
+from nose.tools import assert_in, assert_not_in
 import ckan.model as model
 
 from ckanext.pages import db
@@ -26,7 +27,7 @@ class TestUpdate(helpers.FunctionalTestBase):
             extra_environ=env,
         )
         response = response.follow(extra_environ=env)
-        assert '<h1 class="page-heading">Page Title</h1>' in response.body
+        assert_in('<h1 class="page-heading">Page Title</h1>', response.body)
 
     @helpers.change_config('ckanext.pages.allow_html', 'True')
     def test_rendering_with_html_allowed(self):
@@ -34,7 +35,7 @@ class TestUpdate(helpers.FunctionalTestBase):
         response = self.app.post(
             url=toolkit.url_for('pages_edit', page='/test_html_page'),
             params={
-                'title': 'HTML allowed',
+                'title': 'Allowed',
                 'name': 'page_html_allowed',
                 'content': '<a href="/test">Test</a>',
             },
@@ -42,9 +43,23 @@ class TestUpdate(helpers.FunctionalTestBase):
         )
         response = response.follow(extra_environ=env)
         if toolkit.check_ckan_version(min_version='2.3'):
-            assert '<h1 class="page-heading">HTML allowed</h1><a href="/test">Test</a>' in response.body
+            assert_in(
+                (
+                    '<h1 class="page-heading">Allowed</h1>'
+                    '<div class="ckanext-pages-content">'
+                    '<a href="/test">Test</a>'
+                    '</div>'
+                ),
+                response.body
+            )
         else:
-            assert '<h1 class="page-heading">HTML allowed</h1>Test' in response.body
+            assert_in(
+                (
+                    '<h1 class="page-heading">Allowed</h1>'
+                    '<div class="ckanext-pages-content">Test</div>'
+                ),
+                response.body
+            )
 
     @helpers.change_config('ckanext.pages.allow_html', 'False')
     def test_rendering_with_html_disallowed(self):
@@ -52,11 +67,17 @@ class TestUpdate(helpers.FunctionalTestBase):
         response = self.app.post(
             url=toolkit.url_for('pages_edit', page='/test_html_page'),
             params={
-                'title': 'HTML disallowed',
+                'title': 'Disallowed',
                 'name': 'page_html_disallowed',
                 'content': '<a href="/test">Test</a>',
             },
             extra_environ=env,
         )
         response = response.follow(extra_environ=env)
-        assert '<h1 class="page-heading">HTML disallowed</h1>Test' in response.body
+        assert_in(
+            (
+                '<h1 class="page-heading">Disallowed</h1>'
+                '<div class="ckanext-pages-content">Test</div>'
+            ),
+            response.body
+        )
