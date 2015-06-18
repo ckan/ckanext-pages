@@ -1,10 +1,14 @@
 from ckan.plugins import toolkit
 from ckan.new_tests import factories, helpers
+import ckan.model as model
+
+from ckanext.pages import db
 
 
 class TestUpdate(helpers.FunctionalTestBase):
     def setup(self):
         super(TestUpdate, self).setup()
+        db.init_db(model)
         self.user = factories.Sysadmin()
         self.app = self._get_test_app()
 
