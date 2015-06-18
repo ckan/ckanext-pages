@@ -42,24 +42,11 @@ class TestUpdate(helpers.FunctionalTestBase):
             extra_environ=env,
         )
         response = response.follow(extra_environ=env)
+        assert_in('<h1 class="page-heading">Allowed</h1>', response.body)
         if toolkit.check_ckan_version(min_version='2.3'):
-            assert_in(
-                (
-                    '<h1 class="page-heading">Allowed</h1>'
-                    '<div class="ckanext-pages-content">'
-                    '<a href="/test">Test</a>'
-                    '</div>'
-                ),
-                response.body
-            )
+            assert_in('<p><a href="/test">Test</a>', response.body)
         else:
-            assert_in(
-                (
-                    '<h1 class="page-heading">Allowed</h1>'
-                    '<div class="ckanext-pages-content">Test</div>'
-                ),
-                response.body
-            )
+            assert_in('<p>Test', response.body)
 
     @helpers.change_config('ckanext.pages.allow_html', 'False')
     def test_rendering_with_html_disallowed(self):
@@ -74,10 +61,6 @@ class TestUpdate(helpers.FunctionalTestBase):
             extra_environ=env,
         )
         response = response.follow(extra_environ=env)
-        assert_in(
-            (
-                '<h1 class="page-heading">Disallowed</h1>'
-                '<div class="ckanext-pages-content">Test</div>'
-            ),
-            response.body
-        )
+        assert_in('<h1 class="page-heading">Disallowed</h1>', response.body)
+        assert_in('<p>Test', response.body)
+        assert_not_in('<p><a href="/test">Test</a>', response.body)
