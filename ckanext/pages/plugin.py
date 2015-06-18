@@ -48,6 +48,13 @@ def build_pages_nav_main(*args):
 
     return output
 
+def render_content(content):
+    allow_html = p.toolkit.asbool(config.get('ckanext.pages.allow_html', False))
+    try:
+        return h.render_markdown(content, allow_html=allow_html)
+    except TypeError: 
+        # allow_html is only available in CKAN >= 2.3
+        return h.render_markdown(content)
 
 
 class PagesPlugin(p.SingletonPlugin):
@@ -74,7 +81,8 @@ class PagesPlugin(p.SingletonPlugin):
 
     def get_helpers(self):
         return {
-            'build_nav_main': build_pages_nav_main
+            'build_nav_main': build_pages_nav_main,
+            'render_content': render_content,
         }
 
     def after_map(self, map):

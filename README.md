@@ -33,3 +33,10 @@ ckanext.pages.organization_menu = False
 By default these are all set to True, like on a default install.
 
 
+To enable HTML output for the pages (along with Markdown), add the following to your config:
+
+```
+ckanext.pages.allow_html = True
+```
+
+By default this option is set to False. Note that this feature is only available for CKAN >= 2.3. For older versions of CKAN, this option has no effect.
