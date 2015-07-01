@@ -16,6 +16,9 @@ setup(
 	packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
 	namespace_packages=['ckanext', 'ckanext.pages'],
 	include_package_data=True,
+	package_data={
+            '': ['theme/*/*.html', 'theme/*/*/*.html', 'theme/*/*/*/*.html'],
+	},
 	zip_safe=False,
 	install_requires=[
 		# -*- Extra requirements: -*-
