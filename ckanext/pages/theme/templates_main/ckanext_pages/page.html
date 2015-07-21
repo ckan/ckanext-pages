@@ -10,7 +10,7 @@
     <h1 class="page-heading">{{ c.page.title }}</h1>
     {% if c.page.content %}
       <div class="ckanext-pages-content">
-          {{ h.render_markdown(c.page.content) }}
+          {{ h.render_content(c.page.content) }}
       </div>
     {% else %}
       <p class="empty">{{ _('This page currently has no content') }}</p>

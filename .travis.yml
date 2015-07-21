@@ -8,3 +8,4 @@ env:
 install:
     - bash bin/travis-build.bash
 script: sh bin/travis-run.sh
+sudo: required
