@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/ckan/ckanext-pages.svg?branch=master)](https://travis-ci.org/ckan/ckanext-pages)
-[![Coverage Status](https://coveralls.io/repos/pages/ckanext-pages/badge.svg)](https://coveralls.io/r/ckan/ckanext-pages)
+[![Coverage Status](https://coveralls.io/repos/ckan/ckanext-pages/badge.svg?branch=master&service=github)](https://coveralls.io/github/ckan/ckanext-pages?branch=master)
 ckanext-pages
 =============
 
