@@ -8,4 +8,5 @@ env:
 install:
     - bash bin/travis-build.bash
 script: sh bin/travis-run.sh
+after_success: coveralls
 sudo: required
