@@ -1,0 +1,6 @@
+[report]
+omit =
+    */site-packages/*
+    */python?.?/*
+    */tests/*
+    ckan/*
