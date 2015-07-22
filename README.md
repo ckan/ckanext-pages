@@ -7,6 +7,22 @@ This extension gives you an easy way to add simple pages to CKAN.
 
 By default you can add pages to the main CKAN menu.
 
+## Installation
+
+Use `pip` to install this plugin. This example installs it in `/home/www-data/pyenv`, assuming you have [setup a virtualenv](http://docs.ckan.org/en/latest/maintaining/installing/install-from-source.html#install-ckan-into-a-python-virtual-environment) there:
+
+```
+source /home/www-data/pyenv/bin/activate
+pip install -e 'git+https://github.com/ckan/ckanext-pages.git#egg=ckanext-pages'
+```
+
+Make sure to add `pages` to `ckan.plugins` in your config file:
+
+```
+ckan.plugins = pages
+```
+
+## Configuration
 
 
 Extra config options allow you to control the creation of extra pages against groups and organizations.
