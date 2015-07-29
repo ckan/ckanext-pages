@@ -6,7 +6,8 @@
   {% link_for _('Edit page'), controller='ckanext.pages.controller:PagesController', action='group_edit', id=c.group_dict.name, page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
   <h1 class="page-heading">{{ c.page.title }}</h1>
   {% if c.page.content %}
-    {% if h.wysiwyg() %}
+    {% set editor = h.get_wysiwyg_editor %}
+    {% if editor == 'medium' %}
     <div>
         {{c.page.content|safe}}
     </div>

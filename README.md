@@ -7,6 +7,8 @@ This extension gives you an easy way to add simple pages to CKAN.
 
 By default you can add pages to the main CKAN menu.
 
+Works for ckan>=2.3
+
 ## Installation
 
 Use `pip` to install this plugin. This example installs it in `/home/www-data/pyenv`, assuming you have [setup a virtualenv](http://docs.ckan.org/en/latest/maintaining/installing/install-from-source.html#install-ckan-into-a-python-virtual-environment) there:
@@ -56,10 +58,16 @@ ckanext.pages.allow_html = True
 
 By default this option is set to False. Note that this feature is only available for CKAN >= 2.3. For older versions of CKAN, this option has no effect.
 Use this option with care and only allow this if you trust the input of your users.
+
 If you want to use the WYSIWYG editor instead of Markdown:
 ```
-ckanext.pages.wysiwyg = True
+ckanext.pages.editor = medium
 ```
+or
+```
+ckanext.pages.editor = ckeditor
+```
+This enables either the [medium](https://jakiestfu.github.io/Medium.js/docs/) or [ckeditor](http://ckeditor.com/)
 
 Dependencies
 ------------

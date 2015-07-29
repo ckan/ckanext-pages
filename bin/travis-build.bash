@@ -12,10 +12,10 @@ git clone https://github.com/ckan/ckan
 cd ckan
 if [ $CKANVERSION == '2.3' ]
 then
-	git checkout release-v2.3
+	git checkout release-v2.3-latest
 elif [ $CKANVERSION == '2.2' ]
 then
-	git checkout release-v2.2.3
+	git checkout release-v2.2-latest
 fi
 python setup.py develop
 cp ./ckan/public/base/css/main.css ./ckan/public/base/css/main.debug.css

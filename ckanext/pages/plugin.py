@@ -64,8 +64,8 @@ def render_content(content):
         return h.render_markdown(content)
 
 
-def is_wysiwyg_enabled():
-    return p.toolkit.asbool(config.get('ckanext.pages.wysiwyg', False))
+def get_wysiwyg_editor():
+    return config.get('ckanext.pages.editor', '')
 
 
 def get_recent_blog_posts(number=5, exclude=None):
@@ -116,7 +116,7 @@ class PagesPlugin(p.SingletonPlugin):
         return {
             'build_nav_main': build_pages_nav_main,
             'render_content': render_content,
-            'wysiwyg': is_wysiwyg_enabled,
+            'get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts
         }
 

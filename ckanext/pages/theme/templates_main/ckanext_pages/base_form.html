@@ -53,7 +53,6 @@
     {% set title_placeholder = _('eg. Page Title') %}
 {% endif %}
 
-{% resource 'ckanext-pages/main' %}
 
 <form class="form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form">
 
@@ -94,15 +93,17 @@
     </div>
   {% endif %}
 
-  {% if h.wysiwyg() %}
+  {% set editor = h.get_wysiwyg_editor() %}
+  {% if editor == 'medium' %}
     {{ wysiwyg.editor('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content|safe, error=errors.content) }}
-  {% else %}
-    {# form.markdown('content', id='field-content', label=_('Content'), placeholder=_('My content'), value=data.content, error=errors.content) #}
-
-     <div class="control-group">
+  {% elif editor == 'ckeditor' %}
+    {% resource 'ckanext-pages/main' %}
+    <div class="control-group">
         <label for="field-content-ck" class="control-label">{{ _('Content') }}</label>
-     </div>
-     <textarea id="field-content-ck" name="content" placeholder="{{_('My content')}}" data-module="ckedit" style="height:400px" data-module-site_url="{{ h.dump_json(h.url('/', locale='default', qualified=true)) }}"> {{ data.content }}</textarea>
+    </div>
+    <textarea id="field-content-ck" name="content" placeholder="{{_('My content')}}" data-module="ckedit" style="height:400px" data-module-site_url="{{ h.dump_json(h.url('/', locale='default', qualified=true)) }}"> {{ data.content }}</textarea>
+  {% else %}
+    {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content, error=errors.content) }}
   {% endif %}
 
   <div class="form-actions">

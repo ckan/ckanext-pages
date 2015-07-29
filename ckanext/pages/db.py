@@ -68,22 +68,27 @@ def init_db(model):
         pass
     model.Session.commit()
 
-    sql_upgrade_01 = ''' ALTER TABLE ckanext_pages add column publish_date timestamp, add column page_type Text;
-                       UPDATE ckanext_pages set page_type = 'page'; '''
+    sql_upgrade_01 = (
+        "ALTER TABLE ckanext_pages add column publish_date timestamp;",
+        "ALTER TABLE ckanext_pages add column page_type Text;",
+        "UPDATE ckanext_pages set page_type = 'page';",
+    )
 
     conn = model.Session.connection()
     try:
-        conn.execute(sql_upgrade_01)
+        for statement in sql_upgrade_01:
+            conn.execute(statement)
     except sa.exc.ProgrammingError:
         pass
     model.Session.commit()
 
-    sql_upgrade_02 = ''' ALTER TABLE ckanext_pages add column extras Text;
-                         UPDATE ckanext_pages set extras = '{}'; '''
+    sql_upgrade_02 = ('ALTER TABLE ckanext_pages add column extras Text;',
+                      "UPDATE ckanext_pages set extras = '{}';")
 
     conn = model.Session.connection()
     try:
-        conn.execute(sql_upgrade_02)
+        for statement in sql_upgrade_02:
+            conn.execute(statement)
     except sa.exc.ProgrammingError:
         pass
     model.Session.commit()

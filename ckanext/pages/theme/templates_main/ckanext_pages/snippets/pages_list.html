@@ -16,6 +16,7 @@
 {% endif %}
 
 {% if pages %}
+  {% set editor = h.get_wysiwyg_editor %}
   
     {% for page in pages %}
       {% if id %} {# this is for orgs and groups #}
@@ -39,7 +40,7 @@
               {% endif %}
             </h3>
             {% if page.content %}
-              {% if h.wysiwyg() %}
+              {% if editor == 'medium' %}
               <div>
                 {{page.content|striptags|truncate}}
               </div>
@@ -59,7 +60,7 @@
             {% endif %}
           </h3>
           {% if page.content %}
-            {% if h.wysiwyg() %}
+            {% if editor == 'medium' %}
             <div>
               {{page.content|striptags|truncate}}
             </div>
