@@ -1,5 +1,7 @@
 import logging
 from pylons import config
+import ckan.plugins.toolkit as toolkit
+ignore_missing = toolkit.get_validator('ignore_missing')
 
 import ckan.plugins as p
 import ckan.lib.helpers as h
@@ -32,13 +34,17 @@ def build_pages_nav_main(*args):
 
     page_name = ''
 
-    if (p.toolkit.c.action == 'pages_show'
+    if (p.toolkit.c.action in ('pages_show', 'blog_show')
        and p.toolkit.c.controller == 'ckanext.pages.controller:PagesController'):
         page_name = p.toolkit.c.environ['routes.url'].current().split('/')[-1]
 
     for page in pages_list:
-        link = h.link_to(page.get('title'),
-                         h.url_for('/pages/' + str(page['name'])))
+        if page['page_type'] == 'blog':
+            link = h.link_to(page.get('title'),
+                             h.url_for('/blog/' + str(page['name'])))
+        else:
+            link = h.link_to(page.get('title'),
+                             h.url_for('/pages/' + str(page['name'])))
 
         if page['name'] == page_name:
             li = h.literal('<li class="active">') + link + h.literal('</li>')
@@ -62,6 +68,22 @@ def is_wysiwyg_enabled():
     return p.toolkit.asbool(config.get('ckanext.pages.wysiwyg', False))
 
 
+def get_recent_blog_posts(number=5, exclude=None):
+    blog_list = p.toolkit.get_action('ckanext_pages_list')(
+        None, {'order_publish_date': True, 'private': False,
+               'page_type': 'blog'}
+    )
+    new_list = []
+    for blog in blog_list:
+        if exclude and blog['name'] == exclude:
+            continue
+        new_list.append(blog)
+        if len(new_list) == number:
+            break
+
+    return new_list
+
+
 class PagesPlugin(p.SingletonPlugin):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
@@ -83,6 +105,10 @@ class PagesPlugin(p.SingletonPlugin):
         p.toolkit.add_resource('fanstatic', 'pages')
         p.toolkit.add_public_directory(config, 'public')
 
+        p.toolkit.add_resource('theme/public', 'ckanext-pages')
+        p.toolkit.add_resource('theme/resources', 'pages-theme')
+        p.toolkit.add_public_directory(config, 'theme/public')
+
     def configure(self, config):
         return
 
@@ -91,6 +117,7 @@ class PagesPlugin(p.SingletonPlugin):
             'build_nav_main': build_pages_nav_main,
             'render_content': render_content,
             'wysiwyg': is_wysiwyg_enabled,
+            'get_recent_blog_posts': get_recent_blog_posts
         }
 
     def after_map(self, map):
@@ -101,6 +128,8 @@ class PagesPlugin(p.SingletonPlugin):
                         action='org_delete', ckan_icon='delete', controller=controller)
             map.connect('organization_pages_edit', '/organization/pages_edit/{id}{page:/.*|}',
                         action='org_edit', ckan_icon='edit', controller=controller)
+            map.connect('organization_pages_index', '/organization/pages/{id}',
+                        action='org_show', ckan_icon='file', controller=controller, highlight_actions='org_edit org_show', page='')
             map.connect('organization_pages', '/organization/pages/{id}{page:/.*|}',
                         action='org_show', ckan_icon='file', controller=controller, highlight_actions='org_edit org_show')
 
@@ -109,6 +138,8 @@ class PagesPlugin(p.SingletonPlugin):
                         action='group_delete', ckan_icon='delete', controller=controller)
             map.connect('group_pages_edit', '/group/pages_edit/{id}{page:/.*|}',
                         action='group_edit', ckan_icon='edit', controller=controller)
+            map.connect('group_pages_index', '/group/pages/{id}',
+                        action='group_show', ckan_icon='file', controller=controller, highlight_actions='group_edit group_show', page='')
             map.connect('group_pages', '/group/pages/{id}{page:/.*|}',
                         action='group_show', ckan_icon='file', controller=controller, highlight_actions='group_edit group_show')
 
@@ -117,8 +148,21 @@ class PagesPlugin(p.SingletonPlugin):
                     action='pages_delete', ckan_icon='delete', controller=controller)
         map.connect('pages_edit', '/pages_edit{page:/.*|}',
                     action='pages_edit', ckan_icon='edit', controller=controller)
+        map.connect('pages_index', '/pages',
+                    action='pages_index', ckan_icon='file', controller=controller, highlight_actions='pages_edit pages_index pages_show')
         map.connect('pages_show', '/pages{page:/.*|}',
-                    action='pages_show', ckan_icon='file', controller=controller, highlight_actions='pages_edit pages_show')
+                    action='pages_show', ckan_icon='file', controller=controller, highlight_actions='pages_edit pages_index pages_show')
+        map.connect('pages_upload', '/pages_upload',
+                    action='pages_upload', controller=controller)
+
+        map.connect('blog_delete', '/blog_delete{page:/.*|}',
+                    action='blog_delete', ckan_icon='delete', controller=controller)
+        map.connect('blog_edit', '/blog_edit{page:/.*|}',
+                    action='blog_edit', ckan_icon='edit', controller=controller)
+        map.connect('blog_index', '/blog',
+                    action='blog_index', ckan_icon='file', controller=controller, highlight_actions='blog_edit blog_index blog_show')
+        map.connect('blog_show', '/blog{page:/.*|}',
+                    action='blog_show', ckan_icon='file', controller=controller, highlight_actions='blog_edit blog_index blog_show')
         return map
 
     def get_actions(self):
@@ -127,6 +171,7 @@ class PagesPlugin(p.SingletonPlugin):
             'ckanext_pages_update': actions.pages_update,
             'ckanext_pages_delete': actions.pages_delete,
             'ckanext_pages_list': actions.pages_list,
+            'ckanext_pages_upload': actions.pages_upload,
         }
         if self.organization_pages:
             org_actions={
@@ -152,6 +197,7 @@ class PagesPlugin(p.SingletonPlugin):
             'ckanext_pages_update': auth.pages_update,
             'ckanext_pages_delete': auth.pages_delete,
             'ckanext_pages_list': auth.pages_list,
+            'ckanext_pages_upload': auth.pages_upload,
             'ckanext_org_pages_show': auth.org_pages_show,
             'ckanext_org_pages_update': auth.org_pages_update,
             'ckanext_org_pages_delete': auth.org_pages_delete,
@@ -161,3 +207,37 @@ class PagesPlugin(p.SingletonPlugin):
             'ckanext_group_pages_delete': auth.group_pages_delete,
             'ckanext_group_pages_list': auth.group_pages_list,
        }
+
+class TextBoxView(p.SingletonPlugin):
+
+    p.implements(p.IConfigurer, inherit=True)
+    p.implements(p.IResourceView, inherit=True)
+
+    def update_config(self, config):
+        p.toolkit.add_resource('textbox/theme', 'textbox')
+        p.toolkit.add_template_directory(config, 'textbox/templates')
+
+    def info(self):
+        schema = {
+            'content': [ignore_missing],
+        }
+
+        return {'name': 'wysiwyg',
+                'title': 'Free Text',
+                'icon': 'pencil',
+                'iframed': False,
+                'schema': schema,
+                }
+
+    def can_view(self, data_dict):
+        return True
+
+    def view_template(self, context, data_dict):
+        return 'textbox_view.html'
+
+    def form_template(self, context, data_dict):
+        return 'textbox_form.html'
+
+    def setup_template_variables(self, context, data_dict):
+        return
+

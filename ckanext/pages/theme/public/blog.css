@@ -1,0 +1,20 @@
+.blog .primary .date {
+	display:block;
+	margin-top:-15px;
+	margin-bottom:15px;
+}
+
+.secondary .blog-title small {
+  font-size: 12px;
+}
+.secondary .blog-content {
+  border-bottom: 1px dotted #DDDDDD;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+}
+.secondary .blog-content .btn.more {
+	margin-top:10px;
+}
+.secondary .blog-content .btn {
+	display:none;
+}

@@ -1,41 +1,72 @@
 {% import 'macros/form.html' as form %}
 {% import 'macros/wysiwyg.html' as wysiwyg %}
 
-{% if type == 'org' %}
-  {% set action_url = h.url_for('organization_pages_edit', id=id, page='/' + page) %}
-  {% set cancel_url = h.url_for('organization_pages', id=id, page='') %}
-  {% set slug_prefix = cancel_url ~ '/' %}
-  {% set slug_domain = h.url_for('organization_pages', id=id, page='', qualified=true) %}
-  {% set hide_field_order = true %}
-{% elif type == 'group' %}
-  {% set action_url = h.url_for('group_pages_edit', id=id, page='/' + page) %}
-  {% set cancel_url = h.url_for('group_pages', id=id, page='') %}
-  {% set slug_prefix = cancel_url ~ '/' %}
-  {% set slug_domain = h.url_for('group_pages', id=id, page='', qualified=true) %}
-  {% set hide_field_order = true %}
-{% else %}
-  {% set action_url = h.url_for('pages_edit', page='/' + page) %}
-  {% set cancel_url = h.url_for('pages_show', page='') %}
-  {% set slug_prefix = cancel_url ~ '/' %}
-  {% set slug_domain = h.url_for('pages_show', page='', qualified=true) %}
-{% endif %}
-
 {% set data = data or {} %}
 {% set errors = errors or {} %}
 
-{% if not page %}
-  <h1>{{ _('Add page') }}</h1>
+{% if type == 'org' %}
+  {% set action_url = h.url_for('organization_pages_edit', id=id, page='/' + page) %}
+  {% set cancel_url = h.url_for('organization_pages_index', id=id) %}
+  {% set slug_prefix = cancel_url ~ '/' %}
+  {% set slug_domain = h.url_for('organization_pages_index', id=id, qualified=true) %}
+  {% set hide_field_order = true %}
+{% elif type == 'group' %}
+  {% set action_url = h.url_for('group_pages_edit', id=id, page='/' + page) %}
+  {% set cancel_url = h.url_for('group_pages_index', id=id) %}
+  {% set slug_prefix = cancel_url ~ '/' %}
+  {% set slug_domain = h.url_for('group_pages_index', id=id, qualified=true) %}
+  {% set hide_field_order = true %}
+{% elif type == 'blog' %}
+  {% set action_url = h.url_for('blog_edit', page='/' + page) %}
+  {% set cancel_url = h.url_for('blog_index') %}
+  {% set slug_prefix = cancel_url ~ '/' %}
+  {% set slug_domain = h.url_for('blog_index', qualified=true) %}
+  {% if page %}
+     {% set delete_url = h.url_for('blog_delete', page='/' + data.name) %}
+  {% endif %}
 {% else %}
-  <h1>{{ _('Edit page') }}</h1>
+  {% set action_url = h.url_for('pages_edit', page='/' + page) %}
+  {% set cancel_url = h.url_for('pages_index') %}
+  {% set slug_prefix = cancel_url ~ '/' %}
+  {% set slug_domain = h.url_for('pages_index', qualified=true) %}
+  {% if page %}
+     {% set delete_url = h.url_for('pages_delete', page='/' + data.name) %}
+  {% endif %}
 {% endif %}
+
+
+{% if type == 'blog' %}
+    {% if not page %}
+      <h1>{{ _('Add Blog Article') }}</h1>
+    {% else %}
+      <h1>{{ _('Edit Blog Article') }}</h1>
+    {% endif %}
+    {% set url_placeholder = 'eg. my-blog-article' %}
+    {% set title_placeholder = _('eg. Blog Article Title') %}
+{% else %}
+    {% if not page %}
+      <h1>{{ _('Add page') }}</h1>
+    {% else %}
+      <h1>{{ _('Edit page') }}</h1>
+    {% endif %}
+    {% set url_placeholder = 'eg. my-page' %}
+    {% set title_placeholder = _('eg. Page Title') %}
+{% endif %}
+
+{% resource 'ckanext-pages/main' %}
 
 <form class="form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form">
 
-  {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. Page Title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
+  {{ form.input('title', id='field-title', label=_('Title'), placeholder=title_placeholder, value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
 
   {% set domain = slug_domain|replace("http://", "")|replace("https://", "") %}
   {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain~'/', 'data-module-placeholder': '<page>'} %}
-  {{ form.prepend('name', id='field-name', label=_('URL'), prepend=slug_prefix, placeholder=_('eg. my-page'), value=data.name, error=errors.name, attrs=attrs) }}
+  {{ form.prepend('name', id='field-name', label=_('URL'), prepend=slug_prefix, placeholder=_(url_placeholder), value=data.name, error=errors.name, attrs=attrs) }}
+
+  {{ form.input('publish_date', id='field-publish_date', label=_('Publish Date'), placeholder=_('2005-01-01'), value=data.publish_date, error=errors.publish_date, classes=[], attrs={'data-module': 'datepicker', 'data-date-format': 'yyyy-mm-dd'}) }}
+
+  {% block extra_pages_form %}
+  {% endblock extra_pages_form %}
 
   {#{{ form.input('name', id='field-name', label=_('Name'), placeholder=_('my-name'), value=data.name, error=errors.name, classes=['control-full']) }}#}
 
@@ -55,7 +86,7 @@
       <label for="field-order" class="control-label">{{ _('Menu Order') }}</label>
       <div class="controls">
         <select id="field-order" class="form-control" name="order">
-          {% for option in [('',''), ('1','1'), ('2', '2'), ('3', '3') , ('4', '4')] %}
+            {% for option in [('', _('Not in Menu')), ('1','1'), ('2', '2'), ('3', '3') , ('4', '4')] %}
           <option value="{{ option[0] }}" {% if option[0] == data.order %}selected="selected"{% endif %}>{{ option[1] }}</option>
           {% endfor %}
         </select>
@@ -66,7 +97,12 @@
   {% if h.wysiwyg() %}
     {{ wysiwyg.editor('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content|safe, error=errors.content) }}
   {% else %}
-    {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content, error=errors.content) }}
+    {# form.markdown('content', id='field-content', label=_('Content'), placeholder=_('My content'), value=data.content, error=errors.content) #}
+
+     <div class="control-group">
+        <label for="field-content-ck" class="control-label">{{ _('Content') }}</label>
+     </div>
+     <textarea id="field-content-ck" name="content" placeholder="{{_('My content')}}" data-module="ckedit" style="height:400px" data-module-site_url="{{ h.dump_json(h.url('/', locale='default', qualified=true)) }}"> {{ data.content }}</textarea>
   {% endif %}
 
   <div class="form-actions">
@@ -78,7 +114,7 @@
       {% block delete_button %}
         {% if h.check_access('ckanext_pages_delete', {'id': data.id})  %}
           {% set locale = h.dump_json({'content': _('Are you sure you want to delete this Page?')}) %}
-          <a class="btn btn-danger pull-left" href="{% url_for 'pages_delete', page='/' + data.name %}" data-module="confirm-action" data-module-i18n="{{ locale }}">{% block delete_button_text %}{{ _('Delete') }}{% endblock %}</a>
+          <a class="btn btn-danger pull-left" href="{{ delete_url }}" data-module="confirm-action" data-module-i18n="{{ locale }}">{% block delete_button_text %}{{ _('Delete') }}{% endblock %}</a>
         {% endif %}
       {% endblock %}
 
