@@ -1,4 +1,5 @@
 {% import 'macros/form.html' as form %}
+{% import 'macros/wysiwyg.html' as wysiwyg %}
 
 {% if type == 'org' %}
   {% set action_url = h.url_for('organization_pages_edit', id=id, page='/' + page) %}
@@ -41,7 +42,7 @@
   <div class="control-group">
     <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
     <div class="controls">
-      <select id="field-private" name="private">
+      <select id="field-private" class="form-control" name="private">
         {% for option in [(true, _('Private')), (false, _('Public'))] %}
         <option value="{{ option[0] }}" {% if option[0] == data.private %}selected="selected"{% endif %}>{{ option[1] }}</option>
         {% endfor %}
@@ -53,7 +54,7 @@
     <div class="control-group">
       <label for="field-order" class="control-label">{{ _('Menu Order') }}</label>
       <div class="controls">
-        <select id="field-order" name="order">
+        <select id="field-order" class="form-control" name="order">
           {% for option in [('',''), ('1','1'), ('2', '2'), ('3', '3') , ('4', '4')] %}
           <option value="{{ option[0] }}" {% if option[0] == data.order %}selected="selected"{% endif %}>{{ option[1] }}</option>
           {% endfor %}
@@ -62,7 +63,11 @@
     </div>
   {% endif %}
 
-  {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('My content'), value=data.content, error=errors.content) }}
+  {% if h.wysiwyg() %}
+    {{ wysiwyg.editor('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content|safe, error=errors.content) }}
+  {% else %}
+    {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content, error=errors.content) }}
+  {% endif %}
 
   <div class="form-actions">
     {% if not page %}

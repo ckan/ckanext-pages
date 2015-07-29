@@ -48,13 +48,18 @@ def build_pages_nav_main(*args):
 
     return output
 
+
 def render_content(content):
     allow_html = p.toolkit.asbool(config.get('ckanext.pages.allow_html', False))
     try:
         return h.render_markdown(content, allow_html=allow_html)
-    except TypeError: 
+    except TypeError:
         # allow_html is only available in CKAN >= 2.3
         return h.render_markdown(content)
+
+
+def is_wysiwyg_enabled():
+    return p.toolkit.asbool(config.get('ckanext.pages.wysiwyg', False))
 
 
 class PagesPlugin(p.SingletonPlugin):
@@ -75,6 +80,8 @@ class PagesPlugin(p.SingletonPlugin):
         if self.organization_pages:
             p.toolkit.add_template_directory(config, 'theme/templates_organization')
 
+        p.toolkit.add_resource('fanstatic', 'pages')
+        p.toolkit.add_public_directory(config, 'public')
 
     def configure(self, config):
         return
@@ -83,6 +90,7 @@ class PagesPlugin(p.SingletonPlugin):
         return {
             'build_nav_main': build_pages_nav_main,
             'render_content': render_content,
+            'wysiwyg': is_wysiwyg_enabled,
         }
 
     def after_map(self, map):

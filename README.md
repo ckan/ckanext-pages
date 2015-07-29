@@ -48,6 +48,7 @@ ckanext.pages.organization_menu = False
 
 By default these are all set to True, like on a default install.
 
+If you want to use the WYSIWYG editor instead of Markdown:
 
 To enable HTML output for the pages (along with Markdown), add the following to your config:
 
@@ -57,3 +58,6 @@ ckanext.pages.allow_html = True
 
 By default this option is set to False. Note that this feature is only available for CKAN >= 2.3. For older versions of CKAN, this option has no effect.
 Use this option with care and only allow this if you trust the input of your users.
+```
+ckanext.pages.wysiwyg = True
+```

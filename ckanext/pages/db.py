@@ -123,4 +123,3 @@ def table_dictize(obj, context, **kw):
                                        context.get('metadata_modified', ''))
 
     return result_dict
-
