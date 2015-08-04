@@ -40,7 +40,7 @@
               {% endif %}
             </h3>
             {% if page.content %}
-              {% if editor == 'medium' %}
+              {% if editor %}
               <div>
                 {{page.content|striptags|truncate}}
               </div>
@@ -60,7 +60,7 @@
             {% endif %}
           </h3>
           {% if page.content %}
-            {% if editor == 'medium' %}
+            {% if editor %}
             <div>
               {{page.content|striptags|truncate}}
             </div>

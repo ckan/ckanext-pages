@@ -12,7 +12,14 @@
          <span class="muted date"> {{ h.render_datetime(c.page.publish_date) }} </span>
       {% endif %}
     {% if c.page.content %}
-      {{ c.page.content|safe }}
+      {% set editor = h.get_wysiwyg_editor %}
+      {% if editor %}
+        <div>
+            {{c.page.content|safe}}
+        </div>
+      {% else %}
+        {{ h.render_markdown(c.page.content) }}
+      {% endif %}
     {% else %}
       <p class="empty">{{ _('This page currently has no content') }}</p>
     {% endif %}

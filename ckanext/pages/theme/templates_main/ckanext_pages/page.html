@@ -11,12 +11,12 @@
     {% if c.page.content %}
       <div class="ckanext-pages-content">
         {% set editor = h.get_wysiwyg_editor %}
-        {% if editor == 'medium' %}
+        {% if editor %}
           <div>
               {{c.page.content|safe}}
           </div>
         {% else %}
-          {{ h.render_content(c.page.content) }}
+          {{ h.render_markdown(c.page.content) }}
         {% endif %}
       </div>
     {% else %}
