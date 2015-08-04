@@ -16,7 +16,7 @@
               {{c.page.content|safe}}
           </div>
         {% else %}
-          {{ h.render_markdown(c.page.content) }}
+          {{ h.render_content(c.page.content) }}
         {% endif %}
       </div>
     {% else %}
