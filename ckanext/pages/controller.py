@@ -199,14 +199,16 @@ class PagesController(p.toolkit.BaseController):
         # this is a good proxy to a version of CKAN with views enabled.
         if not p.plugin_loaded('image_view'):
             return
-
         try:
             import lxml
             import lxml.html
+        except ImportError:
+            return
+
+        try:
             root = lxml.html.fromstring(_page['content'])
         # Return if any errors are found while parsing the content
-        except (ImportError,
-                lxml.etree.XMLSyntaxError,
+        except (lxml.etree.XMLSyntaxError,
                 lxml.etree.ParserError):
             return
 
