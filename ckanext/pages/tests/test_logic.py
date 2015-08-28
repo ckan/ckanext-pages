@@ -49,7 +49,7 @@ class TestUpdate(helpers.FunctionalTestBase):
         else:
             assert_in('Test Link', response.body)
 
-    @helpers.change_config('ckanext.pages.allow_html', 'False')
+    @helpers.change_config('ckanext.pages.allow_html', False)
     def test_rendering_with_html_disallowed(self):
         env = {'REMOTE_USER': self.user['name'].encode('ascii')}
         response = self.app.post(

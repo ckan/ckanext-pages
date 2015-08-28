@@ -12,7 +12,7 @@
          <span class="muted date"> {{ h.render_datetime(c.page.publish_date) }} </span>
       {% endif %}
     {% if c.page.content %}
-      {% set editor = h.get_wysiwyg_editor %}
+      {% set editor = h.get_wysiwyg_editor() %}
       {% if editor %}
         <div>
             {{c.page.content|safe}}
