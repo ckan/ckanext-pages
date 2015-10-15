@@ -201,7 +201,7 @@ def pages_show(context, data_dict):
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_show(context, data_dict)
 
-@tk.side_effect_free
+
 def pages_update(context, data_dict):
     try:
         p.toolkit.check_access('ckanext_pages_update', context, data_dict)
@@ -209,7 +209,7 @@ def pages_update(context, data_dict):
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_update(context, data_dict)
 
-@tk.side_effect_free
+
 def pages_delete(context, data_dict):
     try:
         p.toolkit.check_access('ckanext_pages_delete', context, data_dict)
@@ -233,7 +233,7 @@ def org_pages_show(context, data_dict):
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_show(context, data_dict)
 
-@tk.side_effect_free
+
 def org_pages_update(context, data_dict):
     try:
         p.toolkit.check_access('ckanext_org_pages_update', context, data_dict)
@@ -241,7 +241,7 @@ def org_pages_update(context, data_dict):
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_update(context, data_dict)
 
-@tk.side_effect_free
+
 def org_pages_delete(context, data_dict):
     try:
         p.toolkit.check_access('ckanext_org_pages_delete', context, data_dict)
@@ -265,7 +265,7 @@ def group_pages_show(context, data_dict):
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_show(context, data_dict)
 
-@tk.side_effect_free
+
 def group_pages_update(context, data_dict):
     try:
         p.toolkit.check_access('ckanext_group_pages_update', context, data_dict)
@@ -273,7 +273,7 @@ def group_pages_update(context, data_dict):
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_update(context, data_dict)
 
-@tk.side_effect_free
+
 def group_pages_delete(context, data_dict):
     try:
         p.toolkit.check_access('ckanext_group_pages_delete', context, data_dict)
