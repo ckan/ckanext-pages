@@ -156,9 +156,9 @@ def _pages_update(context, data_dict):
         out.group_id = org_id
         out.name = page
     items = ['title', 'content', 'name', 'private',
-             'order', 'page_type', 'publish_date', 'content']
+             'order', 'page_type', 'publish_date']
     for item in items:
-        setattr(out, item, data.get(item))
+        setattr(out, item, data.get(item,'page' if item =='page_type' else None)) #backward compatible with older version where page_type does not exist
 
     extras = {}
     extra_keys = set(schema.keys()) - set(items + ['id', 'created'])
