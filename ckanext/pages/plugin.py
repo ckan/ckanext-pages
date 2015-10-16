@@ -5,7 +5,6 @@ ignore_missing = toolkit.get_validator('ignore_missing')
 
 import ckan.plugins as p
 import ckan.lib.helpers as h
-
 import actions
 import auth
 
@@ -165,6 +164,7 @@ class PagesPlugin(p.SingletonPlugin):
                     action='blog_show', ckan_icon='file', controller=controller, highlight_actions='blog_edit blog_index blog_show')
         return map
 
+
     def get_actions(self):
         actions_dict = {
             'ckanext_pages_show': actions.pages_show,
@@ -240,4 +240,3 @@ class TextBoxView(p.SingletonPlugin):
 
     def setup_template_variables(self, context, data_dict):
         return
-

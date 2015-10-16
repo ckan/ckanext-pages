@@ -266,7 +266,7 @@ class PagesController(p.toolkit.BaseController):
                        'page': page}
         )
         if _page is None:
-            return self._pages_list_pages(p)
+            return self._pages_list_pages(page_type)
         p.toolkit.c.page = _page
         self._inject_views_into_page(_page)
 
@@ -380,5 +380,3 @@ class PagesController(p.toolkit.BaseController):
         return """<script type='text/javascript'>
                       window.parent.CKEDITOR.tools.callFunction(%s, '%s');
                   </script>""" % (p.toolkit.request.GET['CKEditorFuncNum'], url['url'])
-
-

@@ -17,7 +17,7 @@
 
 {% if pages %}
   {% set editor = h.get_wysiwyg_editor() %}
-  
+
     {% for page in pages %}
       {% if id %} {# this is for orgs and groups #}
         {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action=action, id=id, page='/' + page.name) %}
@@ -32,7 +32,7 @@
           <a style="background-image:url({{ page.image }})" href="{{ url }}">
           </a>
         </div>
-        <div class="span9">
+        <div class="span8">
            <h3 class="dataset-heading">
               <a href="{{ url }}" >{{ page.title }}</a>
               {% if page.publish_date %}
@@ -52,7 +52,7 @@
             {% endif %}
         </div>
       {% else %}
-        <div class="span12">
+        <div class="span11">
           <h3 class="dataset-heading">
             <a href="{{ url }}" >{{ page.title }}</a>
             {% if page.publish_date %}
@@ -74,7 +74,7 @@
       {% endif %}
       </div>
     {% endfor %}
-  
+
 {% else %}
     {% if type == 'blog' %}
       <p class="empty">{{ _('There are currently no blog articles here') }}</p>
