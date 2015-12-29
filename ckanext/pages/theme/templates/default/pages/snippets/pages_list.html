@@ -1,0 +1,7 @@
+{% block pages_list %}
+  {% block pages_list_inner %}
+  {% for page in pages %}
+    {% snippet "pages/snippets/pages_item.html", page=page, position=loop.index %}
+  {% endfor %}
+   {% endblock %}
+{% endblock %}

@@ -36,13 +36,13 @@ class PagesController(p.toolkit.BaseController):
         if _page is None:
             return self._org_list_pages(id)
         p.toolkit.c.page = _page
-        return p.toolkit.render('ckanext_pages/organization_page.html')
+        return p.toolkit.render('organization/organization_page.html')
 
     def _org_list_pages(self, id):
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
             data_dict={'org_id': p.toolkit.c.group_dict['id']}
         )
-        return p.toolkit.render('ckanext_pages/organization_page_list.html')
+        return p.toolkit.render('organization/organization_page_list.html')
 
 
     def org_delete(self, id, page):
@@ -66,7 +66,7 @@ class PagesController(p.toolkit.BaseController):
             p.toolkit.abort(401, _('Unauthorized to delete page'))
         except p.toolkit.ObjectNotFound:
             p.toolkit.abort(404, _('Group not found'))
-        return p.toolkit.render('ckanext_pages/confirm_delete.html', {'page': page})
+        return p.toolkit.render('pages/confirm_delete.html', {'page': page})
 
 
     def org_edit(self, id, page=None, data=None, errors=None, error_summary=None):
@@ -109,7 +109,7 @@ class PagesController(p.toolkit.BaseController):
         vars = {'data': data, 'errors': errors,
                 'error_summary': error_summary, 'page': page}
 
-        return p.toolkit.render('ckanext_pages/organization_page_edit.html',
+        return p.toolkit.render('organization/organization_page_edit.html',
                                extra_vars=vars)
 
     def _template_setup_group(self, id):
@@ -138,13 +138,13 @@ class PagesController(p.toolkit.BaseController):
         if _page is None:
             return self._group_list_pages(id)
         p.toolkit.c.page = _page
-        return p.toolkit.render('ckanext_pages/group_page.html')
+        return p.toolkit.render('group/group_page.html')
 
     def _group_list_pages(self, id):
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
             data_dict={'org_id': p.toolkit.c.group_dict['id']}
         )
-        return p.toolkit.render('ckanext_pages/group_page_list.html')
+        return p.toolkit.render('group/group_page_list.html')
 
     def group_edit(self, id, page=None, data=None, errors=None, error_summary=None):
         self._template_setup_group(id)
@@ -186,7 +186,7 @@ class PagesController(p.toolkit.BaseController):
         vars = {'data': data, 'errors': errors,
                 'error_summary': error_summary, 'page': page}
 
-        return p.toolkit.render('ckanext_pages/group_page_edit.html',
+        return p.toolkit.render('group/group_page_edit.html',
                                extra_vars=vars)
 
     def blog_index(self):
@@ -255,7 +255,7 @@ class PagesController(p.toolkit.BaseController):
 
 
 
-    def pages_show(self, page=None, page_type='page'):
+    def pages_show(self, page=None, page_type='pages'):
         p.toolkit.c.page_type = page_type
         if page:
             page = page[1:]
@@ -270,7 +270,7 @@ class PagesController(p.toolkit.BaseController):
         p.toolkit.c.page = _page
         self._inject_views_into_page(_page)
 
-        return p.toolkit.render('ckanext_pages/%s.html' % page_type)
+        return p.toolkit.render('%s/read.html' % page_type)
 
     def pages_index(self):
         return self._pages_list_pages('page')
@@ -290,8 +290,8 @@ class PagesController(p.toolkit.BaseController):
         )
 
         if page_type == 'blog':
-            return p.toolkit.render('ckanext_pages/blog_list.html')
-        return p.toolkit.render('ckanext_pages/pages_list.html')
+            return p.toolkit.render('blog/index.html')
+        return p.toolkit.render('pages/index.html')
 
     def blog_delete(self, page):
         return self.pages_delete(page, page_type='blog')
@@ -311,7 +311,7 @@ class PagesController(p.toolkit.BaseController):
             p.toolkit.abort(401, _('Unauthorized to delete page'))
         except p.toolkit.ObjectNotFound:
             p.toolkit.abort(404, _('Group not found'))
-        return p.toolkit.render('ckanext_pages/confirm_delete.html', {'page': page})
+        return p.toolkit.render('%s/confirm_delete.html' % page_type, {'page': page})
 
 
     def blog_edit(self, page=None, data=None, errors=None, error_summary=None):
@@ -359,13 +359,13 @@ class PagesController(p.toolkit.BaseController):
         errors = errors or {}
         error_summary = error_summary or {}
 
-        form_snippet = config.get('ckanext.pages.form', 'ckanext_pages/base_form.html')
+        form_snippet = config.get('ckanext.pages.form', 'editor/base_form.html')
 
         vars = {'data': data, 'errors': errors,
                 'error_summary': error_summary, 'page': page,
                 'form_snippet': form_snippet}
 
-        return p.toolkit.render('ckanext_pages/%s_edit.html' % page_type,
+        return p.toolkit.render('%s/edit.html' % page_type,
                                 extra_vars=vars)
 
     def pages_upload(self):

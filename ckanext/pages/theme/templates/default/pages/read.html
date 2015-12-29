@@ -2,6 +2,11 @@
 
 {% block subtitle %}{{ c.page.title }}{% endblock %}
 
+{% block breadcrumb_content %}
+  <li>{% link_for _('Pages'), controller='ckanext.pages.controller:PagesController', action='pages_index' %}</li>
+  <li class="active">{% link_for c.page.title, controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + c.page.name %}</li>
+{% endblock %}
+
 {% block primary %}
   <section class="module-content">
     {% if h.check_access('ckanext_pages_update') %}
