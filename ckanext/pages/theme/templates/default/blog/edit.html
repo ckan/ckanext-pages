@@ -1,0 +1,23 @@
+{% extends 'editor/edit_base.html' %}
+
+{% block subtitle %}{{ _('Edit Article')}} {% endblock %}
+{% block page_header %}{% endblock %}
+
+{% block breadcrumb_content %}
+<li>{% link_for _('Article'), controller='ckanext.pages.controller:PagesController', action='blog_index' %}</li>
+  {% if page %}
+  <li>{% link_for page.title(), controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + page  %}</li>
+  <li class="active">{% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='blog_edit', page='/' + page %}</li>
+  {% else %}
+  <li class="active">{% link_for _('Add Article'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='' %}</li>
+  {% endif %}
+{% endblock %}
+
+{% block primary_content_inner %}
+  {% snippet 'editor/base_form.html', page=page, data=data, errors=errors, type='blog' %}
+{% endblock %}
+
+{% block secondary_content %}
+  {% snippet "blog/snippets/helper.html" %}
+{% endblock %}
+

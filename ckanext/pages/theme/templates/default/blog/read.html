@@ -1,16 +1,23 @@
 {% extends 'page.html' %}
+
 {% block bodytag %}{{ super() }} class="blog"{% endblock %}
 {% block subtitle %}{{ c.page.title }}{% endblock %}
 
-{% block primary_content %}
+{% block breadcrumb_content %}
+  <li>{% link_for _('Blog'), controller='ckanext.pages.controller:PagesController', action='pages_index' %}</li>
+  <li class="active">{% link_for c.page.title, controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + c.page.name %}</li>
+{% endblock %}
+
+{% block page_header %}{% endblock %}
+  
+{% block primary_content_inner %}
   <section class="module-content">
     {% if h.check_access('ckanext_pages_update') %}
-      {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='blog_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
+      {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='blog_edit', page='/' + c.page.name, class_='btn bt
+n-primary pull-right', icon='edit' %}
     {% endif %}
     <h1 class="page-heading">{{ c.page.title }}</h1>
-      {% if c.page.publish_date %}
-         <span class="muted date"> {{ h.render_datetime(c.page.publish_date) }} </span>
-      {% endif %}
+    <span class="muted date">{{ h.render_datetime(c.page.publish_date) }}</span>
     {% if c.page.content %}
       {% set editor = h.get_wysiwyg_editor() %}
       {% if editor %}
@@ -21,14 +28,13 @@
         {{ h.render_content(c.page.content) }}
       {% endif %}
     {% else %}
-      <p class="empty">{{ _('This page currently has no content') }}</p>
+      <p class="empty">{{ _('This blog article currently has no content') }}</p>
     {% endif %}
   </section>
 {% endblock %}
 
 {% block secondary_content %}
 {% set posts = h.get_recent_blog_posts(number=5, exclude=c.page.name) %}
-
   <div class="module module-narrow module-shallow">
     <h2 class="module-heading">
       {{ _('Blog') }}
@@ -39,25 +45,17 @@
                 <h3 class="dataset-heading">
                     <a href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + post.name) }}">{{ post.title or post.name }}</a>
                     <br>
-                    {% if post.publish_date %}
                         <small> {{ h.render_datetime(post.publish_date) }} </small>
-                    {% endif %}
                 </h3>
             </div>
             <div class="blog-content">
                 {{ h.markdown_extract(post.content) }}
-                {% if post.publish_date %}
                    <br>
                    <a class="btn btn-small btn-primary more" href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + post.name) }}">{{ _('More') }}</a>
-                {% endif %}
             </div>
+	{% else %}
+	  <p>{{ _('No other blog articles') }}</p>    
         {% endfor %}
     </div>
   </div>
-
-
-
-
-
-{% resource 'ckanext-pages/blog' %}
 {% endblock %}

@@ -97,11 +97,13 @@ class PagesPlugin(p.SingletonPlugin, DefaultTranslation):
         self.organization_pages = p.toolkit.asbool(config.get('ckanext.pages.organization', False))
         self.group_pages = p.toolkit.asbool(config.get('ckanext.pages.group', False))
 
-        p.toolkit.add_template_directory(config, 'theme/templates_main')
+        p.toolkit.add_template_directory(config, 'theme/templates/default')
         if self.group_pages:
-            p.toolkit.add_template_directory(config, 'theme/templates_group')
+            p.toolkit.add_template_directory(
+                config, 'theme/templates/group_pages')
         if self.organization_pages:
-            p.toolkit.add_template_directory(config, 'theme/templates_organization')
+            p.toolkit.add_template_directory(
+                config, 'theme/templates/organization_pages')
 
         p.toolkit.add_resource('fanstatic', 'pages')
         p.toolkit.add_public_directory(config, 'public')

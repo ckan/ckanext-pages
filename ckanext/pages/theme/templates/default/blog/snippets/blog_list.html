@@ -1,0 +1,7 @@
+{% block blog_list %}
+  {% block blog_list_inner %}
+  {% for article in articles %}
+    {% snippet "blog/snippets/blog_item.html", article=article, position=loop.index %}
+  {% endfor %}
+   {% endblock %}
+{% endblock %}
