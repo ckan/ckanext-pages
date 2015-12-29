@@ -5,6 +5,7 @@ ignore_missing = toolkit.get_validator('ignore_missing')
 
 import ckan.plugins as p
 import ckan.lib.helpers as h
+from ckan.lib.plugins import DefaultTranslation
 import actions
 import auth
 
@@ -83,7 +84,8 @@ def get_recent_blog_posts(number=5, exclude=None):
     return new_list
 
 
-class PagesPlugin(p.SingletonPlugin):
+class PagesPlugin(p.SingletonPlugin, DefaultTranslation):
+    p.implements(p.ITranslation)
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
     p.implements(p.IConfigurable, inherit=True)
