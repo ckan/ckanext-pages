@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ckanext-pages 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-12-30 00:15+0000\n"
+"POT-Creation-Date: 2015-12-30 00:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -188,7 +188,7 @@ msgid "No other blog articles"
 msgstr ""
 
 #: ckanext/pages/theme/templates/default/blog/snippets/helper.html:8
-msgid " Add blog articles to CKAN here. "
+msgid "Add blog articles to CKAN here."
 msgstr ""
 
 #: ckanext/pages/theme/templates/default/editor/base_form.html:40
