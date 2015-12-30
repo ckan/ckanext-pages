@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ckanext-pages 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-12-30 00:15+0000\n"
-"PO-Revision-Date: 2015-12-30 00:20+0000\n"
+"POT-Creation-Date: 2015-12-30 00:22+0000\n"
+"PO-Revision-Date: 2015-12-30 00:24+0000\n"
 "Last-Translator: Tryggvi Björgvinsson <tryggvib@fsfi.is>\n"
 "Language: is\n"
 "Language-Team: Icelandic <>\n"
@@ -193,7 +193,7 @@ msgid "No other blog articles"
 msgstr "Engar aðrar bloggfærslur"
 
 #: ckanext/pages/theme/templates/default/blog/snippets/helper.html:8
-msgid " Add blog articles to CKAN here. "
+msgid "Add blog articles to CKAN here."
 msgstr "Bæta við bloggfærslu í CKAN hér."
 
 #: ckanext/pages/theme/templates/default/editor/base_form.html:40
