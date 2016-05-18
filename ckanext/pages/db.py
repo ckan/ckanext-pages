@@ -110,6 +110,7 @@ def init_db(model):
         sa.Column('created', types.DateTime, default=datetime.datetime.utcnow),
         sa.Column('modified', types.DateTime, default=datetime.datetime.utcnow),
         sa.Column('extras', types.UnicodeText, default=u'{}'),
+        extend_existing=True
     )
 
     model.meta.mapper(
