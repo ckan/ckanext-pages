@@ -370,7 +370,7 @@ class PagesController(p.toolkit.BaseController):
 
     def pages_upload(self):
         if not p.toolkit.request.method == 'POST':
-            p.toolkit.abort(409, _('Only Posting is availiable'))
+            p.toolkit.abort(409, _('Only Posting is available'))
 
         try:
             url = p.toolkit.get_action('ckanext_pages_upload')(None, dict(p.toolkit.request.POST))
