@@ -3,11 +3,14 @@ import json
 
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
-import ckan.new_authz as new_authz
 import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
 from ckan.plugins import toolkit as tk
 from HTMLParser import HTMLParser
+try:
+    import ckan.authz as authz
+except ImportError:
+    import ckan.new_authz as authz
 
 
 import db
@@ -98,7 +101,7 @@ def _pages_list(context, data_dict):
     else:
         group = context['model'].Group.get(org_id)
         user = context['user']
-        member = new_authz.has_user_permission_for_group_or_org(
+        member = authz.has_user_permission_for_group_or_org(
             group.id, user, 'read')
         search['group_id'] = org_id
         if not member:

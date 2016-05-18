@@ -1,7 +1,10 @@
 from ckan.plugins import toolkit
-from ckan.new_tests import factories, helpers
 from nose.tools import assert_in, assert_not_in
 import ckan.model as model
+try:
+    from ckan.tests import factories, helpers
+except ImportError:
+    from ckan.new_tests import factories, helpers
 
 from ckanext.pages import db
 
