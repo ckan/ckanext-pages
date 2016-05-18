@@ -1,0 +1,322 @@
+# Icelandic translations for ckanext-pages.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the ckanext-pages
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+# Tryggvi Björgvinsson <tryggvib@fsfi.is>, 2015, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ckanext-pages 0.1\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-12-30 00:22+0000\n"
+"PO-Revision-Date: 2016-03-21 22:22+0000\n"
+"Last-Translator: Tryggvi Björgvinsson <tryggvib@fsfi.is>\n"
+"Language: is\n"
+"Language-Team: Icelandic <>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
+"2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.1.1\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ckanext/pages/actions.py:25
+msgid "Page name already exists in database"
+msgstr "Skjalanafn finnst nú þegar í gagnagrunninum"
+
+#: ckanext/pages/actions.py:182 ckanext/pages/actions.py:201
+#: ckanext/pages/actions.py:209 ckanext/pages/actions.py:217
+#: ckanext/pages/actions.py:225 ckanext/pages/actions.py:233
+#: ckanext/pages/actions.py:241 ckanext/pages/actions.py:249
+#: ckanext/pages/actions.py:257 ckanext/pages/actions.py:265
+#: ckanext/pages/actions.py:273 ckanext/pages/actions.py:281
+#: ckanext/pages/actions.py:289
+msgid "Not authorized to see this page"
+msgstr "Þú hefur ekki heimild til að skoða þetta skjal"
+
+#: ckanext/pages/auth.py:48
+#, python-format
+msgid "User %s not authorized to read this page"
+msgstr "Notandinn %s hefur ekki heimild til að lesa þetta skjal"
+
+#: ckanext/pages/controller.py:22
+msgid "Organization not found"
+msgstr "Stofnun fannst ekki"
+
+#: ckanext/pages/controller.py:24
+#, python-format
+msgid "Unauthorized to read organization %s"
+msgstr "Ekki lesheimild fyrir stofnunina %s"
+
+#: ckanext/pages/controller.py:64 ckanext/pages/controller.py:309
+msgid "Page Not Found"
+msgstr "Skjal fannst ekki"
+
+#: ckanext/pages/controller.py:66 ckanext/pages/controller.py:311
+msgid "Unauthorized to delete page"
+msgstr "Ekki heimild til að eyða skjali"
+
+#: ckanext/pages/controller.py:68 ckanext/pages/controller.py:123
+#: ckanext/pages/controller.py:313
+msgid "Group not found"
+msgstr "Safn fannst ekki"
+
+#: ckanext/pages/controller.py:125
+#, python-format
+msgid "Unauthorized to read group %s"
+msgstr "Ekki lesheimild fyrir safnið %s"
+
+#: ckanext/pages/controller.py:240
+msgid "ERROR: View not found {view_id}"
+msgstr "VILLA: Sýn fannst ekki {view_id}"
+
+#: ckanext/pages/controller.py:248
+msgid "Your browser does not support iframes."
+msgstr "Vafrinn þinn styður ekki iframe tagið"
+
+#: ckanext/pages/controller.py:354
+msgid "Unauthorized to create or edit a page"
+msgstr "Ekki heimild til að búa til eða breyta skjali"
+
+#: ckanext/pages/controller.py:373
+msgid "Only Posting is available"
+msgstr "Aðeins HTTP POST er leyfilegt"
+
+#: ckanext/pages/controller.py:378
+#, python-format
+msgid "Unauthorized to upload file %s"
+msgstr "Ekki heimild til að hlaða upp skránni %s"
+
+#: ckanext/pages/textbox/templates/textbox_form.html:2
+#: ckanext/pages/theme/templates/default/editor/base_form.html:98
+#: ckanext/pages/theme/templates/default/editor/base_form.html:102
+#: ckanext/pages/theme/templates/default/editor/base_form.html:106
+msgid "Content"
+msgstr "Innihald"
+
+#: ckanext/pages/textbox/templates/textbox_form.html:4
+#: ckanext/pages/theme/templates/default/editor/base_form.html:104
+msgid "My content"
+msgstr "Mitt innihald"
+
+#: ckanext/pages/theme/templates/default/header.html:5
+#: ckanext/pages/theme/templates/default/pages/edit.html:7
+#: ckanext/pages/theme/templates/default/pages/index.html:3
+#: ckanext/pages/theme/templates/default/pages/index.html:6
+#: ckanext/pages/theme/templates/default/pages/index.html:18
+#: ckanext/pages/theme/templates/default/pages/read.html:6
+#: ckanext/pages/theme/templates/group_pages/group/group_page.html:3
+#: ckanext/pages/theme/templates/group_pages/group/group_page_edit.html:3
+#: ckanext/pages/theme/templates/group_pages/group/group_page_list.html:9
+#: ckanext/pages/theme/templates/group_pages/group/group_page_list.html:12
+#: ckanext/pages/theme/templates/group_pages/group/read_base.html:5
+#: ckanext/pages/theme/templates/organization_pages/organization/organization_page.html:3
+#: ckanext/pages/theme/templates/organization_pages/organization/organization_page_edit.html:3
+#: ckanext/pages/theme/templates/organization_pages/organization/organization_page_list.html:9
+#: ckanext/pages/theme/templates/organization_pages/organization/organization_page_list.html:12
+#: ckanext/pages/theme/templates/organization_pages/organization/read_base.html:5
+msgid "Pages"
+msgstr "Skjölun"
+
+#: ckanext/pages/theme/templates/default/header.html:10
+#: ckanext/pages/theme/templates/default/blog/index.html:3
+#: ckanext/pages/theme/templates/default/blog/index.html:6
+#: ckanext/pages/theme/templates/default/blog/index.html:18
+#: ckanext/pages/theme/templates/default/blog/read.html:7
+#: ckanext/pages/theme/templates/default/blog/read.html:40
+#: ckanext/pages/theme/templates/default/blog/snippets/helper.html:4
+msgid "Blog"
+msgstr "Blogg"
+
+#: ckanext/pages/theme/templates/default/blog/confirm_delete.html:3
+#: ckanext/pages/theme/templates/default/blog/confirm_delete.html:16
+#: ckanext/pages/theme/templates/default/pages/confirm_delete.html:3
+#: ckanext/pages/theme/templates/default/pages/confirm_delete.html:16
+msgid "Confirm Delete"
+msgstr "Staðfesta eyðingu"
+
+#: ckanext/pages/theme/templates/default/blog/confirm_delete.html:11
+msgid "Are you sure you want to delete blog article - {name}?"
+msgstr "Ertu viss um að þú viljir eyða færslunni: {name}?"
+
+#: ckanext/pages/theme/templates/default/blog/confirm_delete.html:15
+#: ckanext/pages/theme/templates/default/editor/base_form.html:111
+#: ckanext/pages/theme/templates/default/pages/confirm_delete.html:15
+msgid "Cancel"
+msgstr "Hætta við"
+
+#: ckanext/pages/theme/templates/default/blog/edit.html:3
+msgid "Edit Article"
+msgstr "Breyta færslu"
+
+#: ckanext/pages/theme/templates/default/blog/edit.html:7
+msgid "Article"
+msgstr "Bloggfærsla"
+
+#: ckanext/pages/theme/templates/default/blog/edit.html:10
+#: ckanext/pages/theme/templates/default/blog/read.html:16
+#: ckanext/pages/theme/templates/default/pages/edit.html:10
+#: ckanext/pages/theme/templates/default/pages/read.html:13
+msgid "Edit"
+msgstr "Breyta"
+
+#: ckanext/pages/theme/templates/default/blog/edit.html:12
+#: ckanext/pages/theme/templates/default/blog/index.html:13
+msgid "Add Article"
+msgstr "Bæta við færslu"
+
+#: ckanext/pages/theme/templates/default/blog/index.html:26
+msgid "There are currently no blog articles here"
+msgstr "Það eru engar bloggfærslur hérna"
+
+#: ckanext/pages/theme/templates/default/blog/index.html:28
+#: ckanext/pages/theme/templates/default/pages/index.html:28
+#: ckanext/pages/theme/templates/group_pages/group/group_page_list.html:20
+#: ckanext/pages/theme/templates/organization_pages/organization/organization_page_list.html:20
+msgid "How about creating one?"
+msgstr "Væri ekki ráð að gera eitthvað í því?"
+
+#: ckanext/pages/theme/templates/default/blog/read.html:31
+#: ckanext/pages/theme/templates/default/blog/snippets/blog_item.html:24
+#: ckanext/pages/theme/templates/default/blog/snippets/blog_item.html:42
+msgid "This blog article currently has no content"
+msgstr "Þessi bloggfærsla hefur ekkert innihald"
+
+#: ckanext/pages/theme/templates/default/blog/read.html:54
+msgid "More"
+msgstr "Meira"
+
+#: ckanext/pages/theme/templates/default/blog/read.html:57
+msgid "No other blog articles"
+msgstr "Engar aðrar bloggfærslur"
+
+#: ckanext/pages/theme/templates/default/blog/snippets/helper.html:8
+msgid "Add blog articles to CKAN here."
+msgstr "Bæta við bloggfærslu í CKAN hér."
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:40
+msgid "Add Blog Article"
+msgstr "Bæta við bloggfærslu"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:42
+msgid "Edit Blog Article"
+msgstr "Breyta bloggfærslu"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:45
+msgid "eg. Blog Article Title"
+msgstr "t.d. Bloggfærslutitill"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:48
+#: ckanext/pages/theme/templates/default/pages/edit.html:12
+#: ckanext/pages/theme/templates/default/pages/index.html:13
+#: ckanext/pages/theme/templates/group_pages/group/group_page_list.html:5
+#: ckanext/pages/theme/templates/organization_pages/organization/organization_page_list.html:5
+msgid "Add page"
+msgstr "Bæta við skjali"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:50
+#: ckanext/pages/theme/templates/group_pages/group/group_page.html:6
+#: ckanext/pages/theme/templates/organization_pages/organization/organization_page.html:6
+msgid "Edit page"
+msgstr "Breyta skjali"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:53
+msgid "eg. Page Title"
+msgstr "t.d. Titill skjals"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:59
+msgid "Title"
+msgstr "Titill"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:63
+msgid "URL"
+msgstr "Vefslóð"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:65
+msgid "Publish Date"
+msgstr "Útgáfudagur"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:65
+msgid "2005-01-01"
+msgstr "2016-02-29"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:73
+msgid "Visibility"
+msgstr "Sýnileiki"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:76
+msgid "Private"
+msgstr "Lokaður aðgangur"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:76
+msgid "Public"
+msgstr "Opin aðgangur"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:85
+msgid "Menu Order"
+msgstr "Valmyndarröð"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:88
+msgid "Not in Menu"
+msgstr "Ekki í valmynd"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:98
+#: ckanext/pages/theme/templates/default/editor/base_form.html:106
+msgid "Enter content here"
+msgstr "Skrifaðu innihaldið hér"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:112
+msgid "Add"
+msgstr "Bæta við"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:117
+msgid "Are you sure you want to delete this Page?"
+msgstr "Ertu viss um að þú viljir eyða þessu skjali?"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:118
+msgid "Delete"
+msgstr "Eyða"
+
+#: ckanext/pages/theme/templates/default/editor/base_form.html:122
+msgid "Save"
+msgstr "Vista"
+
+#: ckanext/pages/theme/templates/default/pages/confirm_delete.html:11
+msgid "Are you sure you want to delete page - {name}?"
+msgstr "Ertu viss um að þú viljir eyða skjalinu: {name}?"
+
+#: ckanext/pages/theme/templates/default/pages/edit.html:3
+msgid "Edit Page"
+msgstr "Breyta skjali"
+
+#: ckanext/pages/theme/templates/default/pages/index.html:26
+#: ckanext/pages/theme/templates/group_pages/group/group_page_list.html:18
+#: ckanext/pages/theme/templates/organization_pages/organization/organization_page_list.html:18
+msgid "There are currently no pages here"
+msgstr "Það eru engar síður hérna"
+
+#: ckanext/pages/theme/templates/default/pages/read.html:28
+#: ckanext/pages/theme/templates/default/pages/snippets/pages_item.html:32
+#: ckanext/pages/theme/templates/default/pages/snippets/pages_item.html:52
+#: ckanext/pages/theme/templates/group_pages/group/group_page.html:18
+#: ckanext/pages/theme/templates/group_pages/group/snippets/group_pages_item.html:26
+#: ckanext/pages/theme/templates/group_pages/group/snippets/group_pages_item.html:46
+#: ckanext/pages/theme/templates/organization_pages/organization/organization_page.html:18
+#: ckanext/pages/theme/templates/organization_pages/organization/snippets/organization_pages_item.html:26
+#: ckanext/pages/theme/templates/organization_pages/organization/snippets/organization_pages_item.html:46
+msgid "This page currently has no content"
+msgstr "Þetta skjal hefur ekkert innihald"
+
+#: ckanext/pages/theme/templates/default/pages/snippets/helper.html:4
+msgid "What are Pages?"
+msgstr "Hvað eru skjöl?"
+
+#: ckanext/pages/theme/templates/default/pages/snippets/helper.html:8
+msgid ""
+" Pages are are simple way to add extra pages to your ckan instance. You can "
+"assign an order to them. "
+msgstr ""
+"Skjöl eru formlegar viðbótarupplýsingar sem eiga við um alla vefsíðuna en "
+"ekki einstaka gagnapakka."

@@ -1,0 +1,52 @@
+{% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action='group_show', id=id, page='/' + page.name) %}
+
+{% block item %}
+<div class="row page-list-item dataset-item">
+  {% block item_inner %}
+  {% if page.image %}
+  <div class="span3 image">
+    <a style="background-image:url({{ page.image }})" href="{{ url }}"></a>
+  </div>
+  <div class="span8">
+    <h3 class="dataset-heading">
+      <a href="{{ url }}" >{{ page.title }}</a>
+      {% if page.publish_date %}
+      <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
+      {% endif %}
+    </h3>
+    {% if page.content %}
+    {% if editor %}
+    <div>
+      {{page.content|striptags|truncate}}
+    </div>
+    {% else %}
+    {{ h.markdown_extract(page.content) }}
+    {% endif %}
+    {% else %}
+    <p class="empty">{{ _('This page currently has no content') }}</p>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="span11">
+    <h3 class="dataset-heading">
+      <a href="{{ url }}" >{{ page.title }}</a>
+      {% if page.publish_date %}
+      <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
+      {% endif %}
+    </h3>
+    {% if page.content %}
+    {% if editor %}
+    <div>
+      {{page.content|striptags|truncate}}
+    </div>
+    {% else %}
+    {{ h.markdown_extract(page.content) }}
+    {% endif %}
+    {% else %}
+    <p class="empty">{{ _('This page currently has no content') }}</p>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% endblock %}
+</div>
+{% endblock %}

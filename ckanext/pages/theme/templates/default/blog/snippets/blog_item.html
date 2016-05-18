@@ -1,0 +1,49 @@
+{% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + article.name) %}
+
+{% block item %}
+<div class="row page-list-item dataset-item">
+  {% block item_inner %}
+  {% if article.image %}
+  <div class="span3 image">
+    <a style="background-image:url({{ article.image }})" href="{{ url }}"></a>
+  </div>
+  <div class="span8">
+    <h3 class="dataset-heading">
+      <a href="{{ url }}" >{{ article.title }}</a>
+      <small class="date"> {{ h.render_datetime(article.publish_date) }} </small>
+    </h3>
+    {% if article.content %}
+    {% if editor %}
+    <div>
+      {{article.content|striptags|truncate}}
+    </div>
+    {% else %}
+    {{ h.markdown_extract(article.content) }}
+    {% endif %}
+    {% else %}
+    <p class="empty">{{ _('This blog article currently has no content') }}</p>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="span11">
+    <h3 class="dataset-heading">
+      <a href="{{ url }}" >{{ article.title }}</a>
+      <small class="date"> {{ h.render_datetime(article.publish_date) }} </small>
+    </h3>
+    {% if article.content %}
+    {% if editor %}
+    <div>
+      {{article.content|striptags|truncate}}
+    </div>
+    {% else %}
+    {{ h.markdown_extract(article.content) }}
+    {% endif %}
+    {% else %}
+    <p class="empty">{{ _('This blog article currently has no content') }}</p>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% endblock %}
+</div>
+{% endblock %}
+

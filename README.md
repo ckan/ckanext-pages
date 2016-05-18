@@ -7,7 +7,7 @@ This extension gives you an easy way to add simple pages to CKAN.
 
 By default you can add pages to the main CKAN menu.
 
-Works for ckan>=2.3
+Works for ckan>=2.4
 
 ## Installation
 

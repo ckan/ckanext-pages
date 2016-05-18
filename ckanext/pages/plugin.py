@@ -5,6 +5,7 @@ ignore_missing = toolkit.get_validator('ignore_missing')
 
 import ckan.plugins as p
 import ckan.lib.helpers as h
+from ckan.lib.plugins import DefaultTranslation
 import actions
 import auth
 
@@ -83,7 +84,8 @@ def get_recent_blog_posts(number=5, exclude=None):
     return new_list
 
 
-class PagesPlugin(p.SingletonPlugin):
+class PagesPlugin(p.SingletonPlugin, DefaultTranslation):
+    p.implements(p.ITranslation)
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
     p.implements(p.IConfigurable, inherit=True)
@@ -95,11 +97,13 @@ class PagesPlugin(p.SingletonPlugin):
         self.organization_pages = p.toolkit.asbool(config.get('ckanext.pages.organization', False))
         self.group_pages = p.toolkit.asbool(config.get('ckanext.pages.group', False))
 
-        p.toolkit.add_template_directory(config, 'theme/templates_main')
+        p.toolkit.add_template_directory(config, 'theme/templates/default')
         if self.group_pages:
-            p.toolkit.add_template_directory(config, 'theme/templates_group')
+            p.toolkit.add_template_directory(
+                config, 'theme/templates/group_pages')
         if self.organization_pages:
-            p.toolkit.add_template_directory(config, 'theme/templates_organization')
+            p.toolkit.add_template_directory(
+                config, 'theme/templates/organization_pages')
 
         p.toolkit.add_resource('fanstatic', 'pages')
         p.toolkit.add_public_directory(config, 'public')

@@ -27,7 +27,15 @@ setup(
 	"""
         [ckan.plugins]
         pages=ckanext.pages.plugin:PagesPlugin
-        textboxview=ckanext.pages.plugin:TextBoxView
-
+        textboxview=ckanext.pages.plugin:TextBoxVie
+        [babel.extractors]
+        ckan = ckan.lib.extract:extract_ckan
 	""",
+        message_extractors={
+        'ckanext': [
+            ('**.py', 'python', None),
+            ('**.js', 'javascript', None),
+            ('**/templates/**.html', 'ckan', None),
+        ],
+    },
 )

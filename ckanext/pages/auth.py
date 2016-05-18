@@ -1,5 +1,5 @@
 import ckan.plugins as p
-import ckan.new_authz as new_authz
+import ckan.authz as authz
 
 import db
 
@@ -40,9 +40,9 @@ def page_privacy(context, data_dict):
         return {'success': True}
     group = context['model'].Group.get(org_id)
     user = context['user']
-    authorized = new_authz.has_user_permission_for_group_or_org(group.id,
-                                                                user,
-                                                                'read')
+    authorized = authz.has_user_permission_for_group_or_org(
+        group.id, user, 'read')
+    
     if not authorized:
         return {'success': False,
                 'msg': p.toolkit._(
