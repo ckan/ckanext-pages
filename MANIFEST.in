@@ -1,2 +1,3 @@
 recursive-include    ckanext/pages/textbox        *
 recursive-include    ckanext/pages/theme          *
+recursive-include    ckanext/pages/fanstatic      *
