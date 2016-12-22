@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ckanext-pages 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-12-21 23:45+0100\n"
-"PO-Revision-Date: 2016-12-22 13:14+0100\n"
+"POT-Creation-Date: 2016-12-22 18:51+0100\n"
+"PO-Revision-Date: 2016-12-22 18:57+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
 "Language-Team: de <LL@li.org>\n"
@@ -84,7 +84,7 @@ msgstr ""
 #: ckanext/pages/controller.py:378
 #, python-format
 msgid "Unauthorized to upload file %s"
-msgstr "Nicht berechtigt Datei %s hochzulade"
+msgstr "Nicht berechtigt Datei %s hochzuladen"
 
 #: ckanext/pages/theme/templates_group/group/read_base.html:5
 #: ckanext/pages/theme/templates_main/ckanext_pages/edit_base.html:3
@@ -116,11 +116,9 @@ msgstr "Was ist Pages?"
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/base.html:18
 msgid ""
-" <p>Pages are are simple way to add extra pages to your ckan instance. "
-"You can assign an order to them.</p> "
-msgstr ""
-"Pages ist ein einfacher Weg extra Seiten zu deinem CKAN Portal "
-"hinzuzufügen. Du kannst sogar die Anordnung bestimmen."
+" <p>Pages are are simple way to add extra pages to your ckan instance. You "
+"can assign an order to them.</p> "
+msgstr "Pages ist ein einfacher Weg extra Seiten zu deinem CKAN Portal hinzuzufügen. Du kannst sogar die Anordnung bestimmen."
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/base_form.html:40
 msgid "Add Blog Article"
@@ -277,4 +275,5 @@ msgstr "Es sind zur Zeit keine Blogeinträge verfügbar"
 #: ckanext/pages/theme/templates_main/ckanext_pages/snippets/pages_list.html:82
 msgid "There are currently no pages here"
 msgstr "Es sind zur Zeit keine Seiten verfügbar"
+
 
