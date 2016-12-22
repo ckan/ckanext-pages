@@ -7,6 +7,7 @@ import ckan.plugins as p
 import ckan.lib.helpers as h
 import actions
 import auth
+from ckan.lib.plugins import DefaultTranslation
 
 log = logging.getLogger(__name__)
 
@@ -83,13 +84,15 @@ def get_recent_blog_posts(number=5, exclude=None):
     return new_list
 
 
-class PagesPlugin(p.SingletonPlugin):
+class PagesPlugin(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
     p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IActions, inherit=True)
     p.implements(p.IAuthFunctions, inherit=True)
+    p.implements(p.ITranslation, inherit=True)
+
 
     def update_config(self, config):
         self.organization_pages = p.toolkit.asbool(config.get('ckanext.pages.organization', False))
