@@ -149,7 +149,7 @@ msgstr "Seiten Titel"
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/base_form.html:59
 msgid "Title"
-msgstr "Titeloooooooooooooooooooooj"
+msgstr "Titel"
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/base_form.html:63
 msgid "URL"
