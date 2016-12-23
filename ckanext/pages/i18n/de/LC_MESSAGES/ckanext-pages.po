@@ -21,7 +21,7 @@ msgstr ""
 
 #: ckanext/pages/actions.py:28
 msgid "Page name already exists in database"
-msgstr ""
+msgstr "Seitenname existiert bereits in der datenbank"
 
 #: ckanext/pages/actions.py:185 ckanext/pages/actions.py:208
 #: ckanext/pages/actions.py:216 ckanext/pages/actions.py:224
@@ -31,7 +31,7 @@ msgstr ""
 #: ckanext/pages/actions.py:280 ckanext/pages/actions.py:288
 #: ckanext/pages/actions.py:296
 msgid "Not authorized to see this page"
-msgstr ""
+msgstr "Nicht berechtigt, diese seite zu sehen"
 
 #: ckanext/pages/auth.py:52
 #, python-format
@@ -79,7 +79,7 @@ msgstr "Nicht berechtigt eine Seite zu erstellen oder zu editieren"
 
 #: ckanext/pages/controller.py:373
 msgid "Only Posting is availiable"
-msgstr ""
+msgstr "Nur die Buchung ist verfügbar"
 
 #: ckanext/pages/controller.py:378
 #, python-format
