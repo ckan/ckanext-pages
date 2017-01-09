@@ -7,7 +7,9 @@ import ckan.plugins as p
 import ckan.lib.helpers as h
 import actions
 import auth
-from ckan.lib.plugins import DefaultTranslation
+
+if p.toolkit.check_ckan_version(min_version='2.5'):
+    from ckan.lib.plugins import DefaultTranslation
 
 log = logging.getLogger(__name__)
 
