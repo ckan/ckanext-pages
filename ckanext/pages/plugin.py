@@ -11,6 +11,12 @@ import auth
 if p.toolkit.check_ckan_version(min_version='2.5'):
     from ckan.lib.plugins import DefaultTranslation
 
+    class PagesPluginBase(p.SingletonPlugin, DefaultTranslation):
+        p.implements(p.ITranslation, inherit=True)
+else:
+    class PagesPluginBase(p.SingletonPlugin):
+        pass
+
 log = logging.getLogger(__name__)
 
 def build_pages_nav_main(*args):
@@ -86,16 +92,13 @@ def get_recent_blog_posts(number=5, exclude=None):
     return new_list
 
 
-class PagesPlugin(p.SingletonPlugin, DefaultTranslation):
+class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
     p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IActions, inherit=True)
     p.implements(p.IAuthFunctions, inherit=True)
-    # check CKAN version 
-    if p.toolkit.check_ckan_version(min_version='2.4'):
-        p.implements(p.ITranslation)
 
 
     def update_config(self, config):
