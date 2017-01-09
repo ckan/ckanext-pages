@@ -93,7 +93,7 @@ class PagesPlugin(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.IAuthFunctions, inherit=True)
     # check CKAN version 
     if p.toolkit.check_ckan_version(min_version='2.4'):
-        p.implements(p.ITranslation, inherit=True)
+        p.implements(p.ITranslation)
 
 
     def update_config(self, config):
