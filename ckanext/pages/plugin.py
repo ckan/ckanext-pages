@@ -48,11 +48,9 @@ def build_pages_nav_main(*args):
 
     for page in pages_list:
         if page['page_type'] == 'blog':
-            link = h.link_to(page.get('title'),
-                             h.url_for('/blog/' + str(page['name'])))
+            link = h.literal('<a href="/blog/%s">%s</a>' % (str(page['name']), str(page['title'])))
         else:
-            link = h.link_to(page.get('title'),
-                             h.url_for('/pages/' + str(page['name'])))
+            link = h.literal('<a href="/pages/%s">%s</a>' % (str(page['name']), str(page['title'])))
 
         if page['name'] == page_name:
             li = h.literal('<li class="active">') + link + h.literal('</li>')
