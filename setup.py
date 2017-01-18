@@ -1,6 +1,17 @@
 from setuptools import setup, find_packages
+import os
 
 version = '0.1'
+
+# Recurse into package files
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
+
+i18n_files = package_files('ckanext/pages/i18n')
 
 setup(
 	name='ckanext-pages',
@@ -17,7 +28,7 @@ setup(
 	namespace_packages=['ckanext'],
 	include_package_data=True,
 	package_data={
-            '': ['theme/*/*.html', 'theme/*/*/*.html', 'theme/*/*/*/*.html'],
+            '': ['theme/*/*.html', 'theme/*/*/*.html', 'theme/*/*/*/*.html'] + i18n_files,
 	},
 	zip_safe=False,
 	install_requires=[
