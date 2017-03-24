@@ -69,7 +69,12 @@ ckanext.pages.editor = ckeditor
 ```
 This enables either the [medium](https://jakiestfu.github.io/Medium.js/docs/) or [ckeditor](http://ckeditor.com/)
 
-Dependencies
-------------
+## Dependencies
 
 * lxml
+
+
+## History
+
+See the file [CHANGELOG.md](CHANGELOG.md).
+
