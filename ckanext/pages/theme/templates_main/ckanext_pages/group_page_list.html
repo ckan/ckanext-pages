@@ -2,7 +2,7 @@
 
 {% block page_primary_action %}
   {% if h.check_access('package_create', {'group_id': c.group_dict.id}) %}
-    {% link_for _('Add page'), controller='ckanext.pages.controller:PagesController', action='group_edit', id=c.group_dict.name, page='', class_='btn btn-primary', icon='plus-sign-alt' %}
+    {% link_for _('Add page'), controller='ckanext.pages.controller:PagesController', action='group_edit', id=c.group_dict.name, page='', class_='btn btn-primary', icon='plus-square' %}
   {% endif %}
 {% endblock %}
 
