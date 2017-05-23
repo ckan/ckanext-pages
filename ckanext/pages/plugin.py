@@ -90,6 +90,16 @@ def get_recent_blog_posts(number=5, exclude=None):
     return new_list
 
 
+def get_plus_icon():
+    ckan_version = float(h.ckan_version()[0:3])
+    if ckan_version >= 2.7:
+        icon = 'plus-square'
+    else:
+        icon = 'plus-sign-alt'
+        
+    return icon
+
+
 class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
@@ -124,7 +134,8 @@ class PagesPlugin(PagesPluginBase):
             'build_nav_main': build_pages_nav_main,
             'render_content': render_content,
             'get_wysiwyg_editor': get_wysiwyg_editor,
-            'get_recent_blog_posts': get_recent_blog_posts
+            'get_recent_blog_posts': get_recent_blog_posts,
+            'get_plus_icon': get_plus_icon
         }
 
     def after_map(self, map):
