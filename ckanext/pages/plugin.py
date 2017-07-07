@@ -7,6 +7,7 @@ import ckan.plugins as p
 import ckan.lib.helpers as h
 import actions
 import auth
+import ckan
 
 if p.toolkit.check_ckan_version(min_version='2.5'):
     from ckan.lib.plugins import DefaultTranslation
@@ -91,12 +92,12 @@ def get_recent_blog_posts(number=5, exclude=None):
 
 
 def get_plus_icon():
-    ckan_version = float(h.ckan_version()[0:3])
+    ckan_version = float(ckan.__version__[0:3])
     if ckan_version >= 2.7:
         icon = 'plus-square'
     else:
         icon = 'plus-sign-alt'
-        
+
     return icon
 
 
