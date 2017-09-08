@@ -1,5 +1,10 @@
 {% extends 'page.html' %}
 
+{% block breadcrumb_content %}
+  <li>{% link_for _('Pages'), controller='ckanext.pages.controller:PagesController', action='pages_index' %}</li>
+  <li class="active">{% link_for c.page.title|truncate(35), controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + c.page.name %}</li>
+{% endblock %}
+
 {% block subtitle %}{{ c.page.title }}{% endblock %}
 
 {% block primary %}
