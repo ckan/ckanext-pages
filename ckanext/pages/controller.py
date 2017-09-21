@@ -270,7 +270,7 @@ class PagesController(p.toolkit.BaseController):
         p.toolkit.c.page = _page
         self._inject_views_into_page(_page)
 
-        return p.toolkit.render('ckanext_pages/%s.html' % page_type)
+        return p.toolkit.render('ckanext_pages/%s.html' % page_type, extra_vars={"pages_name": config.get('ckanext.pages.alternative_name', 'pages').title()})
 
     def pages_index(self):
         return self._pages_list_pages('page')

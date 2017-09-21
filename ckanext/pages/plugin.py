@@ -139,6 +139,7 @@ class PagesPlugin(PagesPluginBase):
         }
 
     def after_map(self, map):
+        pages_name = config.get('ckanext.pages.alternative_name', 'pages')
         controller = 'ckanext.pages.controller:PagesController'
 
         if self.organization_pages:
@@ -166,9 +167,9 @@ class PagesPlugin(PagesPluginBase):
                     action='pages_delete', ckan_icon='delete', controller=controller)
         map.connect('pages_edit', '/pages_edit{page:/.*|}',
                     action='pages_edit', ckan_icon='edit', controller=controller)
-        map.connect('pages_index', '/pages',
+        map.connect('pages_index', '/%s' % pages_name,
                     action='pages_index', ckan_icon='file', controller=controller, highlight_actions='pages_edit pages_index pages_show')
-        map.connect('pages_show', '/pages{page:/.*|}',
+        map.connect('pages_show', '/%s{page:/.*|}' % pages_name,
                     action='pages_show', ckan_icon='file', controller=controller, highlight_actions='pages_edit pages_index pages_show')
         map.connect('pages_upload', '/pages_upload',
                     action='pages_upload', controller=controller)
