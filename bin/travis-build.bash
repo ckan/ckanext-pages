@@ -27,10 +27,10 @@ echo "SOLR config..."
 # Travis single-core. See https://github.com/ckan/ckan/issues/2972
 sed -i -e 's/solr_url.*/solr_url = http:\/\/127.0.0.1:8983\/solr/' ckan/test-core.ini
 
-#echo "Initialising the database..."
-#cd ckan
-#paster db init -c test-core.ini
-#cd -
+echo "Initialising the database..."
+cd ckan
+paster db init -c test-core.ini
+cd -
 
 echo "Installing ckanext-pages and its requirements..."
 python setup.py develop
