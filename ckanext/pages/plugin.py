@@ -47,11 +47,9 @@ def build_pages_nav_main(*args):
         page_name = p.toolkit.c.environ['routes.url'].current().split('/')[-1]
 
     for page in pages_list:
-        if page['page_type'] == 'blog':
-            link = h.literal('<a href="/blog/%s">%s</a>' % (str(page['name']), str(page['title'])))
-        else:
-            link = h.literal('<a href="/pages/%s">%s</a>' % (str(page['name']), str(page['title'])))
-
+        page_type = 'blog' if page['page_type'] == 'blog' else 'pages'
+        link = h.literal(u'<a href="/{}/{}">{}</a>'.format(page_type,
+                         page['name'], page['title']))
         if page['name'] == page_name:
             li = h.literal('<li class="active">') + link + h.literal('</li>')
         else:
