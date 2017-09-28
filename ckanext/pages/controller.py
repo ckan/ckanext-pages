@@ -98,7 +98,7 @@ class PagesController(p.toolkit.BaseController):
                 error_summary = e.error_summary
                 return self.org_edit(id, '/' + page, data,
                                  errors, error_summary)
-            p.toolkit.redirect_to(p.toolkit.url_for('organization_pages', id=id, page='/' + _page['name']))
+            p.toolkit.redirect_to('organization_pages', id=id, page='/' + _page['name'])
 
         if not data:
             data = _page
@@ -175,7 +175,7 @@ class PagesController(p.toolkit.BaseController):
                 error_summary = e.error_summary
                 return self.group_edit(id, '/' + page, data,
                                  errors, error_summary)
-            p.toolkit.redirect_to(p.toolkit.url_for('group_pages', id=id, page='/' + _page['name']))
+            p.toolkit.redirect_to('group_pages', id=id, page='/' + _page['name'])
 
         if not data:
             data = _page
@@ -345,8 +345,7 @@ class PagesController(p.toolkit.BaseController):
                 error_summary = e.error_summary
                 return self.pages_edit('/' + page, data,
                                        errors, error_summary, page_type=page_type)
-            p.toolkit.redirect_to(p.toolkit.url_for('%s_show' % page_type,
-                                                    page='/' + _page['name']))
+            p.toolkit.redirect_to('%s_show' % page_type, page='/' + _page['name'])
 
         try:
             p.toolkit.check_access('ckanext_pages_update', {'user': p.toolkit.c.user or p.toolkit.c.author})
