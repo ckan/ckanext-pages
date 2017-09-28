@@ -1,5 +1,6 @@
 import cgi
 import logging
+import urllib
 from pylons import config
 import ckan.plugins.toolkit as toolkit
 ignore_missing = toolkit.get_validator('ignore_missing')
@@ -49,7 +50,7 @@ def build_pages_nav_main(*args):
 
     for page in pages_list:
         type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
-        name = cgi.escape(page['name'], quote=True)
+        name = urllib.quote(page['name'].encode('utf-8')).decode('utf-8')
         title = cgi.escape(page['title'])
         link = h.literal(u'<a href="/{}/{}">{}</a>'.format(type_, name, title))
         if page['name'] == page_name:
