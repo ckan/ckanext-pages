@@ -1,3 +1,4 @@
+import cgi
 import logging
 from pylons import config
 import ckan.plugins.toolkit as toolkit
@@ -47,9 +48,10 @@ def build_pages_nav_main(*args):
         page_name = p.toolkit.c.environ['routes.url'].current().split('/')[-1]
 
     for page in pages_list:
-        page_type = 'blog' if page['page_type'] == 'blog' else 'pages'
-        link = h.literal(u'<a href="/{}/{}">{}</a>'.format(page_type,
-                         page['name'], page['title']))
+        type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
+        name = cgi.escape(page['name'], quote=True)
+        title = cgi.escape(page['title'])
+        link = h.literal(u'<a href="/{}/{}">{}</a>'.format(type_, name, title))
         if page['name'] == page_name:
             li = h.literal('<li class="active">') + link + h.literal('</li>')
         else:
