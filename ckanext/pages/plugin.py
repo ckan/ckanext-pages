@@ -90,10 +90,26 @@ def get_recent_blog_posts(number=5, exclude=None):
     return new_list
 
 
-def get_plus_icon():
+# Maps selected FontAwesome 4 icon names to FontAwesome 3
+_FA4_TO_FA3 = {
+    'plus-square': 'plus-sign-alt',
+    'pencil-square-o': 'edit',
+}
+
+
+def get_icon(name):
+    '''
+    Get a FontAwesome icon name.
+
+    Given the FontAwesome 4 icon name returns the appropriate icon name
+    for the current CKAN version.
+
+    Raises a ``KeyError`` on CKAN versions prior to 2.7 if the
+    FontAwesome 3 name for the given icon is not known.
+    '''
     if toolkit.check_ckan_version(min_version='2.7'):
-        return 'plus-square'
-    return 'plus-sign-alt'
+        return name
+    return _FA4_TO_FA3[name]
 
 
 class PagesPlugin(PagesPluginBase):
@@ -131,7 +147,7 @@ class PagesPlugin(PagesPluginBase):
             'render_content': render_content,
             'get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
-            'pages_get_plus_icon': get_plus_icon
+            'pages_get_icon': get_icon
         }
 
     def after_map(self, map):
@@ -141,7 +157,7 @@ class PagesPlugin(PagesPluginBase):
             map.connect('organization_pages_delete', '/organization/pages_delete/{id}{page:/.*|}',
                         action='org_delete', ckan_icon='delete', controller=controller)
             map.connect('organization_pages_edit', '/organization/pages_edit/{id}{page:/.*|}',
-                        action='org_edit', ckan_icon='edit', controller=controller)
+                        action='org_edit', ckan_icon=get_icon('pencil-square-o'), controller=controller)
             map.connect('organization_pages_index', '/organization/pages/{id}',
                         action='org_show', ckan_icon='file', controller=controller, highlight_actions='org_edit org_show', page='')
             map.connect('organization_pages', '/organization/pages/{id}{page:/.*|}',
@@ -151,7 +167,7 @@ class PagesPlugin(PagesPluginBase):
             map.connect('group_pages_delete', '/group/pages_delete/{id}{page:/.*|}',
                         action='group_delete', ckan_icon='delete', controller=controller)
             map.connect('group_pages_edit', '/group/pages_edit/{id}{page:/.*|}',
-                        action='group_edit', ckan_icon='edit', controller=controller)
+                        action='group_edit', ckan_icon=get_icon('pencil-square-o'), controller=controller)
             map.connect('group_pages_index', '/group/pages/{id}',
                         action='group_show', ckan_icon='file', controller=controller, highlight_actions='group_edit group_show', page='')
             map.connect('group_pages', '/group/pages/{id}{page:/.*|}',
@@ -161,7 +177,7 @@ class PagesPlugin(PagesPluginBase):
         map.connect('pages_delete', '/pages_delete{page:/.*|}',
                     action='pages_delete', ckan_icon='delete', controller=controller)
         map.connect('pages_edit', '/pages_edit{page:/.*|}',
-                    action='pages_edit', ckan_icon='edit', controller=controller)
+                    action='pages_edit', ckan_icon=get_icon('pencil-square-o'), controller=controller)
         map.connect('pages_index', '/pages',
                     action='pages_index', ckan_icon='file', controller=controller, highlight_actions='pages_edit pages_index pages_show')
         map.connect('pages_show', '/pages{page:/.*|}',
@@ -172,7 +188,7 @@ class PagesPlugin(PagesPluginBase):
         map.connect('blog_delete', '/blog_delete{page:/.*|}',
                     action='blog_delete', ckan_icon='delete', controller=controller)
         map.connect('blog_edit', '/blog_edit{page:/.*|}',
-                    action='blog_edit', ckan_icon='edit', controller=controller)
+                    action='blog_edit', ckan_icon=get_icon('pencil-square-o'), controller=controller)
         map.connect('blog_index', '/blog',
                     action='blog_index', ckan_icon='file', controller=controller, highlight_actions='blog_edit blog_index blog_show')
         map.connect('blog_show', '/blog{page:/.*|}',
