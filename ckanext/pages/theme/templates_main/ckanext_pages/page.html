@@ -5,8 +5,10 @@ pages_name - what we call pages
 {% extends 'page.html' %}
 
 {% block breadcrumb_content %}
-  <li>{% link_for _(pages_name), controller='ckanext.pages.controller:PagesController', action='pages_index' %}</li>
-  <li class="active">{% link_for c.page.title|truncate(35), controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + c.page.name %}</li>
+  <li><a href="/analysis/home">Analysis</a></li>
+  {% if c.page.name != "home" %}
+    <li class="active">{% link_for c.page.title|truncate(35), controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + c.page.name %}</li>
+  {% endif %}
 {% endblock %}
 
 {% block subtitle %}{{ c.page.title }}{% endblock %}

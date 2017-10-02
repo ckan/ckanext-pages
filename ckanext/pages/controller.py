@@ -276,6 +276,11 @@ class PagesController(p.toolkit.BaseController):
         return self._pages_list_pages('page')
 
     def _pages_list_pages(self, page_type):
+        #Don't allow normal users to see this, we provide our own custom view
+        try:
+            p.toolkit.check_access('ckanext_pages_update', {'user': p.toolkit.c.user})
+        except p.toolkit.NotAuthorized:
+            p.toolkit.abort(401, _('Unauthorized to manage pages'))
         data_dict={'org_id': None, 'page_type': page_type}
         if page_type == 'blog':
             data_dict['order_publish_date'] = True
