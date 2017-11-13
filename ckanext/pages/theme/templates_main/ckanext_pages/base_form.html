@@ -34,7 +34,8 @@
   {% endif %}
 {% endif %}
 
-
+{% set title_image_url = _('Image url') %}
+{% set title_lang =  h.lang() %}
 {% if type == 'blog' %}
     {% if not page %}
       <h1>{{ _('Add Blog Article') }}</h1>
@@ -79,6 +80,10 @@
       </select>
     </div>
   </div>
+
+  {{ form.input('image_url', id='field-image_url', label=_('Image URL'), placeholder=title_image_url, value=data.image_url, error=errors.image_url) }}
+
+  {{ form.input('lang', id='field-lang', label=_('Lang'), placeholder=title_lang, value=data.lang, error=errors.lang) }}
 
   {% if not hide_field_order %}
     <div class="control-group">
