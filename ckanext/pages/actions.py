@@ -49,9 +49,8 @@ schema = {
              p.toolkit.get_validator('name_validator'), page_name_validator],
     'content': [p.toolkit.get_validator('ignore_missing'), unicode],
     'page_type': [p.toolkit.get_validator('ignore_missing'), unicode],
-  #  'lang': [p.toolkit.get_validator('not_empty'), unicode],
-    'order': [p.toolkit.get_validator('ignore_missing'),
-              unicode],
+    'lang': [p.toolkit.get_validator('not_empty'), unicode],
+    'order': [p.toolkit.get_validator('ignore_missing'), unicode],
     'private': [p.toolkit.get_validator('ignore_missing'),
                 p.toolkit.get_validator('boolean_validator')],
     'group_id': [p.toolkit.get_validator('ignore_missing'), unicode],
@@ -61,6 +60,7 @@ schema = {
     'publish_date': [not_empty_if_blog,
                      p.toolkit.get_validator('ignore_missing'),
                      p.toolkit.get_validator('isodate')],
+    'image_url': [p.toolkit.get_validator('ignore_empty'), unicode]
 }
 
 
@@ -83,6 +83,7 @@ def _pages_list(context, data_dict):
     ordered = data_dict.get('order')
     order_publish_date = data_dict.get('order_publish_date')
     page_type = data_dict.get('page_type')
+    lang = data_dict.get('lang')
     private = data_dict.get('private', True)
     if ordered:
         search['order'] = True
@@ -90,6 +91,8 @@ def _pages_list(context, data_dict):
         search['page_type'] = page_type
     if order_publish_date:
         search['order_publish_date'] = True
+    if lang:
+        search['lang'] = lang
     if not org_id:
         search['group_id'] = None
         try:
@@ -118,6 +121,7 @@ def _pages_list(context, data_dict):
                   'publish_date': pg.publish_date.isoformat() if pg.publish_date else None,
                   'group_id': pg.group_id,
                   'page_type': pg.page_type,
+                  'image_url': pg.image_url
                  }
         if img:
             pg_row['image'] = img
@@ -159,7 +163,7 @@ def _pages_update(context, data_dict):
         out.group_id = org_id
         out.name = page
     items = ['title', 'content', 'name', 'private',
-             'order', 'page_type', 'publish_date']
+             'order', 'page_type', 'publish_date', 'image_url', 'lang']
     for item in items:
         setattr(out, item, data.get(item,'page' if item =='page_type' else None)) #backward compatible with older version where page_type does not exist
 

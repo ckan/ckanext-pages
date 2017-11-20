@@ -8,6 +8,9 @@
       {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='blog_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
     {% endif %}
     <h1 class="page-heading">{{ c.page.title }}</h1>
+    {% if c.page.image_url  %}
+      <img src="{{ c.page.image_url }}" />
+    {% endif  %}
       {% if c.page.publish_date %}
          <span class="muted date"> {{ h.render_datetime(c.page.publish_date) }} </span>
       {% endif %}
