@@ -1,4 +1,5 @@
 import logging
+import datetime
 from pylons import config
 import ckan.plugins.toolkit as toolkit
 ignore_missing = toolkit.get_validator('ignore_missing')
@@ -96,6 +97,11 @@ def get_plus_icon():
     return 'plus-sign-alt'
 
 
+def current_server_date():
+    """ Return server date """
+    return datetime.datetime.now()
+
+
 class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
@@ -131,7 +137,8 @@ class PagesPlugin(PagesPluginBase):
             'render_content': render_content,
             'get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
-            'pages_get_plus_icon': get_plus_icon
+            'pages_get_plus_icon': get_plus_icon,
+            'current_date': current_server_date
         }
 
     def after_map(self, map):
