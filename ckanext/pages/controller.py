@@ -290,7 +290,7 @@ class PagesController(p.toolkit.BaseController):
             collection=p.toolkit.c.pages_dict,
             page=p.toolkit.request.params.get('page', 1),
             url=helpers.pager_url,
-            items_per_page=21
+            items_per_page=12
         )
 
         if page_type == 'blog':
