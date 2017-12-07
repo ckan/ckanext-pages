@@ -91,7 +91,12 @@
       <div class="controls">
         <select id="field-lang" class="form-control" name="lang">
           {% for locale in h.get_available_locales() %}
-           <option value="{{ locale.short_name }}" {% if locale.identifier == current_lang %}selected="selected"{% endif %}>
+           <option value="{{ locale.short_name }}"
+             {% if not data.lang %}
+               {% if locale.identifier == current_lang %}selected="selected"{% endif %}
+             {% else %}
+                 {% if locale.identifier == data.lang %}selected="selected"{% endif %}
+             {% endif %}>
              {{ locale.display_name or locale.english_name }}
            </option>
           {% endfor %}
