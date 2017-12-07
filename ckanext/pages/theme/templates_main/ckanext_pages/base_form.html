@@ -90,8 +90,10 @@
       <label for="field-order" class="control-label">{{ _('Lang') }}</label>
       <div class="controls">
         <select id="field-lang" class="form-control" name="lang">
-          {% for option in [('uk', _('Ukrainian')), ('en','English')] %}
-            <option value="{{ option[0] }}" {% if option[0] == data.lang %}selected="selected"{% endif %}>{{ option[1] }}</option>
+          {% for locale in h.get_available_locales() %}
+           <option value="{{ locale.short_name }}" {% if locale.identifier == current_lang %}selected="selected"{% endif %}>
+             {{ locale.display_name or locale.english_name }}
+           </option>
           {% endfor %}
         </select>
       </div>
