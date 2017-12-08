@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from ckan.plugins import toolkit
 from nose.tools import assert_in, assert_not_in
 import ckan.model as model

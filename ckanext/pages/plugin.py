@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import logging
 from pylons import config
 import ckan.plugins.toolkit as toolkit
@@ -48,9 +50,9 @@ def build_pages_nav_main(*args):
 
     for page in pages_list:
         if page['page_type'] == 'blog':
-            link = h.literal('<a href="/blog/%s">%s</a>' % (str(page['name']), str(page['title'])))
+            link = h.literal('<a href="/blog/%s">%s</a>' % (page['name'], page['title']))
         else:
-            link = h.literal('<a href="/pages/%s">%s</a>' % (str(page['name']), str(page['title'])))
+            link = h.literal('<a href="/pages/%s">%s</a>' % (page['name'], page['title']))
 
         if page['name'] == page_name:
             li = h.literal('<li class="active">') + link + h.literal('</li>')
