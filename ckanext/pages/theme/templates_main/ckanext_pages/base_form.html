@@ -93,7 +93,7 @@
           {% for locale in h.get_available_locales() %}
            <option value="{{ locale.short_name }}"
              {% if not data.lang %}
-               {% if locale.identifier == current_lang %}selected="selected"{% endif %}
+               {% if locale.identifier == h.lang() %}selected="selected"{% endif %}
              {% else %}
                  {% if locale.identifier == data.lang %}selected="selected"{% endif %}
              {% endif %}>

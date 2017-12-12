@@ -83,7 +83,6 @@ def _pages_list(context, data_dict):
     ordered = data_dict.get('order')
     order_publish_date = data_dict.get('order_publish_date')
     page_type = data_dict.get('page_type')
-    lang = data_dict.get('lang')
     private = data_dict.get('private', True)
     if ordered:
         search['order'] = True
@@ -91,8 +90,7 @@ def _pages_list(context, data_dict):
         search['page_type'] = page_type
     if order_publish_date:
         search['order_publish_date'] = True
-    if lang:
-        search['lang'] = lang
+    search['lang'] = h.lang()
     if not org_id:
         search['group_id'] = None
         try:
