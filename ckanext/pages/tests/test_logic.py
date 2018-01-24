@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from ckan.plugins import toolkit
 from nose.tools import assert_in, assert_not_in
 import ckan.model as model
@@ -98,3 +100,22 @@ class TestPages(helpers.FunctionalTestBase):
         response = self.app.get(url, status=200, extra_environ=env)
         assert_in('<h2>Pages</h2>', response.body)
         assert_in('Add page</a>', response.body)
+
+    def test_unicode(self):
+        env = {'REMOTE_USER': self.user['name'].encode('ascii')}
+        response = self.app.post(
+            url=toolkit.url_for('pages_edit', page='/test_unicode_page'),
+            params={
+                'title': u'Tïtlé'.encode('utf-8'),
+                'name': 'page_unicode',
+                'content': u'Çöñtéñt'.encode('utf-8'),
+                'order': 1,
+                'private': False,
+            },
+            extra_environ=env,
+        )
+        response = response.follow(extra_environ=env)
+        assert_in(u'<title>Tïtlé - CKAN</title>', response.unicode_body)
+        assert_in(u'<a href="/pages/page_unicode">Tïtlé</a>', response.unicode_body)
+        assert_in(u'<h1 class="page-heading">Tïtlé</h1>', response.unicode_body)
+        assert_in(u'<p>Çöñtéñt</p>', response.unicode_body)
