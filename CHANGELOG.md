@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed wrong redirects when using non-default language
   ([#60](https://github.com/ckan/ckanext-pages/issues/60))
 
+- Group and organization pages could not be deleted
+  ([#53](https://github.com/ckan/ckanext-pages/issues/53))
+
 ### Changed
 
 - Upgrade to font-awesome 4 on CKAN 2.7 and later (contributed by
