@@ -22,8 +22,8 @@ fi
 # https://stackoverflow.com/questions/47044854/error-installing-psycopg2-2-6-2
 sed -i '/psycopg2/c\psycopg2' requirements.txt
 python setup.py develop
-pip install -r requirements.txt --allow-all-external
-pip install -r dev-requirements.txt --allow-all-external
+pip install -r requirements.txt
+pip install -r dev-requirements.txt
 cd -
 
 echo "Creating the PostgreSQL user and database..."
