@@ -5,35 +5,26 @@
 {% set errors = errors or {} %}
 
 {% if type == 'org' %}
-  {% set action_url = h.url_for('organization_pages_edit', id=id, page='/' + page) %}
-  {% set cancel_url = h.url_for('organization_pages_index', id=id) %}
-  {% set slug_prefix = cancel_url ~ '/' %}
-  {% set slug_domain = h.url_for('organization_pages_index', id=id, qualified=true) %}
-  {% set hide_field_order = true %}
+    {% set prefix = 'organization_pages_' %}
+    {% set args = {'id': id} %}
 {% elif type == 'group' %}
-  {% set action_url = h.url_for('group_pages_edit', id=id, page='/' + page) %}
-  {% set cancel_url = h.url_for('group_pages_index', id=id) %}
-  {% set slug_prefix = cancel_url ~ '/' %}
-  {% set slug_domain = h.url_for('group_pages_index', id=id, qualified=true) %}
-  {% set hide_field_order = true %}
+    {% set prefix = 'group_pages_' %}
+    {% set args = {'id': id} %}
 {% elif type == 'blog' %}
-  {% set action_url = h.url_for('blog_edit', page='/' + page) %}
-  {% set cancel_url = h.url_for('blog_index') %}
-  {% set slug_prefix = cancel_url ~ '/' %}
-  {% set slug_domain = h.url_for('blog_index', qualified=true) %}
-  {% if page %}
-     {% set delete_url = h.url_for('blog_delete', page='/' + data.name) %}
-  {% endif %}
+    {% set prefix = 'blog_' %}
+    {% set args = {} %}
 {% else %}
-  {% set action_url = h.url_for('pages_edit', page='/' + page) %}
-  {% set cancel_url = h.url_for('pages_index') %}
-  {% set slug_prefix = cancel_url ~ '/' %}
-  {% set slug_domain = h.url_for('pages_index', qualified=true) %}
-  {% if page %}
-     {% set delete_url = h.url_for('pages_delete', page='/' + data.name) %}
-  {% endif %}
+    {% set prefix = 'pages_' %}
+    {% set args = {} %}
 {% endif %}
-
+{% set page_url = '/' + page %}
+{% set action_url = h.url_for(prefix + 'edit', page=page_url, **args) %}
+{% set cancel_url = h.url_for(prefix + 'index', **args) %}
+{% set slug_prefix = cancel_url ~ '/' %}
+{% set slug_domain = h.url_for(prefix + 'index', qualified=true, **args) %}
+{% if page %}
+   {% set delete_url = h.url_for(prefix + 'delete', page=page_url, **args) %}
+{% endif %}
 
 {% if type == 'blog' %}
     {% if not page %}
