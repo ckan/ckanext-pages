@@ -18,7 +18,7 @@ this.ckan.module('ckedit', function (jQuery, _) {
         { name: 'insert' },
         { name: 'forms' },
         { name: 'tools' },
-        { name: 'document',	   groups: [ 'document', 'doctools' ] },
+        { name: 'document',	   groups: [ 'document', 'doctools', 'mode' ]},
         { name: 'others' },
         '/',
         { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
@@ -36,8 +36,9 @@ this.ckan.module('ckedit', function (jQuery, _) {
       // Make dialogs simpler.
       config.removeDialogTabs = 'image:advanced;link:advanced';
       config.filebrowserUploadUrl = this.options.site_url + 'pages_upload';
-      config.extraPlugins = 'divarea,ckanview';
-      config.height = '400px';
+      config.extraPlugins = 'divarea,ckanview,sourcearea';
+      config.allowedContent = true;
+      config.height = '550px';
       config.customConfig = false;
 
       var editor = $(this.el).ckeditor(config);

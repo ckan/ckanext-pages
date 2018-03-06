@@ -96,6 +96,13 @@ def get_plus_icon():
         return 'plus-square'
     return 'plus-sign-alt'
 
+def get_page_html(page):
+    _page = p.toolkit.get_action('ckanext_pages_show')(
+        data_dict={'org_id': None,
+                   'page': page}
+    )
+    return _page['content'];
+
 
 class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurer, inherit=True)
@@ -132,6 +139,7 @@ class PagesPlugin(PagesPluginBase):
             'render_content': render_content,
             'get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
+            'get_page_html': get_page_html,
             'pages_get_plus_icon': get_plus_icon
         }
 

@@ -1,9 +1,18 @@
 {% extends 'page.html' %}
 
-{% block subtitle %}{{ c.page.title }}{% endblock %}
+{% block subtitle %} - {{ c.page.title }}{% endblock %}
+
+
+{% block pre_primary %}
+<ul id="pages-nav-bar">
+  {{ h.build_nav_main() }}
+</ul>
+{% endblock %}
 
 {% block primary %}
-  <section class="module-content">
+<div id="page-container" class="container-fluid gobar-static-container">
+  <div id="page" class="col-xs-12 col-md-10 col-md-offset-1 gobar-static">
+  <section class="">
     {% if h.check_access('ckanext_pages_update') %}
       {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
     {% endif %}
@@ -23,6 +32,8 @@
       <p class="empty">{{ _('This page currently has no content') }}</p>
     {% endif %}
   </section>
+</div>
+</div>
 {% endblock %}
 
 {% block secondary %}{% endblock %}
