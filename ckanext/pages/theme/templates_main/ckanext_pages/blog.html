@@ -1,4 +1,8 @@
 {% extends 'page.html' %}
+{% block styles %}
+  {{ super() }}
+  {% resource 'pages-theme/styles/poncho.css' %}
+{% endblock %}
 {% block bodytag %}{{ super() }} class="blog"{% endblock %}
 {% block subtitle %}{{ c.page.title }}{% endblock %}
 
@@ -7,29 +11,58 @@
     {% if h.check_access('ckanext_pages_update') %}
       {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='blog_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
     {% endif %}
-    <h1 class="page-heading">{{ c.page.title }}</h1>
-      {% if c.page.publish_date %}
-         <span class="muted date"> {{ h.render_datetime(c.page.publish_date) }} </span>
-      {% endif %}
-    {% if c.page.content %}
-      {% set editor = h.get_wysiwyg_editor() %}
-      {% if editor %}
-        <div>
-            {{c.page.content|safe}}
+    <div class="pane-content">
+      <header>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 overlap">
+          <div class="title-description"><h1>{{ c.page.title }}</h1>
+            <div class="row">
+              <div class="col-md-6 social-share">
+                  {% if c.page.publish_date %}
+                <time class="text-muted">Publicado el {{ h.render_datetime(c.page.publish_date) }}</time>
+                  {% endif %}
+              </div>
+              <!--<div class="section-actions col-md-6 social-share">
+              </div>-->
+            </div>
+          </div>
         </div>
-      {% else %}
-        {{ h.render_content(c.page.content) }}
-      {% endif %}
-    {% else %}
-      <p class="empty">{{ _('This page currently has no content') }}</p>
-    {% endif %}
-  </section>
+      </div>
+    </div>
+  </header>  </div>
+<section class="content_format">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <div class="panel-pane pane-texto">
+          <div class="pane-content">
+            {% if c.page.content %}
+              {% set editor = h.get_wysiwyg_editor() %}
+              {% if editor %}
+                  <div class="text-justify article-news">
+                    {{c.page.content|safe}}
+                  </div>
+              {% else %}
+                  <div class="text-justify article-news">
+                    {{ h.render_content(c.page.content) }}
+                  </div>
+              {% endif %}
+            {% else %}
+              <p class="empty">{{ _('This page currently has no content') }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}
 
 {% block secondary_content %}
 {% set posts = h.get_recent_blog_posts(number=5, exclude=c.page.name) %}
 
-  <div class="module module-narrow module-shallow">
+  <!--div class="module module-narrow module-shallow">
     <h2 class="module-heading">
       {{ _('Blog') }}
     </h2>
@@ -53,7 +86,7 @@
             </div>
         {% endfor %}
     </div>
-  </div>
+  </div-->
 
 
 

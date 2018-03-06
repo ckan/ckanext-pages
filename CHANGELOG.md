@@ -3,6 +3,49 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+# Cambios
+
+## Poncho theme
+
+Se baja el theme de poncho.
+En principio se utilizará el css, en el futuro se implementará sass.
+[Repositorio github de poncho] (https://argob.github.io/poncho/)
+
+### Modificaciones realizadas para el blog
+
+En poncho.css se agrega mas espacio entre parrafo y parrafo y en el interlineado.
+Y también entre la lista de items.
+
+Para las noticicas se usará la clase article-news
+´´´
+.article-news article section {
+  font-family: "Droid Serif", serif;
+}
+
+.article-news p {
+  font-size: 18px;
+  margin-bottom: 25px;
+  line-height: 1.528;
+}
+.article-news li {
+  font-size: 18px;
+  margin-bottom: 25px;
+}
+´´´
+
+### Copia de css
+Es necesario copiar todos los css de poncho en los recursos de pages. A futuro si el theme se extiende al ckan entero habrá que incluirlo
+en el ckan default.
+
+Directorio donde copiar los css:
+**ckan-desa:/usr/lib/ckan/default/src/ckan/ckanext/src/ckanext-pages/ckanext/pages/theme/resources/styles**
+
+## Template
+Es necesario modificar el template especifico relacionado a blog para por un lado incluir el theme de Poncho, y por el otro modificar el grid html de blog.
+
+El template a modificar es el especifico del blog:
+**/usr/lib/ckan/default/src/ckan/ckanext/src/ckanext-pages/ckanext/pages/theme/templates_main/ckanext_pages/blog.html**
+
 ## [Unreleased]
 
 ### Fixed
