@@ -286,11 +286,14 @@ class PagesController(p.toolkit.BaseController):
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
             data_dict=data_dict
         )
+        page = p.toolkit.request.params.get('page', '1')
+        if not page.isdigit():
+            page = 1
         p.toolkit.c.page = helpers.Page(
             collection=p.toolkit.c.pages_dict,
-            page=p.toolkit.request.params.get('page', 1),
+            page=page,
             url=helpers.pager_url,
-            items_per_page=12
+            items_per_page=10
         )
 
         if page_type == 'blog':
