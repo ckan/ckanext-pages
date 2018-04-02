@@ -1,6 +1,7 @@
 import datetime
 import uuid
 import json
+from ckan import model
 
 import sqlalchemy as sa
 from sqlalchemy.orm import class_mapper
@@ -11,6 +12,32 @@ except:
 
 pages_table = None
 Page = None
+types = sa.types
+
+
+class Page(model.DomainObject):
+
+    @classmethod
+    def get(cls, **kw):
+        '''Finds a single entity in the register.'''
+        query = model.Session.query(cls).autoflush(False)
+        return query.filter_by(**kw).first()
+
+    @classmethod
+    def pages(cls, **kw):
+        '''Finds a single entity in the register.'''
+        order = kw.pop('order', False)
+        order_publish_date = kw.pop('order_publish_date', False)
+
+        query = model.Session.query(cls).autoflush(False)
+        query = query.filter_by(**kw)
+        if order:
+            query = query.order_by(cls.order).filter(cls.order != '')
+        elif order_publish_date:
+            query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)
+        else:
+            query = query.order_by(cls.created.desc())
+        return query.all()
 
 
 def make_uuid():
@@ -18,34 +45,19 @@ def make_uuid():
 
 
 def init_db(model):
-    class _Page(model.DomainObject):
 
-        @classmethod
-        def get(cls, **kw):
-            '''Finds a single entity in the register.'''
-            query = model.Session.query(cls).autoflush(False)
-            return query.filter_by(**kw).first()
+    sql = u'''
+       SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
+       WHERE TABLE_NAME = 'ckanext_pages';
+    '''
+    conn = model.Session.connection()
+    res = conn.execute(sql)
+    first = res.first()
+    if first.values()[0] == 1:
+        global pages_table
+        pages_table = _pages_table
+        return
 
-        @classmethod
-        def pages(cls, **kw):
-            '''Finds a single entity in the register.'''
-            order = kw.pop('order', False)
-            order_publish_date = kw.pop('order_publish_date', False)
-
-            query = model.Session.query(cls).autoflush(False)
-            query = query.filter_by(**kw)
-            if order:
-                query = query.order_by(cls.order).filter(cls.order != '')
-            elif order_publish_date:
-                query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)
-            else:
-                query = query.order_by(cls.created.desc())
-            return query.all()
-
-    global Page
-    Page = _Page
-    # We will just try to create the table.  If it already exists we get an
-    # error but we can just skip it and carry on.
     sql = '''
                 CREATE TABLE ckanext_pages (
                     id text NOT NULL,
@@ -103,31 +115,32 @@ def init_db(model):
         pass
     model.Session.commit()
 
-    types = sa.types
     global pages_table
-    pages_table = sa.Table('ckanext_pages', model.meta.metadata,
-        sa.Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
-        sa.Column('title', types.UnicodeText, default=u''),
-        sa.Column('name', types.UnicodeText, default=u''),
-        sa.Column('content', types.UnicodeText, default=u''),
-        sa.Column('lang', types.UnicodeText, default=u''),
-        sa.Column('order', types.UnicodeText, default=u''),
-        sa.Column('private',types.Boolean,default=True),
-        sa.Column('group_id', types.UnicodeText, default=None),
-        sa.Column('user_id', types.UnicodeText, default=u''),
-        sa.Column('publish_date', types.DateTime),
-        sa.Column('page_type', types.DateTime),
-        sa.Column('created', types.DateTime, default=datetime.datetime.utcnow),
-        sa.Column('modified', types.DateTime, default=datetime.datetime.utcnow),
-        sa.Column('extras', types.UnicodeText, default=u'{}'),
-        sa.Column('image_url', types.UnicodeText, default=None),
-        extend_existing=True
-    )
+    pages_table = _pages_table
 
-    model.meta.mapper(
-        Page,
-        pages_table,
-    )
+
+_pages_table = sa.Table('ckanext_pages', model.meta.metadata,
+    sa.Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
+    sa.Column('title', types.UnicodeText, default=u''),
+    sa.Column('name', types.UnicodeText, default=u''),
+    sa.Column('content', types.UnicodeText, default=u''),
+    sa.Column('lang', types.UnicodeText, default=u''),
+    sa.Column('order', types.UnicodeText, default=u''),
+    sa.Column('private',types.Boolean,default=True),
+    sa.Column('group_id', types.UnicodeText, default=None),
+    sa.Column('user_id', types.UnicodeText, default=u''),
+    sa.Column('publish_date', types.DateTime),
+    sa.Column('page_type', types.DateTime),
+    sa.Column('created', types.DateTime, default=datetime.datetime.utcnow),
+    sa.Column('modified', types.DateTime, default=datetime.datetime.utcnow),
+    sa.Column('extras', types.UnicodeText, default=u'{}'),
+    sa.Column('image_url', types.UnicodeText, default=None)
+)
+
+model.meta.mapper(
+    Page,
+    _pages_table,
+)
 
 
 def table_dictize(obj, context, **kw):
