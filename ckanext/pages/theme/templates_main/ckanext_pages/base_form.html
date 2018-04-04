@@ -57,7 +57,7 @@
 {% endif %}
 
 
-<form class="form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form">
+<form class="form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form" enctype="multipart/form-data">
 
   {{ form.input('title', id='field-title', label=_('Title'), placeholder=title_placeholder, value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
 
@@ -83,7 +83,14 @@
     </div>
   </div>
 
-  {{ form.input('image_url', id='field-image_url', label=_('Image URL'), placeholder=title_image_url, value=data.image_url, error=errors.image_url) }}
+  {% block basic_fields_url %}
+  {% set is_upload = (data.url_type == 'upload') %}
+  {{ form.image_upload(data, errors, field_url='image_url', field_upload='upload', field_clear='clear_upload',
+  is_upload_enabled=h.uploads_enabled(), is_url=data.url and not is_upload, is_upload=is_upload,
+  upload_label=_('Image File'), url_label=_('URL'), placeholder=_('http://example.com/external-data.csv'), field_name='name') }}
+  {% endblock %}
+
+  {#{ form.input('image_url', id='field-image_url', label=_('Image URL'), placeholder=title_image_url, value=data.image_url, error=errors.image_url) }#}
 
   <!--{{ form.input('lang', id='field-lang', label=_('Lang'), placeholder=title_lang, value=data.lang, error=errors.lang) }}-->
     <div class="control-group">

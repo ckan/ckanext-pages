@@ -1,7 +1,8 @@
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
-from pylons import config
 import ckan.lib.helpers as h
+
+from pylons import config
 
 _ = p.toolkit._
 
@@ -335,8 +336,9 @@ class PagesController(p.toolkit.BaseController):
             _page = {}
 
         if p.toolkit.request.method == 'POST' and not data:
+            pages_upload = p.toolkit.get_action('ckanext_pages_upload')
             data = dict(p.toolkit.request.POST)
-
+            data['image_url'] = pages_upload({}, data)
             _page.update(data)
 
             _page['org_id'] = None

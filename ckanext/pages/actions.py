@@ -2,10 +2,12 @@ import datetime
 import json
 
 import ckan.plugins as p
+import ckan.lib.helpers as h
 import ckan.lib.navl.dictization_functions as df
 import ckan.lib.uploader as uploader
-import ckan.lib.helpers as h
 from ckan.plugins import toolkit as tk
+
+
 from HTMLParser import HTMLParser
 try:
     import ckan.authz as authz
@@ -194,13 +196,15 @@ def pages_upload(context, data_dict):
     upload.update_data_dict(data_dict, 'image_url',
                             'upload', 'clear_upload')
     upload.upload()
+
     image_url = data_dict.get('image_url')
     if image_url:
         image_url = h.url_for_static(
            'uploads/page_images/%s' % image_url,
             qualified = True
         )
-    return {'url': image_url}
+    # return {'url': image_url}
+    return image_url
 
 @tk.side_effect_free
 def pages_show(context, data_dict):
