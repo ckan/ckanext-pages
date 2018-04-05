@@ -1,11 +1,15 @@
 import datetime
 import json
+import mimetypes
+import os
 
 import ckan.plugins as p
-import ckan.lib.navl.dictization_functions as df
-import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
+import ckan.lib.uploader as uploader
+import ckan.lib.navl.dictization_functions as df
+from ckan.logic import ValidationError
 from ckan.plugins import toolkit as tk
+
 from HTMLParser import HTMLParser
 try:
     import ckan.authz as authz
@@ -14,6 +18,20 @@ except ImportError:
 
 
 import db
+
+
+def image_mime_type_validator(file_path):
+    allowed_types = [
+        'image/jpeg',
+        'image/bmp',
+        'image/gif',
+        'image/png'
+    ]
+    file_type, _ = mimetypes.guess_type(file_path)
+    if file_type not in allowed_types:
+        return False
+    return True
+
 def page_name_validator(key, data, errors, context):
     session = context['session']
     page = context.get('page')
@@ -49,9 +67,8 @@ schema = {
              p.toolkit.get_validator('name_validator'), page_name_validator],
     'content': [p.toolkit.get_validator('ignore_missing'), unicode],
     'page_type': [p.toolkit.get_validator('ignore_missing'), unicode],
-  #  'lang': [p.toolkit.get_validator('not_empty'), unicode],
-    'order': [p.toolkit.get_validator('ignore_missing'),
-              unicode],
+    'lang': [p.toolkit.get_validator('not_empty'), unicode],
+    'order': [p.toolkit.get_validator('ignore_missing'), unicode],
     'private': [p.toolkit.get_validator('ignore_missing'),
                 p.toolkit.get_validator('boolean_validator')],
     'group_id': [p.toolkit.get_validator('ignore_missing'), unicode],
@@ -61,8 +78,8 @@ schema = {
     'publish_date': [not_empty_if_blog,
                      p.toolkit.get_validator('ignore_missing'),
                      p.toolkit.get_validator('isodate')],
+    'image_url': [p.toolkit.get_validator('ignore_empty'), unicode]
 }
-
 
 def _pages_show(context, data_dict):
     if db.pages_table is None:
@@ -90,6 +107,7 @@ def _pages_list(context, data_dict):
         search['page_type'] = page_type
     if order_publish_date:
         search['order_publish_date'] = True
+    search['lang'] = h.lang()
     if not org_id:
         search['group_id'] = None
         try:
@@ -118,6 +136,7 @@ def _pages_list(context, data_dict):
                   'publish_date': pg.publish_date.isoformat() if pg.publish_date else None,
                   'group_id': pg.group_id,
                   'page_type': pg.page_type,
+                  'image_url': pg.image_url
                  }
         if img:
             pg_row['image'] = img
@@ -159,7 +178,7 @@ def _pages_update(context, data_dict):
         out.group_id = org_id
         out.name = page
     items = ['title', 'content', 'name', 'private',
-             'order', 'page_type', 'publish_date']
+             'order', 'page_type', 'publish_date', 'image_url', 'lang']
     for item in items:
         setattr(out, item, data.get(item,'page' if item =='page_type' else None)) #backward compatible with older version where page_type does not exist
 
@@ -191,14 +210,20 @@ def pages_upload(context, data_dict):
 
     upload.update_data_dict(data_dict, 'image_url',
                             'upload', 'clear_upload')
-    upload.upload()
+
+    upload.upload(uploader.get_max_image_size())
+
     image_url = data_dict.get('image_url')
+
+    if not image_mime_type_validator(os.path.join(uploader.get_storage_path(), 'uploads', 'page_images', image_url)):
+        raise ValidationError(tk._('You can upload image file only'))
+
     if image_url:
         image_url = h.url_for_static(
            'uploads/page_images/%s' % image_url,
             qualified = True
         )
-    return {'url': image_url}
+    return image_url
 
 @tk.side_effect_free
 def pages_show(context, data_dict):

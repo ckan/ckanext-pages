@@ -44,9 +44,14 @@ def build_pages_nav_main(*args):
 
     page_name = ''
 
-    if (toolkit.c.action in ('pages_show', 'blog_show')
-       and toolkit.c.controller == 'ckanext.pages.controller:PagesController'):
-        page_name = toolkit.c.environ['routes.url'].current().split('/')[-1]
+    try:
+        if (toolkit.c.action in ('pages_show', 'blog_show')
+           and toolkit.c.controller == 'ckanext.pages.controller:PagesController'):
+            page_name = toolkit.c.environ['routes.url'].current().split('/')[-1]
+    except AttributeError:
+        # NOTE(e0ne): we don't have 'action' attribute in Flask context.
+        # We can igrore if it's Flask Bluprint-bases plugin
+        pass
 
     for page in pages_list:
         type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
@@ -97,6 +102,11 @@ def get_plus_icon():
     return 'plus-sign-alt'
 
 
+def current_server_date():
+    """ Return server date """
+    return datetime.datetime.now()
+
+
 class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
@@ -132,7 +142,8 @@ class PagesPlugin(PagesPluginBase):
             'render_content': render_content,
             'get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
-            'pages_get_plus_icon': get_plus_icon
+            'pages_get_plus_icon': get_plus_icon,
+            'current_date': current_server_date
         }
 
     def after_map(self, map):

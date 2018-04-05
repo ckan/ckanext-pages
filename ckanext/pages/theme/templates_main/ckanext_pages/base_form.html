@@ -1,4 +1,4 @@
-{% import 'macros/form.html' as form %}
+{% import 'macros/blog_form.html' as form %}
 {% import 'macros/wysiwyg.html' as wysiwyg %}
 
 {% set data = data or {} %}
@@ -25,7 +25,6 @@
 {% if page %}
    {% set delete_url = h.url_for(prefix + 'delete', page=page_url, **args) %}
 {% endif %}
-
 {% if type == 'blog' %}
     {% if not page %}
       <h1>{{ _('Add Blog Article') }}</h1>
@@ -45,7 +44,7 @@
 {% endif %}
 
 
-<form class="form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form">
+<form class="form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form" enctype="multipart/form-data">
 
   {{ form.input('title', id='field-title', label=_('Title'), placeholder=title_placeholder, value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
 
@@ -53,7 +52,7 @@
   {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain~'/', 'data-module-placeholder': '<page>'} %}
   {{ form.prepend('name', id='field-name', label=_('URL'), prepend=slug_prefix, placeholder=_(url_placeholder), value=data.name, error=errors.name, attrs=attrs) }}
 
-  {{ form.input('publish_date', id='field-publish_date', label=_('Publish Date'), placeholder=_('2005-01-01'), value=data.publish_date, error=errors.publish_date, classes=[], attrs={'data-module': 'datepicker', 'data-date-format': 'yyyy-mm-dd'}) }}
+  {{ form.input('publish_date', id='field-publish_date', label=_('Publish Date'), value=h.render_datetime(data.publish_date, "%Y-%m-%d")  or h.render_datetime(h.current_date(), "%Y-%m-%d"), error=errors.publish_date, classes=[], attrs={'data-module': 'datepicker', 'data-date-format': 'yyyy-mm-dd'}) }}
 
   {% block extra_pages_form %}
   {% endblock extra_pages_form %}
@@ -70,6 +69,35 @@
       </select>
     </div>
   </div>
+
+  {% block basic_fields_url %}
+  {% set is_upload = (data.url_type == 'upload') %}
+  {{ form.image_upload(data, errors, field_url='image_url', field_upload='upload', field_clear='clear_upload',
+  is_upload_enabled=h.uploads_enabled(), is_url=data.url and not is_upload, is_upload=is_upload,
+  upload_label=_('Image File'), url_label=_('URL'), placeholder=_('http://example.com/external-image.jpg'),
+  field_name='name') }}
+  {% endblock %}
+
+  {#{ form.input('image_url', id='field-image_url', label=_('Image URL'), placeholder=title_image_url, value=data.image_url, error=errors.image_url) }#}
+
+  <!--{{ form.input('lang', id='field-lang', label=_('Lang'), placeholder=title_lang, value=data.lang, error=errors.lang) }}-->
+    <div class="control-group">
+      <label for="field-order" class="control-label">{{ _('Lang') }}</label>
+      <div class="controls">
+        <select id="field-lang" class="form-control" name="lang">
+          {% for locale in h.get_available_locales() %}
+           <option value="{{ locale.short_name }}"
+             {% if not data.lang %}
+               {% if locale.identifier == h.lang() %}selected="selected"{% endif %}
+             {% else %}
+                 {% if locale.identifier == data.lang %}selected="selected"{% endif %}
+             {% endif %}>
+             {{ locale.display_name or locale.english_name }}
+           </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
 
   {% if not hide_field_order %}
     <div class="control-group">

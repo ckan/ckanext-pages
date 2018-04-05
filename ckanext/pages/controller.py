@@ -1,5 +1,9 @@
+import cgi
+
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
+import ckan.lib.helpers as h
+
 from pylons import config
 
 _ = p.toolkit._
@@ -295,17 +299,23 @@ class PagesController(p.toolkit.BaseController):
         return self._pages_list_pages('page')
 
     def _pages_list_pages(self, page_type):
+        lang = h.lang()
         data_dict={'org_id': None, 'page_type': page_type}
+        if lang != "en":
+            data_dict["lang"] = lang
         if page_type == 'blog':
             data_dict['order_publish_date'] = True
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
             data_dict=data_dict
         )
+        page = p.toolkit.request.params.get('page', '1')
+        if not page.isdigit():
+            page = 1
         p.toolkit.c.page = helpers.Page(
             collection=p.toolkit.c.pages_dict,
-            page=p.toolkit.request.params.get('page', 1),
+            page=page,
             url=helpers.pager_url,
-            items_per_page=21
+            items_per_page=10
         )
 
         if page_type == 'blog':
@@ -348,14 +358,21 @@ class PagesController(p.toolkit.BaseController):
 
         if p.toolkit.request.method == 'POST' and not data:
             data = dict(p.toolkit.request.POST)
-
-            _page.update(data)
-
-            _page['org_id'] = None
-            _page['page'] = page
-            _page['page_type'] = 'page' if page_type == 'pages' else page_type
-
+            if isinstance(data.get('upload'), cgi.FieldStorage):
+                try:
+                    pages_upload = p.toolkit.get_action('ckanext_pages_upload')
+                    data['image_url'] = pages_upload({}, data)
+                except p.toolkit.ValidationError, e:
+                    data['image_url'] = ''
+                    h.flash_error(e.error_dict['message'])
+                    return self.pages_edit('/' + page, data,
+                                           errors, error_summary, page_type=page_type)
             try:
+                _page.update(data)
+                _page['org_id'] = None
+                _page['page'] = page
+                _page['page_type'] = 'page' if page_type == 'pages' else page_type
+
                 junk = p.toolkit.get_action('ckanext_pages_update')(
                     data_dict=_page
                 )
