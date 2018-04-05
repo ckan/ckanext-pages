@@ -10,10 +10,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed wrong redirects when using non-default language
   ([#60](https://github.com/ckan/ckanext-pages/issues/60))
 
+- Group and organization pages could not be deleted
+  ([#53](https://github.com/ckan/ckanext-pages/issues/53))
+
+- Fixed crash when Unicode is used in a menu item
+  ([#54](https://github.com/ckan/ckanext-pages/issues/54))
+
+
 ### Changed
 
-- Upgrade to font-awesome 4 on CKAN 2.7 and later (contributed by
-  [@mattfullerton](https://github.com/ckan/ckanext-pages/pull/51))
+- Upgrade to font-awesome 4 on CKAN 2.7 and later
+  ([#51](https://github.com/ckan/ckanext-pages/pull/51))
+
+
+### Added
+
+- Added information regarding the project's license
+  ([#73](https://github.com/ckan/ckanext-pages/issues/73))
 
 ## 0.1.0 (2017-03-23)
 
