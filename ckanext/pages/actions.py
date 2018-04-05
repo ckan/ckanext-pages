@@ -1,12 +1,14 @@
 import datetime
 import json
+import mimetypes
+import os
 
 import ckan.plugins as p
 import ckan.lib.helpers as h
-import ckan.lib.navl.dictization_functions as df
 import ckan.lib.uploader as uploader
+import ckan.lib.navl.dictization_functions as df
+from ckan.logic import ValidationError
 from ckan.plugins import toolkit as tk
-
 
 from HTMLParser import HTMLParser
 try:
@@ -16,6 +18,20 @@ except ImportError:
 
 
 import db
+
+
+def image_mime_type_validator(file_path):
+    allowed_types = [
+        'image/jpeg',
+        'image/bmp',
+        'image/gif',
+        'image/png'
+    ]
+    file_type, _ = mimetypes.guess_type(file_path)
+    if file_type not in allowed_types:
+        return False
+    return True
+
 def page_name_validator(key, data, errors, context):
     session = context['session']
     page = context.get('page')
@@ -64,7 +80,6 @@ schema = {
                      p.toolkit.get_validator('isodate')],
     'image_url': [p.toolkit.get_validator('ignore_empty'), unicode]
 }
-
 
 def _pages_show(context, data_dict):
     if db.pages_table is None:
@@ -195,15 +210,19 @@ def pages_upload(context, data_dict):
 
     upload.update_data_dict(data_dict, 'image_url',
                             'upload', 'clear_upload')
-    upload.upload()
+
+    upload.upload(uploader.get_max_image_size())
 
     image_url = data_dict.get('image_url')
+
+    if not image_mime_type_validator(os.path.join(uploader.get_storage_path(), 'uploads', 'page_images', image_url)):
+        raise ValidationError(tk._('You can upload image file only'))
+
     if image_url:
         image_url = h.url_for_static(
            'uploads/page_images/%s' % image_url,
             qualified = True
         )
-    # return {'url': image_url}
     return image_url
 
 @tk.side_effect_free
