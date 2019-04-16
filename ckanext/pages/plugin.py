@@ -21,19 +21,25 @@ else:
 
 log = logging.getLogger(__name__)
 
+
 def build_pages_nav_main(*args):
 
     about_menu = toolkit.asbool(config.get('ckanext.pages.about_menu', True))
     group_menu = toolkit.asbool(config.get('ckanext.pages.group_menu', True))
     org_menu = toolkit.asbool(config.get('ckanext.pages.organization_menu', True))
 
+    # Different CKAN versions use different route names - gotta catch em all!
+    about_menu_routes = ['about', 'home.about']
+    group_menu_routes = ['group_index', 'home.group_index']
+    org_menu_routes = ['organizations_index', 'home.organizations_index']
+
     new_args = []
     for arg in args:
-        if arg[0] == 'about' and not about_menu:
+        if arg[0] in about_menu_routes and not about_menu:
             continue
-        if arg[0] == 'organizations_index' and not org_menu:
+        if arg[0] in org_menu_routes and not org_menu:
             continue
-        if arg[0] == 'group_index' and not group_menu:
+        if arg[0] in group_menu_routes and not group_menu:
             continue
         new_args.append(arg)
 
