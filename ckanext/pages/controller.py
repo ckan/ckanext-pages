@@ -1,8 +1,10 @@
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
 from pylons import config
+import logging
 
 _ = p.toolkit._
+
 
 class PagesController(p.toolkit.BaseController):
     controller = 'ckanext.pages.controller:PagesController'
@@ -32,14 +34,22 @@ class PagesController(p.toolkit.BaseController):
         if _page is None:
             return self._org_list_pages(id)
         p.toolkit.c.page = _page
-        return p.toolkit.render('ckanext_pages/organization_page.html')
+        return p.toolkit.render(
+            'ckanext_pages/organization_page.html',
+            {'group_type': p.toolkit.c.group_dict['type']}
+        )
 
     def _org_list_pages(self, id):
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
-            data_dict={'org_id': p.toolkit.c.group_dict['id']}
+            data_dict={
+                'org_id': p.toolkit.c.group_dict['id']
+            }
         )
-        return p.toolkit.render('ckanext_pages/organization_page_list.html')
-
+        logging.warning(p.toolkit.c.group_dict)
+        return p.toolkit.render(
+            'ckanext_pages/organization_page_list.html',
+            {'group_type': p.toolkit.c.group_dict['type']}
+        )
 
     def org_delete(self, id, page):
         self._template_setup_org(id)
@@ -102,10 +112,11 @@ class PagesController(p.toolkit.BaseController):
         error_summary = error_summary or {}
 
         vars = {'data': data, 'errors': errors,
-                'error_summary': error_summary, 'page': page}
+                'error_summary': error_summary, 'page': page,
+                'group_type': p.toolkit.c.group_dict['type']}
 
         return p.toolkit.render('ckanext_pages/organization_page_edit.html',
-                               extra_vars=vars)
+                                extra_vars=vars)
 
     def _template_setup_group(self, id):
         if not id:

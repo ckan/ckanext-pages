@@ -3,7 +3,9 @@
 {% block subtitle %}{{ _('Edit Page')}} {% endblock %}
 
 {% block primary_content_inner %}
+  <div class="page-edit">
   {% snippet form_snippet, page=page, data=data, errors=errors %}
+  </div>
 {% endblock %}
 
 {% block main_content %}
