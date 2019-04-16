@@ -103,6 +103,10 @@ def get_plus_icon():
     return 'plus-sign-alt'
 
 
+def get_blog_used():
+    return config.get('ckanext.pages.blog', "True") == "True"
+
+
 class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
@@ -138,7 +142,8 @@ class PagesPlugin(PagesPluginBase):
             'render_content': render_content,
             'get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
-            'pages_get_plus_icon': get_plus_icon
+            'pages_get_plus_icon': get_plus_icon,
+            'blog_used': get_blog_used
         }
 
     def after_map(self, map):
