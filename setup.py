@@ -1,31 +1,25 @@
 # encoding: utf-8
 
 import io
-import os.path
 import re
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages  # Always prefer setuptools over distutils
+from codecs import open  # To use a consistent encoding
+from os import path
 
+here = path.abspath(path.dirname(__file__))
 
-# Extract version
-HERE = os.path.abspath(os.path.dirname(__file__))
-INIT_PY = os.path.join(HERE, 'ckanext', 'pages', '__init__.py')
-version = None
-with io.open(INIT_PY) as f:
-    for line in f:
-        m = re.match(r'__version__\s*=\s*u?[\'"](.*)[\'"]', line)
-        if m:
-            version = m.groups()[0]
-            break
-if version is None:
-    raise RuntimeError('Could not extract version from "{}".'.format(INIT_PY))
+# Get the long description from the relevant file
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 
 
 setup(
     name='ckanext-pages',
-    version=version,
+    version='',
     description='Basic CMS extension for ckan',
-    long_description='',
+    long_description=long_description,
     classifiers=[
         # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Development Status :: 5 - Production/Stable',

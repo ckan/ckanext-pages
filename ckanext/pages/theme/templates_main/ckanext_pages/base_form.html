@@ -94,7 +94,7 @@
     </div>
     <textarea id="field-content-ck" name="content" placeholder="{{_('My content')}}" data-module="ckedit" style="height:400px" data-module-site_url="{{ h.dump_json(h.url('/', locale='default', qualified=true)) }}"> {{ data.content }}</textarea>
   {% else %}
-    {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content, error=errors.content) }}
+    {{ form.markdown('content', id='field-content', attrs={'class': 'form-control page-simple-form-height'}, label=_('Content'), placeholder=_('Enter content here'), value=data.content, error=errors.content) }}
   {% endif %}
 
   <div class="form-actions">

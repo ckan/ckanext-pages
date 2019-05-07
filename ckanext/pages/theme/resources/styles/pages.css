@@ -4,7 +4,6 @@
 .page-list-item .image {
   width: 168px;
   /* hack for default theme */
-
 }
 .page-list-item .image a {
   display: block;
@@ -14,4 +13,7 @@
 }
 .page-list-item h3 a {
   display: block;
+}
+.page-simple-form-height {
+  height: 400px !important;
 }
