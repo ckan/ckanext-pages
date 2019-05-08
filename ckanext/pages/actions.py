@@ -242,8 +242,10 @@ def org_pages_show(context, data_dict):
 
 
 def org_pages_update(context, data_dict):
+    org_id = data_dict.get('org_id')
     try:
-        p.toolkit.check_access('ckanext_org_pages_update', context, data_dict)
+        p.toolkit.check_access('ckanext_org_pages_update', context,
+                               {'id': org_id})
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_update(context, data_dict)
@@ -274,8 +276,10 @@ def group_pages_show(context, data_dict):
 
 
 def group_pages_update(context, data_dict):
+    group_id = data_dict.get('org_id')
     try:
-        p.toolkit.check_access('ckanext_group_pages_update', context, data_dict)
+        p.toolkit.check_access('ckanext_group_pages_update', context,
+                               {'id': group_id})
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_update(context, data_dict)

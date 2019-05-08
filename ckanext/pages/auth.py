@@ -22,11 +22,15 @@ if p.toolkit.check_ckan_version(min_version='2.2'):
 
 
 def group_admin(context, data_dict):
-    return p.toolkit.check_access('group_update', context, data_dict)
+    return {
+        'success': p.toolkit.check_access('group_update', context, data_dict)
+    }
 
 
 def org_admin(context, data_dict):
-    return p.toolkit.check_access('group_update', context, data_dict)
+    return {
+        'success': p.toolkit.check_access('group_update', context, data_dict)
+    }
 
 
 def page_privacy(context, data_dict):
