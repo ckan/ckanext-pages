@@ -53,7 +53,7 @@ class PagesController(p.toolkit.BaseController):
                                   page='/' + page)
         try:
             if p.toolkit.request.method == 'POST':
-                action = p.toolkit.get_action('ckanext_pages_delete')
+                action = p.toolkit.get_action('ckanext_org_pages_delete')
                 action({}, {'org_id': p.toolkit.c.group_dict['id'],
                        'page': page})
                 p.toolkit.redirect_to('organization_pages_index', id=id)
@@ -151,7 +151,7 @@ class PagesController(p.toolkit.BaseController):
                                   page='/' + page)
         try:
             if p.toolkit.request.method == 'POST':
-                action = p.toolkit.get_action('ckanext_pages_delete')
+                action = p.toolkit.get_action('ckanext_group_pages_delete')
                 action({}, {'org_id': p.toolkit.c.group_dict['id'],
                        'page': page})
                 p.toolkit.redirect_to('group_pages_index', id=id)
