@@ -36,7 +36,8 @@ class PagesController(p.toolkit.BaseController):
         p.toolkit.c.page = _page
         return p.toolkit.render(
             'ckanext_pages/organization_page.html',
-            {'group_type': p.toolkit.c.group_dict['type']}
+            {'group_type': p.toolkit.c.group_dict['type'],
+             'group_dict': p.toolkit.c.group_dict}
         )
 
     def _org_list_pages(self, id):
@@ -45,10 +46,10 @@ class PagesController(p.toolkit.BaseController):
                 'org_id': p.toolkit.c.group_dict['id']
             }
         )
-        logging.warning(p.toolkit.c.group_dict)
         return p.toolkit.render(
             'ckanext_pages/organization_page_list.html',
-            {'group_type': p.toolkit.c.group_dict['type']}
+            {'group_type': p.toolkit.c.group_dict['type'],
+             'group_dict': p.toolkit.c.group_dict}
         )
 
     def org_delete(self, id, page):
@@ -79,7 +80,7 @@ class PagesController(p.toolkit.BaseController):
             page = page[1:]
         _page = p.toolkit.get_action('ckanext_pages_show')(
             data_dict={'org_id': p.toolkit.c.group_dict['id'],
-                       'page': page,}
+                       'page': page}
         )
         if _page is None:
             _page = {}
@@ -97,11 +98,15 @@ class PagesController(p.toolkit.BaseController):
                 junk = p.toolkit.get_action('ckanext_pages_update')(
                     data_dict=_page
                 )
-            except p.toolkit.ValidationError, e:
+            except p.toolkit.ValidationError as e:
                 errors = e.error_dict
                 error_summary = e.error_summary
-                return self.org_edit(id, '/' + page, data,
-                                 errors, error_summary)
+                return self.org_edit(
+                    id,
+                    '/' + page, data,
+                    errors,
+                    error_summary
+                )
             p.toolkit.redirect_to('organization_pages', id=id, page='/' + _page['name'])
 
         if not data:
@@ -112,7 +117,8 @@ class PagesController(p.toolkit.BaseController):
 
         vars = {'data': data, 'errors': errors,
                 'error_summary': error_summary, 'page': page,
-                'group_type': p.toolkit.c.group_dict['type']}
+                'group_type': p.toolkit.c.group_dict['type'],
+                'group_dict': p.toolkit.c.group_dict}
 
         return p.toolkit.render('ckanext_pages/organization_page_edit.html',
                                 extra_vars=vars)
@@ -173,7 +179,8 @@ class PagesController(p.toolkit.BaseController):
         return p.toolkit.render(
             'ckanext_pages/group_page_list.html',
             extra_vars={
-                'group_type': p.toolkit.c.group_dict.get('type')
+                'group_type': p.toolkit.c.group_dict['type'],
+                'group_dict': p.toolkit.c.group_dict
             }
         )
 
@@ -201,7 +208,7 @@ class PagesController(p.toolkit.BaseController):
                 junk = p.toolkit.get_action('ckanext_pages_update')(
                     data_dict=_page
                 )
-            except p.toolkit.ValidationError, e:
+            except p.toolkit.ValidationError as e:
                 errors = e.error_dict
                 error_summary = e.error_summary
                 return self.group_edit(
@@ -263,7 +270,8 @@ class PagesController(p.toolkit.BaseController):
                 if not height.endswith('%') and not height.endswith('px'):
                     height = height + 'px'
                 align = element.attrib.pop('align', 'none')
-                style = "width: %s; height: %s; float: %s; overflow: auto; vertical-align:middle; position:relative" % (width, height, align)
+                style = "width: %s; height: %s; float: %s; overflow: auto;" + \
+                        " vertical-align:middle; position:relative" % (width, height, align)
                 element.attrib['style'] = style
                 element.attrib['class'] = 'pages-embed'
                 view = p.toolkit.get_action('resource_view_show')({}, {'id': iframe_src[-36:]})
@@ -272,16 +280,23 @@ class PagesController(p.toolkit.BaseController):
                 package_id = context['resource'].resource_group.package_id
                 package = p.toolkit.get_action('package_show')(context, {'id': package_id})
             except p.toolkit.ObjectNotFound:
-                error = _('ERROR: View not found {view_id}'.format(view_id=iframe_src ))
+                error = _('ERROR: View not found {view_id}'.format(view_id=iframe_src))
 
             if error:
                 resource_view_html = '<h4> %s </h4>' % error
             elif not helpers.resource_view_is_iframed(view):
                 resource_view_html = helpers.rendered_resource_view(view, resource, package)
             else:
-                src = helpers.url_for(qualified=True, controller='package', action='resource_view', id=package['name'], resource_id=resource['id'], view_id=view['id'])
+                src = helpers.url_for(
+                    qualified=True, controller='package',
+                    action='resource_view', id=package['name'],
+                    resource_id=resource['id'],
+                    view_id=view['id']
+                )
                 message = _('Your browser does not support iframes.')
-                resource_view_html = '<iframe src="{src}" frameborder="0" width="100%" height="100%" style="display:block"> <p>{message}</p> </iframe>'.format(src=src, message=message)
+                resource_view_html = '<iframe src="{src}" frameborder="0" width="100%" ' + \
+                    'height="100%" style="display:block"> <p>{message}</p> ' + \
+                    '</iframe>'.format(src=src, message=message)
 
             view_element = lxml.html.fromstring(resource_view_html)
             element.append(view_element)
@@ -348,7 +363,6 @@ class PagesController(p.toolkit.BaseController):
             p.toolkit.abort(404, _('Group not found'))
         return p.toolkit.render('ckanext_pages/confirm_delete.html', {'page': page})
 
-
     def blog_edit(self, page=None, data=None, errors=None, error_summary=None):
         return self.pages_edit(page=page, data=data, errors=errors, error_summary=error_summary, page_type='blog')
 
@@ -357,7 +371,7 @@ class PagesController(p.toolkit.BaseController):
             page = page[1:]
         _page = p.toolkit.get_action('ckanext_pages_show')(
             data_dict={'org_id': None,
-                       'page': page,}
+                       'page': page}
         )
         if _page is None:
             _page = {}

@@ -47,8 +47,7 @@ setup(
     install_requires=[
         # -*- Extra requirements: -*-
     ],
-    entry_points=\
-    """
+    entry_points="""
         [ckan.plugins]
         pages=ckanext.pages.plugin:PagesPlugin
         textboxview=ckanext.pages.plugin:TextBoxView

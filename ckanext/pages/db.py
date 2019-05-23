@@ -6,7 +6,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import class_mapper
 try:
     from sqlalchemy.engine.result import RowProxy
-except:
+except Exception:
     from sqlalchemy.engine.base import RowProxy
 
 pages_table = None
@@ -37,7 +37,7 @@ def init_db(model):
             if order:
                 query = query.order_by(cls.order).filter(cls.order != '')
             elif order_publish_date:
-                query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)
+                query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date is not None)
             else:
                 query = query.order_by(cls.created.desc())
             return query.all()
@@ -95,14 +95,16 @@ def init_db(model):
 
     types = sa.types
     global pages_table
-    pages_table = sa.Table('ckanext_pages', model.meta.metadata,
+    pages_table = sa.Table(
+        'ckanext_pages',
+        model.meta.metadata,
         sa.Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
         sa.Column('title', types.UnicodeText, default=u''),
         sa.Column('name', types.UnicodeText, default=u''),
         sa.Column('content', types.UnicodeText, default=u''),
         sa.Column('lang', types.UnicodeText, default=u''),
         sa.Column('order', types.UnicodeText, default=u''),
-        sa.Column('private',types.Boolean,default=True),
+        sa.Column('private', types.Boolean, default=True),
         sa.Column('group_id', types.UnicodeText, default=None),
         sa.Column('user_id', types.UnicodeText, default=u''),
         sa.Column('publish_date', types.DateTime),
@@ -154,8 +156,7 @@ def table_dictize(obj, context, **kw):
 
     result_dict.update(kw)
 
-    ##HACK For optimisation to get metadata_modified created faster.
-
+    # HACK For optimisation to get metadata_modified created faster.
     context['metadata_modified'] = max(result_dict.get('revision_timestamp', ''),
                                        context.get('metadata_modified', ''))
 
