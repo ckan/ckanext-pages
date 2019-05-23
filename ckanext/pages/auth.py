@@ -11,6 +11,7 @@ import db
 def sysadmin(context, data_dict):
     return {'success':  False}
 
+
 def anyone(context, data_dict):
     return {'success': True}
 
@@ -35,7 +36,7 @@ def page_privacy(context, data_dict):
     org_id = data_dict.get('org_id')
     page = data_dict.get('page')
     out = db.Page.get(group_id=org_id, name=page)
-    if out and out.private == False:
+    if out and out.private is False:
         return {'success':  True}
     # no org_id means it's a universal page
     if not org_id:
@@ -44,9 +45,11 @@ def page_privacy(context, data_dict):
         return {'success': True}
     group = context['model'].Group.get(org_id)
     user = context['user']
-    authorized = authz.has_user_permission_for_group_or_org(group.id,
-                                                                user,
-                                                                'read')
+    authorized = authz.has_user_permission_for_group_or_org(
+        group.id,
+        user,
+        'read'
+    )
     if not authorized:
         return {'success': False,
                 'msg': p.toolkit._(

@@ -1,7 +1,6 @@
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
 from pylons import config
-import logging
 
 _ = p.toolkit._
 
@@ -25,7 +24,7 @@ class PagesController(p.toolkit.BaseController):
         if page:
             page = page[1:]
         self._template_setup_org(id)
-        if page is '':
+        if page == '':
             return self._org_list_pages(id)
         _page = p.toolkit.get_action('ckanext_pages_show')(
             data_dict={'org_id': p.toolkit.c.group_dict['id'],
@@ -95,7 +94,7 @@ class PagesController(p.toolkit.BaseController):
             _page['org_id'] = p.toolkit.c.group_dict['id'],
             _page['page'] = page
             try:
-                junk = p.toolkit.get_action('ckanext_pages_update')(
+                p.toolkit.get_action('ckanext_pages_update')(
                     data_dict=_page
                 )
             except p.toolkit.ValidationError as e:
@@ -139,7 +138,7 @@ class PagesController(p.toolkit.BaseController):
         if page:
             page = page[1:]
         self._template_setup_group(id)
-        if page is '':
+        if page == '':
             return self._group_list_pages(id)
         _page = p.toolkit.get_action('ckanext_pages_show')(
             data_dict={'org_id': p.toolkit.c.group_dict['id'],
@@ -205,7 +204,7 @@ class PagesController(p.toolkit.BaseController):
             _page['org_id'] = p.toolkit.c.group_dict['id']
             _page['page'] = page
             try:
-                junk = p.toolkit.get_action('ckanext_pages_update')(
+                p.toolkit.get_action('ckanext_pages_update')(
                     data_dict=_page
                 )
             except p.toolkit.ValidationError as e:
@@ -386,7 +385,7 @@ class PagesController(p.toolkit.BaseController):
             _page['page_type'] = 'page' if page_type == 'pages' else page_type
 
             try:
-                junk = p.toolkit.get_action('ckanext_pages_update')(
+                p.toolkit.get_action('ckanext_pages_update')(
                     data_dict=_page
                 )
             except p.toolkit.ValidationError, e:
