@@ -18,7 +18,7 @@ matrix:
     - name: "Flake8 on Python 3.7"
       dist: xenial    # required for Python 3.7
       cache: pip
-      install: pip install --user flake8
+      install: pip install flake8
       script:
         - flake8 --version
         - flake8 . --count --max-complexity=12 --max-line-length=127 --statistics --exclude ckan,{{ project }}
