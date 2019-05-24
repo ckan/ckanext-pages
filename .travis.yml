@@ -1,38 +1,36 @@
 language: python
 python:
-    - "2.7"
+- '2.7'
 env:
-    - CKANVERSION=master
-    - CKANVERSION=2.8
+- CKANVERSION=master
+- CKANVERSION=2.8
 install:
-    - bash bin/travis-build.bash
-services:
-    -postgresql
+- bash bin/travis-build.bash
+services: "-postgresql"
 script: sh bin/travis-run.sh
 after_success: coveralls
 sudo: required
-
-# additional jobs
 matrix:
   include:
-    - name: "Flake8 on Python 2.7"
-      dist: xenial    # required for Python 3.7
-      cache: pip
-      install: pip install flake8
-      script:
-        - flake8 --version
-        - flake8 . --count --max-complexity=14 --max-line-length=127 --statistics --exclude ckan,{{ project }}
-      python: "2.7"
-      # overwrite matrix
-      env:
-        - FLAKE8=true
-        - CKANVERSION=master
-
+  - name: Flake8 on Python 2.7
+    dist: xenial
+    cache: pip
+    install: pip install flake8
+    script:
+    - flake8 --version
+    - flake8 . --count --max-complexity=14 --max-line-length=127 --statistics --exclude
+      ckan,{{ project }}
+    python: '2.7'
+    env:
+    - FLAKE8=true
+    - CKANVERSION=master
 notifications:
   slack:
-    secure: u5ZLC2z7j4clJSEpImV7iQ+S2Au/BSkVoGZ8/d93q1EfXnQFwFCsS6ZlRB4w8F5PoQDrfznivKcqcSrUSj9EG9CSuVliYxlLp9zFIn0aAZ4Abcqf7NyLI1enx9RcwWQq98CWYv7MZzldc8laoTeUXpzcsXerG5RU5bqJptobrMls2OT/rl2sow6DPiKslpIrTzmo4cTDxvSqARGXSylMn9+35J3FGZf0QeZ2mhVGR9D5okmQ+iJCB//ZvDM8kHKrgqRLPhx3D/vpOUsw1cM/qwtpOaPkdLQSDjhdC0wx5ZyzY3fNVIEwnH3auCqO0Rr2S+IT/wytoeEYqmFo0yZhRyTTaGTasTeoOOjPCI23xHN177bCEoprA1ok6qurQLqUGKhUqpxymRIxfy7GmM+xZjqsFbz7oFhW7gcpRVPovSgSszQrrJIXdLihMpzWNlifgDt1KjFBZrmGsUE5wrnFeo+97eRq/jIBzpmiB21wedkXDQkXTOn2ECCweeYO7JaZiPp33hfZCNu0JfWGYDLyxa1/32sNh/4Q9gGPdKDy+zVL+BwR6kO23WMtGlwvFC7kbek7/YHZ8zjfVvFQtPH6JIgT+jXNpmWA4QZgWLvmmRWKGZ1vWoE0Cm9crnc3OTyyvEy2w1drlrhM/+PPBym9/Fv+VRhH4f1x+jwoPBb0XFc=
+    rooms:
+      secure: FFPSeBLMLXQjta6tKhBExupJkRb4qB1Rb0XCYF9a+jjXIKFFzO14cRCSD2Ss8gajVMBAyYSJALxZy/9cnZyDbjcKK5xMJx8FTf+BzbgthlEuL6uvtNNfivwLvvexvjLORkuBHPJ+JaTxpF1ZnNWPGtXTd8i3Xe7vESv1D4t+Ha/9XjLHB4DcJCCmUiiOYeygyKILhJxGqrexlwwg2B6FFY308ByuEHdenLbkXjsnC19qUdLTbmUNfoIOLIqwi9QDrQdqTHf4u+RuaqUQUIo87onMypqBKVng3Zh06aC+cn6Th+k7mN5JsGGlqPlZRIt88Bsy/If02lXE5wWNWv5l2z53AsqIowZSTXdlmwFmR2fN+yQzwM5R3wTOC/M0YSfs6k2GvebO9vL7W5W28igyD54jno0nwrOfXua1C/222r2drmKDQ3FL2UWr6gx9rUyFgsubiId4HhYOUPh8zmTi18hPhWBmaf/tNjvcTztEBntKy8aUEI4Yptzmroszn5zZBw0Nms+WGKsMlAnRzKVtYRlfoOa7Ge0eoQt9CoVMnjg+emR0vSaiOXbm3xXLV350rKiDOeyMA8Hrr4kW40G240Z29jjNKaFc/3HhdEmTJozY9ietEdQnqw7ymig5NrZNYUeMh0GJ6ZwkcyxfGqy2t/2u/DFogfn2rSwfWjlx2Tw=
     on_success: change
     on_failure: always
+    on_pull_requests: false
   email:
     on_success: never
     on_failure: never
