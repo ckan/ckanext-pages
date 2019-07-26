@@ -11,6 +11,7 @@
     {% if c.page.content %}
       <div class="ckanext-pages-content">
         {% set editor = h.get_wysiwyg_editor() %}
+        <!-- editor set to "{{ editor }}"-->
         {% if editor %}
           <div>
               {{c.page.content|safe}}

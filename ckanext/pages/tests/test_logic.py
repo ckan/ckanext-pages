@@ -71,6 +71,37 @@ class TestPages(helpers.FunctionalTestBase):
         assert_in('Test Link', response.body)
         assert_not_in('<a href="/test">Test Link</a>', response.body)
 
+    @helpers.change_config('ckanext.pages.allow_html', False)
+    def test_rendering_no_p_tags_added_with_html_disallowed(self):
+        env = {'REMOTE_USER': self.user['name'].encode('ascii')}
+        response = self.app.post(
+            url=toolkit.url_for('pages_edit', page='/test_html_page_p'),
+            params={
+                'title': 'Disallowed',
+                'name': 'page_html_disallowed_p',
+                'content': 'Hi there **you**',
+            },
+            extra_environ=env,
+        )
+        response = response.follow(extra_environ=env)
+        assert_in('<p>Hi there <strong>you</strong></p>', response.body)
+
+    @helpers.change_config('ckanext.pages.allow_html', True)
+    def test_rendering_no_div_tags_added_with_html_allowed(self):
+        env = {'REMOTE_USER': self.user['name'].encode('ascii')}
+        response = self.app.post(
+            url=toolkit.url_for('pages_edit', page='/test_html_page_div'),
+            params={
+                'title': 'Disallowed',
+                'name': 'page_html_allowed_div',
+                'content': '<p>Hi there</p>',
+            },
+            extra_environ=env,
+        )
+        response = response.follow(extra_environ=env)
+        assert_in('<p>Hi there</p>', response.body)
+        assert_not_in('<div><p>Hi there</p></div>', response.body)
+
     def test_pages_index(self):
         env = {'REMOTE_USER': self.user['name'].encode('ascii')}
         url = toolkit.url_for('pages_index')
