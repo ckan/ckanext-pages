@@ -270,8 +270,16 @@ class PagesController(p.toolkit.BaseController):
             view_element = lxml.html.fromstring(resource_view_html)
             element.append(view_element)
 
-        _page['content'] = lxml.html.tostring(root)
-
+        new_content = lxml.html.tostring(root)
+        if new_content.startswith('<div>') and new_content.endswith('</div>'):
+            # lxml will add a <div> tag to text that starts with an HTML tag,
+            # which will cause the rendering to fail
+            new_content = new_content[5:-6]
+        elif new_content.startswith('<p>') and new_content.endswith('</p>'):
+            # lxml will add a <p> tag to plain text snippet, which will cause the
+            # rendering to fail
+            new_content = new_content[3:-4]
+        _page['content'] = new_content
 
 
     def pages_show(self, page=None, page_type='page'):
