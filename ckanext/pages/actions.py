@@ -191,7 +191,7 @@ def pages_upload(context, data_dict):
 
     upload.update_data_dict(data_dict, 'image_url',
                             'upload', 'clear_upload')
-    upload.upload()
+    upload.upload(uploader.get_max_image_size())
     image_url = data_dict.get('image_url')
     if image_url:
         image_url = h.url_for_static(
