@@ -32,13 +32,15 @@ class PagesController(p.toolkit.BaseController):
         if _page is None:
             return self._org_list_pages(id)
         p.toolkit.c.page = _page
-        return p.toolkit.render('ckanext_pages/organization_page.html')
+        return p.toolkit.render('ckanext_pages/organization_page.html',
+                                {'group_type': 'organization'})
 
     def _org_list_pages(self, id):
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
             data_dict={'org_id': p.toolkit.c.group_dict['id']}
         )
-        return p.toolkit.render('ckanext_pages/organization_page_list.html')
+        return p.toolkit.render('ckanext_pages/organization_page_list.html',
+                                {'group_type': 'organization'})
 
 
     def org_delete(self, id, page):
@@ -51,7 +53,7 @@ class PagesController(p.toolkit.BaseController):
                                   page='/' + page)
         try:
             if p.toolkit.request.method == 'POST':
-                action = p.toolkit.get_action('ckanext_pages_delete')
+                action = p.toolkit.get_action('ckanext_org_pages_delete')
                 action({}, {'org_id': p.toolkit.c.group_dict['id'],
                        'page': page})
                 p.toolkit.redirect_to('organization_pages_index', id=id)
@@ -61,7 +63,8 @@ class PagesController(p.toolkit.BaseController):
             p.toolkit.abort(401, _('Unauthorized to delete page'))
         except p.toolkit.ObjectNotFound:
             p.toolkit.abort(404, _('Organization not found'))
-        return p.toolkit.render('ckanext_pages/confirm_delete.html', {'page': page})
+        return p.toolkit.render('ckanext_pages/confirm_delete.html',
+                                {'page': page, 'group_type': 'organization'})
 
 
     def org_edit(self, id, page=None, data=None, errors=None, error_summary=None):
@@ -70,7 +73,7 @@ class PagesController(p.toolkit.BaseController):
             page = page[1:]
         _page = p.toolkit.get_action('ckanext_pages_show')(
             data_dict={'org_id': p.toolkit.c.group_dict['id'],
-                       'page': page,}
+                       'page': page}
         )
         if _page is None:
             _page = {}
@@ -82,10 +85,10 @@ class PagesController(p.toolkit.BaseController):
             for item in items:
                 if item in data:
                     _page[item] = data[item]
-            _page['org_id'] = p.toolkit.c.group_dict['id'],
+            _page['org_id'] = p.toolkit.c.group_dict['id']
             _page['page'] = page
             try:
-                junk = p.toolkit.get_action('ckanext_pages_update')(
+                junk = p.toolkit.get_action('ckanext_org_pages_update')(
                     data_dict=_page
                 )
             except p.toolkit.ValidationError, e:
@@ -102,7 +105,8 @@ class PagesController(p.toolkit.BaseController):
         error_summary = error_summary or {}
 
         vars = {'data': data, 'errors': errors,
-                'error_summary': error_summary, 'page': page}
+                'error_summary': error_summary, 'page': page,
+                'group_type': 'organization'}
 
         return p.toolkit.render('ckanext_pages/organization_page_edit.html',
                                extra_vars=vars)
@@ -128,12 +132,13 @@ class PagesController(p.toolkit.BaseController):
             return self._group_list_pages(id)
         _page = p.toolkit.get_action('ckanext_pages_show')(
             data_dict={'org_id': p.toolkit.c.group_dict['id'],
-                       'page': page,}
+                       'page': page}
         )
         if _page is None:
             return self._group_list_pages(id)
         p.toolkit.c.page = _page
-        return p.toolkit.render('ckanext_pages/group_page.html')
+        return p.toolkit.render('ckanext_pages/group_page.html',
+                                {'group_type': 'group'})
 
 
     def group_delete(self, id, page):
@@ -146,7 +151,7 @@ class PagesController(p.toolkit.BaseController):
                                   page='/' + page)
         try:
             if p.toolkit.request.method == 'POST':
-                action = p.toolkit.get_action('ckanext_pages_delete')
+                action = p.toolkit.get_action('ckanext_group_pages_delete')
                 action({}, {'org_id': p.toolkit.c.group_dict['id'],
                        'page': page})
                 p.toolkit.redirect_to('group_pages_index', id=id)
@@ -156,14 +161,16 @@ class PagesController(p.toolkit.BaseController):
             p.toolkit.abort(401, _('Unauthorized to delete page'))
         except p.toolkit.ObjectNotFound:
             p.toolkit.abort(404, _('Group not found'))
-        return p.toolkit.render('ckanext_pages/confirm_delete.html', {'page': page})
+        return p.toolkit.render('ckanext_pages/confirm_delete.html',
+                                {'page': page, 'group_type': 'group'})
 
 
     def _group_list_pages(self, id):
         p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
             data_dict={'org_id': p.toolkit.c.group_dict['id']}
         )
-        return p.toolkit.render('ckanext_pages/group_page_list.html')
+        return p.toolkit.render('ckanext_pages/group_page_list.html',
+                                {'group_type': 'group'})
 
     def group_edit(self, id, page=None, data=None, errors=None, error_summary=None):
         self._template_setup_group(id)
@@ -171,7 +178,7 @@ class PagesController(p.toolkit.BaseController):
             page = page[1:]
         _page = p.toolkit.get_action('ckanext_pages_show')(
             data_dict={'org_id': p.toolkit.c.group_dict['id'],
-                       'page': page,}
+                       'page': page}
         )
         if _page is None:
             _page = {}
@@ -186,7 +193,7 @@ class PagesController(p.toolkit.BaseController):
             _page['org_id'] = p.toolkit.c.group_dict['id']
             _page['page'] = page
             try:
-                junk = p.toolkit.get_action('ckanext_pages_update')(
+                junk = p.toolkit.get_action('ckanext_group_pages_update')(
                     data_dict=_page
                 )
             except p.toolkit.ValidationError, e:
@@ -203,7 +210,8 @@ class PagesController(p.toolkit.BaseController):
         error_summary = error_summary or {}
 
         vars = {'data': data, 'errors': errors,
-                'error_summary': error_summary, 'page': page}
+                'error_summary': error_summary, 'page': page,
+                'group_type': 'group'}
 
         return p.toolkit.render('ckanext_pages/group_page_edit.html',
                                extra_vars=vars)

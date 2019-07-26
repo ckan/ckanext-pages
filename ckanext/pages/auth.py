@@ -22,11 +22,25 @@ if p.toolkit.check_ckan_version(min_version='2.2'):
 
 
 def group_admin(context, data_dict):
-    return p.toolkit.check_access('group_update', context, data_dict)
+    return {
+        'success': p.toolkit.check_access('group_update', context, data_dict)
+    }
 
 
 def org_admin(context, data_dict):
-    return p.toolkit.check_access('group_update', context, data_dict)
+    return {
+        'success': p.toolkit.check_access('group_update', context, data_dict)
+    }
+
+
+def page_group_admin(context, data_dict):
+    group_id = data_dict.get('org_id')
+    if not group_id:
+        id = data_dict.get('id')
+        page = data_dict.get('page') or db.Page.get(id=id)
+        if page:
+            group_id = page.group_id
+    return group_admin(context, {'id': group_id})
 
 
 def page_privacy(context, data_dict):
@@ -68,10 +82,10 @@ pages_delete = sysadmin
 pages_list = anyone
 pages_upload = sysadmin
 org_pages_show = page_privacy
-org_pages_update = org_admin
-org_pages_delete = org_admin
+org_pages_update = page_group_admin
+org_pages_delete = page_group_admin
 org_pages_list = anyone
 group_pages_show = page_privacy
-group_pages_update = group_admin
-group_pages_delete = group_admin
+group_pages_update = page_group_admin
+group_pages_delete = page_group_admin
 group_pages_list = anyone
