@@ -15,3 +15,12 @@
 .page-list-item h3 a {
   display: block;
 }
+.form-control-panel {
+  margin-top: 20px;
+  border-top: 1px solid #e5e5e5;
+  padding: 19px 20px 20px 0;
+}
+
+.form-control-panel button {
+  float: right;
+}

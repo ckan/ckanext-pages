@@ -1,7 +1,7 @@
 {% macro editor(name, id='', label='', value='', placeholder='', error="", classes=[], attrs={}, is_required=false) %}
-    <div class="control-group wysiwyg">
-        <label for="field-{{name}}-editor">{{label}}</label>
-        <div class="controls">
+    <div class="from-group wysiwyg">
+        <label for="field-{{name}}-editor" class="col-md-2">{{label}}</label>
+        <div class="col-md-10">
             <div class="editable" id='field-{{name}}-editor' data-placeholder="{{ placeholder }}">
                 {{value}}
             </div>
