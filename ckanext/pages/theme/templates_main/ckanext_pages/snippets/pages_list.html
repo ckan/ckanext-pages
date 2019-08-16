@@ -28,11 +28,11 @@
       {% endif %}
       <div class="row page-list-item dataset-item">
       {% if page.image %}
-        <div class="col-md-3 image">
+        <div class="col-sm-3 image">
           <a style="background-image:url({{ page.image }})" href="{{ url }}">
           </a>
         </div>
-        <div class="col-md-8">
+        <div class="col-sm-8">
            <h3 class="dataset-heading">
               <a href="{{ url }}" >{{ page.title }}</a>
               {% if page.publish_date %}
@@ -52,7 +52,7 @@
             {% endif %}
         </div>
       {% else %}
-        <div class="col-md-11">
+        <div class="col-sm-11">
           <h3 class="dataset-heading">
             <a href="{{ url }}" >{{ page.title }}</a>
             {% if page.publish_date %}
