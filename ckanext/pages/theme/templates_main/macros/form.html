@@ -47,7 +47,7 @@ Example:
 {% macro checkbox(name, id='', label='', value='', checked=false, placeholder='', error="", classes=[], attrs={}, is_required=false) %}
 {%- set extra_html = caller() if caller -%}
 <div class="form-group{{ " " ~ classes | join(" ") }}{% if error %} error{% endif %}">
-<div class="col-sm-10">
+<div class="col-sm-9">
   <label class="checkbox" for="{{ id or name }}">
     <input id="{{ id or name }}" type="checkbox" name="{{ name }}" value="{{ value | empty_and_escape }}" {{ "checked " if checked }} {{ attributes(attrs) }} />
     {{ label or name }}
@@ -274,8 +274,8 @@ options     - A list/tuple of fields to be used as <options>.
   #}
   {% macro input_block(for, label="", error="", classes=[], control_classes=[], extra_html="", is_required=false) %}
   <div class="form-group{{ " error" if error }}{{ " " ~ classes | join(' ') }}">
-  <label class="control-label col-sm-2" for="{{ for }}">{% if is_required %}<span title="{{ _("This field is required") }}" class="control-required">*</span> {% endif %}{{ label or _('Custom') }}</label>
-  <div class="col-sm-10{{ " " ~ control_classes | join(' ') }}">
+  <label class="control-label col-sm-3" for="{{ for }}">{% if is_required %}<span title="{{ _("This field is required") }}" class="control-required">*</span> {% endif %}{{ label or _('Custom') }}</label>
+  <div class="col-sm-9{{ " " ~ control_classes | join(' ') }}">
   {{ caller() }}
   {% if error and error is iterable %}<span class="error-block">{{ error|join(', ') }}</span>{% endif %}
   {{ extra_html }}
