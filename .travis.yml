@@ -1,17 +1,19 @@
+dist: trusty
+group: deprecated-2017Q4
+
 language: python
 python:
     - "2.7"
 env:
     - CKANVERSION=master
+    - CKANVERSION=2.8
     - CKANVERSION=2.7
     - CKANVERSION=2.6
-    - CKANVERSION=2.5
-    - CKANVERSION=2.4
-    - CKANVERSION=2.3
 install:
     - bash bin/travis-build.bash
 services:
-    -postgresql
+    - postgresql
+    - redis-server
 script: sh bin/travis-run.sh
 after_success: coveralls
 sudo: required
