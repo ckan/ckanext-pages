@@ -26,9 +26,6 @@ pip install -r requirements.txt
 pip install -r dev-requirements.txt
 cd -
 
-
-sed -i -e 's/except \(sqlalchemy.exc.ProgrammingError, sqlalchemy.exc.OperationalError\)/except \(sqlalchemy.exc.ProgrammingError, sqlalchemy.exc.OperationalError, sqlalchemy.exc.DBAPIError\)/' ckan/ckan/config/environment.py
-
 echo "Creating the PostgreSQL user and database..."
 sudo -u postgres psql -c "CREATE USER ckan_default WITH PASSWORD 'pass';"
 sudo -u postgres psql -c 'CREATE DATABASE ckan_test WITH OWNER ckan_default;'
