@@ -1,3 +1,6 @@
+dist: trusty
+group: deprecated-2017Q4
+
 language: python
 python:
     - "2.7"
@@ -10,6 +13,8 @@ install:
     - bash bin/travis-build.bash
 services:
     -postgresql
+
+    - redis-server
 script: sh bin/travis-run.sh
 after_success: coveralls
 sudo: required
