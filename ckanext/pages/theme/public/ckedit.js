@@ -18,7 +18,7 @@ this.ckan.module('ckedit', function (jQuery, _) {
         { name: 'insert' },
         { name: 'forms' },
         { name: 'tools' },
-        { name: 'document',	   groups: [ 'document', 'doctools' ] },
+        { name: 'document',	   groups: [ 'mode', 'document', 'doctools' ] },
         { name: 'others' },
         '/',
         { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
