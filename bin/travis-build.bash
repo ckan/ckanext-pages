@@ -20,9 +20,7 @@ else
     git checkout $CKAN_TAG
     echo "CKAN version: ${CKAN_TAG#ckan-}"
 fi
-# Unpin CKAN's psycopg2 dependency get an important bugfix
-# https://stackoverflow.com/questions/47044854/error-installing-psycopg2-2-6-2
-sed -i '/psycopg2/c\psycopg2' requirements.txt
+
 python setup.py develop
 pip install -r requirements.txt
 pip install -r dev-requirements.txt
