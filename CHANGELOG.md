@@ -49,6 +49,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added option to edit source code in CKEditor
  ([c66e02f](https://github.com/ckan/ckanext-pages/commit/c66e02f))
 
+- Added Spanish translation
+ ([a426338](https://github.com/ckan/ckanext-pages/commit/a426338))
+
 
 ## 0.1.0 (2017-03-23)
 
