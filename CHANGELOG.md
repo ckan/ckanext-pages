@@ -3,6 +3,14 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.2.1 (2019-08-29)
+
+### Fixed
+
+- Added i18n folder to manifest
+  ([97a15d9](https://github.com/ckan/ckanext-pages/commit/97a15d9))
+
+
 ## 0.2.0 (2019-08-29)
 
 ### Fixed
