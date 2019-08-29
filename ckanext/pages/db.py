@@ -35,7 +35,7 @@ def init_db(model):
             query = model.Session.query(cls).autoflush(False)
             query = query.filter_by(**kw)
             if order:
-                query = query.order_by(cls.order).filter(cls.order != '')
+                query = query.order_by(sa.cast(cls.order, sa.Integer)).filter(cls.order != '')
             elif order_publish_date:
                 query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)
             else:
