@@ -3,9 +3,21 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## 0.2.0 (2019-08-29)
 
 ### Fixed
+
+- Fixed support for CKAN 2.8 and CKAN 2.9
+  ([d60ba49](https://github.com/ckan/ckanext-pages/commit/d60ba49))
+
+- Remove extraneous tags added by lxml that prevent proper rendering
+  ([bf25e9](https://github.com/ckan/ckanext-pages/commit/bf25e9))
+
+- Fix about menu not being hidden
+  ([#83](https://github.com/ckan/ckanext-pages/pull/83))
+
+- Fix group/org pages update permissions
+  ([#84](https://github.com/ckan/ckanext-pages/pull/84))
 
 - Fixed wrong redirects when using non-default language
   ([#60](https://github.com/ckan/ckanext-pages/issues/60))
@@ -21,6 +33,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Upgrade to font-awesome 4 on CKAN 2.7 and later
   ([#51](https://github.com/ckan/ckanext-pages/pull/51))
+
+- Honour ckan.max_images_size config option
+  ([915028](https://github.com/ckan/ckanext-pages/commit/915028))
 
 
 ### Added
