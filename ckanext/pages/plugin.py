@@ -50,7 +50,7 @@ def build_pages_nav_main(*args):
 
     page_name = ''
 
-    if (toolkit.c.action in ('pages_show', 'blog_show')
+    if (hasattr(toolkit.c, 'action') and toolkit.c.action in ('pages_show', 'blog_show')
        and toolkit.c.controller == 'ckanext.pages.controller:PagesController'):
         page_name = toolkit.c.environ['routes.url'].current().split('/')[-1]
 
