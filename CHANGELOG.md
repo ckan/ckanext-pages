@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed support for CKAN 2.8 and CKAN 2.9
   ([d60ba49](https://github.com/ckan/ckanext-pages/commit/d60ba49))
 
+- Order pages numerically in the header menu
+  ([eb7d215](https://github.com/ckan/ckanext-pages/commit/eb7d215)
+
 - Remove extraneous tags added by lxml that prevent proper rendering
   ([bf25e9](https://github.com/ckan/ckanext-pages/commit/bf25e9))
 
@@ -42,6 +45,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Added information regarding the project's license
   ([#73](https://github.com/ckan/ckanext-pages/issues/73))
+
+- Added option to edit source code in CKEditor
+ ([c66e02f](https://github.com/ckan/ckanext-pages/commit/c66e02f))
+
 
 ## 0.1.0 (2017-03-23)
 
