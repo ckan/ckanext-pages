@@ -149,4 +149,7 @@ class TestPages(helpers.FunctionalTestBase):
         assert_in(u'<title>Tïtlé - CKAN</title>', response.unicode_body)
         assert_in(u'<a href="/pages/page_unicode">Tïtlé</a>', response.unicode_body)
         assert_in(u'<h1 class="page-heading">Tïtlé</h1>', response.unicode_body)
-        assert_in(u'<p>Çöñtéñt</p>', response.unicode_body)
+        if toolkit.check_ckan_version(min_version='2.8.0'):
+            assert_in(u'<p>&#199;&#246;&#241;t&#233;&#241;t</p>', response.unicode_body)
+        else:
+            assert_in(u'<p>Çöñtéñt</p>', response.unicode_body)
