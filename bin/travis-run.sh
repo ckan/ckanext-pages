@@ -14,11 +14,11 @@ nosetests --ckan \
           --nologcapture \
           --with-pylons=subdir/test.ini \
           --with-coverage \
-          --cover-package=ckanext.restricted \
+          --cover-package=ckanext.pages \
           --cover-inclusive \
           --cover-erase \
           --cover-tests \
-          ckanext/restricted
+          ckanext/pages
 
 # strict linting
 flake8 . --count --max-complexity=10 --max-line-length=127 --statistics --exclude ckan,{{ project }}
