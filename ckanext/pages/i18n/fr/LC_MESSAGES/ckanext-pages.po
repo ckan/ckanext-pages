@@ -1,17 +1,19 @@
-# Translations template for ckanext-pages.
+# French translations for ckanext-pages.
 # Copyright (C) 2019 ORGANIZATION
-# This file is distributed under the same license as the ckanext-pages project.
+# This file is distributed under the same license as the ckanext-pages
+# project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: ckanext-pages 0.1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-12-20 06:40+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2019-12-20 06:41+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -115,8 +117,8 @@ msgstr ""
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/base.html:18
 msgid ""
-" <p>Pages are are simple way to add extra pages to your ckan instance. You "
-"can assign an order to them.</p> "
+" <p>Pages are are simple way to add extra pages to your ckan instance. "
+"You can assign an order to them.</p> "
 msgstr ""
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/base_form.html:31
