@@ -5,6 +5,7 @@ from pylons import config
 import ckan.plugins.toolkit as toolkit
 import ckan.plugins as p
 import ckan.lib.helpers as h
+from ckan.common import _
 import actions
 import auth
 
@@ -58,7 +59,7 @@ def build_pages_nav_main(*args):
         type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
         name = urllib.quote(page['name'].encode('utf-8')).decode('utf-8')
         title = cgi.escape(page['title'])
-        link = h.literal(u'<a href="/{}/{}">{}</a>'.format(type_, name, title))
+        link = h.literal(u'<a href="/{}/{}/{}">{}</a>'.format(h.lang(), type_, name, _(title)))
         if page['name'] == page_name:
             li = h.literal('<li class="active">') + link + h.literal('</li>')
         else:
