@@ -7,7 +7,7 @@ import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
 from ckan.plugins import toolkit as tk
 from HTMLParser import HTMLParser
-from ckanext.pages.logic.schema import default_pages_schema
+from ckanext.pages.logic.schema import update_pages_schema
 
 try:
     import ckan.authz as authz
@@ -111,7 +111,7 @@ def _pages_update(context, data_dict):
     # we need the page in the context for name validation
     context['page'] = page
     context['group_id'] = org_id
-    schema = default_pages_schema()
+    schema = update_pages_schema()
 
     data, errors = df.validate(data_dict, schema, context)
 
