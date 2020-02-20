@@ -69,6 +69,43 @@ ckanext.pages.editor = ckeditor
 ```
 This enables either the [medium](https://jakiestfu.github.io/Medium.js/docs/) or [ckeditor](http://ckeditor.com/)
 
+## Extending ckanext-pages schema
+
+This extension defines an `IPagesSchema` interface that allows other extensions to update the pages schema and add custom fields.
+
+To do so, you can implement the method `update_pages_schema` in your extension:
+
+```
+import ckan.plugins as plugins
+import ckan.plugins.toolkit as toolkit
+from ckanext.pages.interfaces import IPagesSchema
+
+class MyextPlugin(plugins.SingletonPlugin):
+    plugins.implements(IPagesSchema)
+
+    #IPagesSchema
+    def update_pages_schema(self, schema):
+        schema.update({
+            'new_field': [
+                toolkit.get_validator('not_empty'),
+                toolkit.get_validator('boolean_validator')]
+            })
+        return schema
+```
+
+and also extends `ckanext_pages/base_form.html` and override the `extra_pages_form` block to add it to the form:
+
+```
+{% ckan_extends %}
+
+{% set options = [{'value': True, 'text': _('Yes')}, {'value': False, 'text': _('No')}]%}
+{% block extra_pages_form %}
+    {{ form.select('new_field', id = 'new_field', label = 'New Field', options=options, selected=data.testing) }}
+{% endblock extra_pages_form %}
+```
+
+If you want to override, make sure your extension is added before `pages` in the `ckan.plugins` config.
+
 ## Dependencies
 
 * lxml
