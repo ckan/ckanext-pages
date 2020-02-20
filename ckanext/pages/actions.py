@@ -137,7 +137,7 @@ def _pages_update(context, data_dict):
     out.extras = json.dumps(extras)
 
     out.modified = datetime.datetime.utcnow()
-    out.user_id = p.toolkit.c.userobj.id
+    out.user_id = context['user']
     out.save()
     session = context['session']
     session.add(out)
