@@ -3,6 +3,15 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 0.2.2 (2020-02-28)
+
+### Added
+
+- Allow customizatin of the pages schema from another extension
+  ([#95](https://github.com/ckan/ckanext-pages/pull/95))
+
+
 ## 0.2.1 (2019-08-29)
 
 ### Fixed

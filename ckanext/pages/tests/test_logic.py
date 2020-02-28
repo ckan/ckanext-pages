@@ -1,7 +1,8 @@
 # encoding: utf-8
 
 from ckan.plugins import toolkit
-from nose.tools import assert_in, assert_not_in
+from nose.tools import assert_in, assert_not_in, assert_equals
+import mock
 import ckan.model as model
 try:
     from ckan.tests import factories, helpers
@@ -9,6 +10,7 @@ except ImportError:
     from ckan.new_tests import factories, helpers
 
 from ckanext.pages import db
+from ckanext.pages.logic import schema
 
 
 class TestPages(helpers.FunctionalTestBase):
@@ -153,3 +155,25 @@ class TestPages(helpers.FunctionalTestBase):
             assert_in(u'<p>&#199;&#246;&#241;t&#233;&#241;t</p>', response.unicode_body)
         else:
             assert_in(u'<p>Çöñtéñt</p>', response.unicode_body)
+
+    def test_pages_saves_custom_schema_fields(self):
+        context = {'user': self.user['name']}
+
+        mock_schema = schema.default_pages_schema()
+        mock_schema.update({
+            'new_field': [toolkit.get_validator('ignore_missing')],
+        })
+
+        with mock.patch('ckanext.pages.actions.update_pages_schema', return_value=mock_schema):
+            helpers.call_action(
+                'ckanext_pages_update',
+                context=context,
+                title='Page Title',
+                name='page_name',
+                page='page_name',
+                new_field='new_field_value',
+                content='test',
+            )
+
+        pages = helpers.call_action('ckanext_pages_list', context)
+        assert_equals(pages[0]['new_field'], 'new_field_value')
