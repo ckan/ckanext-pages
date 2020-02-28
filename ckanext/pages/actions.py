@@ -1,6 +1,7 @@
 import datetime
 import json
 
+from ckan import model
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
 import ckan.lib.uploader as uploader
@@ -137,7 +138,8 @@ def _pages_update(context, data_dict):
     out.extras = json.dumps(extras)
 
     out.modified = datetime.datetime.utcnow()
-    out.user_id = context['user']
+    user = model.User.get(context['user'])
+    out.user_id = user.id
     out.save()
     session = context['session']
     session.add(out)

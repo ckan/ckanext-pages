@@ -157,19 +157,23 @@ class TestPages(helpers.FunctionalTestBase):
             assert_in(u'<p>Çöñtéñt</p>', response.unicode_body)
 
     def test_pages_saves_custom_schema_fields(self):
-        env = {'REMOTE_USER': self.user['name'].encode('ascii')}
+        context = {'user': self.user['name']}
 
         mock_schema = schema.default_pages_schema()
         mock_schema.update({
             'new_field': [toolkit.get_validator('ignore_missing')],
-            })
+        })
 
         with mock.patch('ckanext.pages.actions.update_pages_schema', return_value=mock_schema):
-            helpers.call_action('ckanext_pages_update', env,
+            helpers.call_action(
+                'ckanext_pages_update',
+                context=context,
                 title='Page Title',
                 name='page_name',
-                new_field='new_field_value'
+                page='page_name',
+                new_field='new_field_value',
+                content='test',
             )
 
-        pages = helpers.call_action('ckanext_pages_list', env)
+        pages = helpers.call_action('ckanext_pages_list', context)
         assert_equals(pages[0]['new_field'], 'new_field_value')
