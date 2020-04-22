@@ -18,11 +18,11 @@ this.ckan.module('ckedit', function (jQuery, _) {
         { name: 'insert' },
         { name: 'forms' },
         { name: 'tools' },
-        { name: 'document',	   groups: [ 'document', 'doctools' ] },
+        { name: 'document',	   groups: [ 'mode', 'document', 'doctools' ] },
         { name: 'others' },
         '/',
         { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-        { name: 'paragraph',   groups: [ 'list', 'blocks', 'align', 'bidi' ] },
+        { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
         { name: 'styles' },
       ];
 
@@ -36,7 +36,7 @@ this.ckan.module('ckedit', function (jQuery, _) {
       // Make dialogs simpler.
       config.removeDialogTabs = 'image:advanced;link:advanced';
       config.filebrowserUploadUrl = this.options.site_url + 'pages_upload';
-      config.extraPlugins = 'divarea,ckanview';
+      config.extraPlugins = 'divarea,ckanview,templates';
       config.height = '400px';
       config.customConfig = false;
 

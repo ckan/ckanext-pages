@@ -1,12 +1,15 @@
 import datetime
 import json
 
+from ckan import model
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
 import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
 from ckan.plugins import toolkit as tk
 from HTMLParser import HTMLParser
+from ckanext.pages.logic.schema import update_pages_schema
+
 try:
     import ckan.authz as authz
 except ImportError:
@@ -14,24 +17,7 @@ except ImportError:
 
 
 import db
-def page_name_validator(key, data, errors, context):
-    session = context['session']
-    page = context.get('page')
-    group_id = context.get('group_id')
-    if page and page == data[key]:
-        return
 
-    query = session.query(db.Page.name).filter_by(name=data[key], group_id=group_id)
-    result = query.first()
-    if result:
-        errors[key].append(
-            p.toolkit._('Page name already exists in database'))
-
-def not_empty_if_blog(key, data, errors, context):
-    value = data.get(key)
-    if data.get(('page_type',), '') == 'blog':
-        if value is df.missing or not value:
-            errors[key].append('Publish Date Must be supplied')
 
 class HTMLFirstImage(HTMLParser):
     def __init__(self):
@@ -41,27 +27,6 @@ class HTMLFirstImage(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == 'img' and not self.first_image:
             self.first_image = dict(attrs)['src']
-
-schema = {
-    'id': [p.toolkit.get_validator('ignore_empty'), unicode],
-    'title': [p.toolkit.get_validator('not_empty'), unicode],
-    'name': [p.toolkit.get_validator('not_empty'), unicode,
-             p.toolkit.get_validator('name_validator'), page_name_validator],
-    'content': [p.toolkit.get_validator('ignore_missing'), unicode],
-    'page_type': [p.toolkit.get_validator('ignore_missing'), unicode],
-  #  'lang': [p.toolkit.get_validator('not_empty'), unicode],
-    'order': [p.toolkit.get_validator('ignore_missing'),
-              unicode],
-    'private': [p.toolkit.get_validator('ignore_missing'),
-                p.toolkit.get_validator('boolean_validator')],
-    'group_id': [p.toolkit.get_validator('ignore_missing'), unicode],
-    'user_id': [p.toolkit.get_validator('ignore_missing'), unicode],
-    'created': [p.toolkit.get_validator('ignore_missing'),
-                p.toolkit.get_validator('isodate')],
-    'publish_date': [not_empty_if_blog,
-                     p.toolkit.get_validator('ignore_missing'),
-                     p.toolkit.get_validator('isodate')],
-}
 
 
 def _pages_show(context, data_dict):
@@ -147,6 +112,7 @@ def _pages_update(context, data_dict):
     # we need the page in the context for name validation
     context['page'] = page
     context['group_id'] = org_id
+    schema = update_pages_schema()
 
     data, errors = df.validate(data_dict, schema, context)
 
@@ -164,6 +130,7 @@ def _pages_update(context, data_dict):
         setattr(out, item, data.get(item,'page' if item =='page_type' else None)) #backward compatible with older version where page_type does not exist
 
     extras = {}
+
     extra_keys = set(schema.keys()) - set(items + ['id', 'created'])
     for key in extra_keys:
         if key in data:
@@ -171,7 +138,8 @@ def _pages_update(context, data_dict):
     out.extras = json.dumps(extras)
 
     out.modified = datetime.datetime.utcnow()
-    out.user_id = p.toolkit.c.userobj.id
+    user = model.User.get(context['user'])
+    out.user_id = user.id
     out.save()
     session = context['session']
     session.add(out)
