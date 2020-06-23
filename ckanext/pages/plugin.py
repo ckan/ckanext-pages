@@ -103,7 +103,6 @@ def get_plus_icon():
         return 'plus-square'
     return 'plus-sign-alt'
 
-
 class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
