@@ -1,3 +1,17 @@
+Branches:
+
+- master: What's getting installed on our systems.
+- master_clean_29: current( as of ckan 2.9) upstream tag 0.2.3 with our rebased master changes on it. 
+- upstream: Upstream master, with tags.
+- a bunch of other ones that may not be necessary
+
+
+
+
+
+
+
+
 [![Build Status](https://travis-ci.org/ckan/ckanext-pages.svg?branch=master)](https://travis-ci.org/ckan/ckanext-pages)
 [![Coverage Status](https://coveralls.io/repos/ckan/ckanext-pages/badge.svg?branch=master&service=github)](https://coveralls.io/github/ckan/ckanext-pages?branch=master)
 ckanext-pages
