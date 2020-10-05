@@ -407,6 +407,7 @@ class PagesController(p.toolkit.BaseController):
             except p.toolkit.ValidationError, e:
                 errors = e.error_dict
                 error_summary = e.error_summary
+                p.toolkit.h.flash_error(error_summary)
                 return self.pages_edit('/' + page, data,
                                        errors, error_summary, page_type=page_type)
             p.toolkit.redirect_to('%s_show' % page_type, page='/' + _page['name'])
