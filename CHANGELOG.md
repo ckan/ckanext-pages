@@ -4,6 +4,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## 0.2.3 (2020-09-24)
+
+### Added
+
+- Add blocks to main page template
+  ([bf9f3c0](https://github.com/ckan/ckanext-pages/commit/bf9f3c0))
+
+### Fixed
+
+- Adding flash_error message in case of missing values
+  ([#97](https://github.com/ckan/ckanext-pages/pull/97))
+
+
 ## 0.2.2 (2020-02-28)
 
 ### Added
