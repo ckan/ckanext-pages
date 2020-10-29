@@ -27,6 +27,7 @@ def build_pages_nav_main(*args):
     about_menu = toolkit.asbool(config.get('ckanext.pages.about_menu', True))
     group_menu = toolkit.asbool(config.get('ckanext.pages.group_menu', True))
     org_menu = toolkit.asbool(config.get('ckanext.pages.organization_menu', True))
+    root_path = config.get('ckan.root_path', '/')
 
     # Different CKAN versions use different route names - gotta catch em all!
     about_menu_routes = ['about', 'home.about']
@@ -58,7 +59,7 @@ def build_pages_nav_main(*args):
         type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
         name = urllib.quote(page['name'].encode('utf-8')).decode('utf-8')
         title = cgi.escape(page['title'])
-        link = h.literal(u'<a href="/{}/{}">{}</a>'.format(type_, name, title))
+        link = h.literal(u'<a href="{}/{}/{}">{}</a>'.format(root_path, type_, name, title))
         if page['name'] == page_name:
             li = h.literal('<li class="active">') + link + h.literal('</li>')
         else:
