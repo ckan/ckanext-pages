@@ -3,6 +3,14 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.2.4 (2021-02-17)
+
+
+### Fixed
+
+- Do not prefix absolute HTTP URLs of uploaded image 
+  ([#107](https://github.com/ckan/ckanext-pages/pull/107))
+
 
 ## 0.2.3 (2020-09-24)
 
