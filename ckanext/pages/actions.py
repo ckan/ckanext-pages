@@ -161,10 +161,10 @@ def pages_upload(context, data_dict):
                             'upload', 'clear_upload')
     upload.upload(uploader.get_max_image_size())
     image_url = data_dict.get('image_url')
-    if image_url:
+    if image_url and image_url[0:6] not in {'http:/', 'https:'}:
         image_url = h.url_for_static(
            'uploads/page_images/%s' % image_url,
-            qualified = True
+            qualified=True
         )
     return {'url': image_url}
 
