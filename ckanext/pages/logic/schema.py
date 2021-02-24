@@ -2,24 +2,29 @@ import ckan.plugins as p
 from ckanext.pages.validators import page_name_validator, not_empty_if_blog
 from ckanext.pages.interfaces import IPagesSchema
 
+
 def default_pages_schema():
+    ignore_empty = p.toolkit.get_validator('ignore_empty')
+    ignore_missing = p.toolkit.get_validator('ignore_missing')
+    not_empty = p.toolkit.get_validator('not_empty')
+    isodate = p.toolkit.get_validator('isodate')
+    unicode_safe = p.toolkit.get_validator('unicode_safe')
+    name_validator = p.toolkit.get_validator('name_validator')
     return {
-        'id': [p.toolkit.get_validator('ignore_empty'), unicode],
-        'title': [p.toolkit.get_validator('not_empty'), unicode],
-        'name': [p.toolkit.get_validator('not_empty'), unicode,
-                p.toolkit.get_validator('name_validator'), page_name_validator],
-        'content': [p.toolkit.get_validator('ignore_missing'), unicode],
-        'page_type': [p.toolkit.get_validator('ignore_missing'), unicode],
-        'order': [p.toolkit.get_validator('ignore_missing'), unicode],
-        'private': [p.toolkit.get_validator('ignore_missing'),
+        'id': [ignore_empty, unicode_safe],
+        'title': [not_empty, unicode_safe],
+        'name': [
+            not_empty, unicode_safe, name_validator, page_name_validator],
+        'content': [ignore_missing, unicode_safe],
+        'page_type': [ignore_missing, unicode_safe],
+        'order': [ignore_missing, unicode_safe],
+        'private': [ignore_missing,
                     p.toolkit.get_validator('boolean_validator')],
-        'group_id': [p.toolkit.get_validator('ignore_missing'), unicode],
-        'user_id': [p.toolkit.get_validator('ignore_missing'), unicode],
-        'created': [p.toolkit.get_validator('ignore_missing'),
-                    p.toolkit.get_validator('isodate')],
-        'publish_date': [not_empty_if_blog,
-                        p.toolkit.get_validator('ignore_missing'),
-                        p.toolkit.get_validator('isodate')],
+        'group_id': [ignore_missing, unicode_safe],
+        'user_id': [ignore_missing, unicode_safe],
+        'created': [ignore_missing, isodate],
+        'publish_date': [
+            not_empty_if_blog, ignore_missing, isodate],
     }
 
 

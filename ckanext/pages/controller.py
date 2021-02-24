@@ -102,7 +102,7 @@ class PagesController(p.toolkit.BaseController):
                 junk = p.toolkit.get_action('ckanext_org_pages_update')(
                     data_dict=_page
                 )
-            except p.toolkit.ValidationError, e:
+            except p.toolkit.ValidationError as e:
                 errors = e.error_dict
                 error_summary = e.error_summary
                 return self.org_edit(id, '/' + page, data,
@@ -222,7 +222,7 @@ class PagesController(p.toolkit.BaseController):
                 junk = p.toolkit.get_action('ckanext_group_pages_update')(
                     data_dict=_page
                 )
-            except p.toolkit.ValidationError, e:
+            except p.toolkit.ValidationError as e:
                 errors = e.error_dict
                 error_summary = e.error_summary
                 return self.group_edit(id, '/' + page, data,
@@ -404,7 +404,7 @@ class PagesController(p.toolkit.BaseController):
                 junk = p.toolkit.get_action('ckanext_pages_update')(
                     data_dict=_page
                 )
-            except p.toolkit.ValidationError, e:
+            except p.toolkit.ValidationError as e:
                 errors = e.error_dict
                 error_summary = e.error_summary
                 p.toolkit.h.flash_error(error_summary)
