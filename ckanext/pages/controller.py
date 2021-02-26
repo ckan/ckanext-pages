@@ -1,6 +1,11 @@
+import ckantoolkit
+
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
-from pylons import config
+
+import ckanext.pages.utils as utils
+
+config = ckantoolkit.config
 
 _ = p.toolkit._
 
@@ -246,7 +251,7 @@ class PagesController(p.toolkit.BaseController):
                                extra_vars=vars)
 
     def blog_index(self):
-        return self._pages_list_pages('blog')
+        return utils.pages_list_pages('blog')
 
     def blog_show(self, page=None):
         return self.pages_show(page, page_type='blog')
@@ -324,38 +329,20 @@ class PagesController(p.toolkit.BaseController):
         if page:
             page = page[1:]
         if not page:
-            return self._pages_list_pages(page_type)
+            return utils.pages_list_pages(page_type)
         _page = p.toolkit.get_action('ckanext_pages_show')(
             data_dict={'org_id': None,
                        'page': page}
         )
         if _page is None:
-            return self._pages_list_pages(page_type)
+            return utils.pages_list_pages(page_type)
         p.toolkit.c.page = _page
         self._inject_views_into_page(_page)
 
         return p.toolkit.render('ckanext_pages/%s.html' % page_type)
 
     def pages_index(self):
-        return self._pages_list_pages('page')
-
-    def _pages_list_pages(self, page_type):
-        data_dict={'org_id': None, 'page_type': page_type}
-        if page_type == 'blog':
-            data_dict['order_publish_date'] = True
-        p.toolkit.c.pages_dict = p.toolkit.get_action('ckanext_pages_list')(
-            data_dict=data_dict
-        )
-        p.toolkit.c.page = helpers.Page(
-            collection=p.toolkit.c.pages_dict,
-            page=p.toolkit.request.params.get('page', 1),
-            url=helpers.pager_url,
-            items_per_page=21
-        )
-
-        if page_type == 'blog':
-            return p.toolkit.render('ckanext_pages/blog_list.html')
-        return p.toolkit.render('ckanext_pages/pages_list.html')
+        return utils.pages_list_pages('page')
 
     def blog_delete(self, page):
         return self.pages_delete(page, page_type='blog')
@@ -377,60 +364,11 @@ class PagesController(p.toolkit.BaseController):
             p.toolkit.abort(404, _('Group not found'))
         return p.toolkit.render('ckanext_pages/confirm_delete.html', {'page': page})
 
-
     def blog_edit(self, page=None, data=None, errors=None, error_summary=None):
-        return self.pages_edit(page=page, data=data, errors=errors, error_summary=error_summary, page_type='blog')
+        return utils.pages_edit(page, data, errors, error_summary, page_type='blog')
 
     def pages_edit(self, page=None, data=None, errors=None, error_summary=None, page_type='pages'):
-        if page:
-            page = page[1:]
-        _page = p.toolkit.get_action('ckanext_pages_show')(
-            data_dict={'org_id': None,
-                       'page': page,}
-        )
-        if _page is None:
-            _page = {}
-
-        if p.toolkit.request.method == 'POST' and not data:
-            data = dict(p.toolkit.request.POST)
-
-            _page.update(data)
-
-            _page['org_id'] = None
-            _page['page'] = page
-            _page['page_type'] = 'page' if page_type == 'pages' else page_type
-
-            try:
-                junk = p.toolkit.get_action('ckanext_pages_update')(
-                    data_dict=_page
-                )
-            except p.toolkit.ValidationError as e:
-                errors = e.error_dict
-                error_summary = e.error_summary
-                p.toolkit.h.flash_error(error_summary)
-                return self.pages_edit('/' + page, data,
-                                       errors, error_summary, page_type=page_type)
-            p.toolkit.redirect_to('%s_show' % page_type, page='/' + _page['name'])
-
-        try:
-            p.toolkit.check_access('ckanext_pages_update', {'user': p.toolkit.c.user or p.toolkit.c.author})
-        except p.toolkit.NotAuthorized:
-            p.toolkit.abort(401, _('Unauthorized to create or edit a page'))
-
-        if not data:
-            data = _page
-
-        errors = errors or {}
-        error_summary = error_summary or {}
-
-        form_snippet = config.get('ckanext.pages.form', 'ckanext_pages/base_form.html')
-
-        vars = {'data': data, 'errors': errors,
-                'error_summary': error_summary, 'page': page,
-                'form_snippet': form_snippet}
-
-        return p.toolkit.render('ckanext_pages/%s_edit.html' % page_type,
-                                extra_vars=vars)
+        return utils.pages_edit(page, data, errors, error_summary, page_type)
 
     def pages_upload(self):
         if not p.toolkit.request.method == 'POST':

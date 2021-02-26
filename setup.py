@@ -45,10 +45,9 @@ setup(
     },
     zip_safe=False,
     install_requires=[
-        # -*- Extra requirements: -*-
+        'six', 'ckantoolkit',
     ],
-    entry_points=\
-    """
+    entry_points="""
         [ckan.plugins]
         pages=ckanext.pages.plugin:PagesPlugin
         textboxview=ckanext.pages.plugin:TextBoxView
