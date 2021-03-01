@@ -1,15 +1,15 @@
 import cgi
 import logging
 import urllib
-from pylons import config
-import ckan.plugins.toolkit as toolkit
+
+import ckantoolkit as tk
 
 import ckan.plugins as p
-import ckan.lib.helpers as h
+
 from ckanext.pages import actions
 from ckanext.pages import auth
 
-if toolkit.check_ckan_version(min_version='2.5'):
+if tk.check_ckan_version(min_version='2.5'):
     from ckan.lib.plugins import DefaultTranslation
 
     class PagesPluginBase(p.SingletonPlugin, DefaultTranslation):
@@ -18,7 +18,7 @@ else:
     class PagesPluginBase(p.SingletonPlugin):
         pass
 
-if toolkit.check_ckan_version(u'2.9'):
+if tk.check_ckan_version(u'2.9'):
     from ckanext.pages.plugin.flask_plugin import MixinPlugin
 else:
     from ckanext.pages.plugin.pylons_plugin import MixinPlugin
@@ -29,9 +29,9 @@ log = logging.getLogger(__name__)
 
 def build_pages_nav_main(*args):
 
-    about_menu = toolkit.asbool(config.get('ckanext.pages.about_menu', True))
-    group_menu = toolkit.asbool(config.get('ckanext.pages.group_menu', True))
-    org_menu = toolkit.asbool(config.get('ckanext.pages.organization_menu', True))
+    about_menu = tk.asbool(tk.config.get('ckanext.pages.about_menu', True))
+    group_menu = tk.asbool(tk.config.get('ckanext.pages.group_menu', True))
+    org_menu = tk.asbool(tk.config.get('ckanext.pages.organization_menu', True))
 
     # Different CKAN versions use different route names - gotta catch em all!
     about_menu_routes = ['about', 'home.about']
@@ -48,46 +48,46 @@ def build_pages_nav_main(*args):
             continue
         new_args.append(arg)
 
-    output = h.build_nav_main(*new_args)
+    output = tk.h.build_nav_main(*new_args)
 
     # do not display any private datasets in menu even for sysadmins
-    pages_list = toolkit.get_action('ckanext_pages_list')(None, {'order': True, 'private': False})
+    pages_list = tk.get_action('ckanext_pages_list')(None, {'order': True, 'private': False})
 
     page_name = ''
 
-    if (hasattr(toolkit.c, 'action') and toolkit.c.action in ('pages_show', 'blog_show')
-       and toolkit.c.controller == 'ckanext.pages.controller:PagesController'):
-        page_name = toolkit.c.environ['routes.url'].current().split('/')[-1]
+    if (hasattr(tk.c, 'action') and tk.c.action in ('pages_show', 'blog_show')
+       and tk.c.controller == 'ckanext.pages.controller:PagesController'):
+        page_name = tk.c.environ['routes.url'].current().split('/')[-1]
 
     for page in pages_list:
         type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
         name = urllib.quote(page['name'].encode('utf-8')).decode('utf-8')
         title = cgi.escape(page['title'])
-        link = h.literal(u'<a href="/{}/{}">{}</a>'.format(type_, name, title))
+        link = tk.h.literal(u'<a href="/{}/{}">{}</a>'.format(type_, name, title))
         if page['name'] == page_name:
-            li = h.literal('<li class="active">') + link + h.literal('</li>')
+            li = tk.literal('<li class="active">') + link + tk.literal('</li>')
         else:
-            li = h.literal('<li>') + link + h.literal('</li>')
+            li = tk.literal('<li>') + link + tk.literal('</li>')
         output = output + li
 
     return output
 
 
 def render_content(content):
-    allow_html = toolkit.asbool(config.get('ckanext.pages.allow_html', False))
+    allow_html = tk.asbool(tk.config.get('ckanext.pages.allow_html', False))
     try:
-        return h.render_markdown(content, allow_html=allow_html)
+        return tk.h.render_markdown(content, allow_html=allow_html)
     except TypeError:
         # allow_html is only available in CKAN >= 2.3
-        return h.render_markdown(content)
+        return tk.h.render_markdown(content)
 
 
 def get_wysiwyg_editor():
-    return config.get('ckanext.pages.editor', '')
+    return tk.config.get('ckanext.pages.editor', '')
 
 
 def get_recent_blog_posts(number=5, exclude=None):
-    blog_list = toolkit.get_action('ckanext_pages_list')(
+    blog_list = tk.get_action('ckanext_pages_list')(
         None, {'order_publish_date': True, 'private': False,
                'page_type': 'blog'}
     )
@@ -103,7 +103,7 @@ def get_recent_blog_posts(number=5, exclude=None):
 
 
 def get_plus_icon():
-    if toolkit.check_ckan_version(min_version='2.7'):
+    if tk.check_ckan_version(min_version='2.7'):
         return 'plus-square'
     return 'plus-sign-alt'
 
@@ -115,23 +115,23 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
     p.implements(p.IAuthFunctions, inherit=True)
 
     def update_config(self, config):
-        self.organization_pages = toolkit.asbool(config.get('ckanext.pages.organization', False))
-        self.group_pages = toolkit.asbool(config.get('ckanext.pages.group', False))
+        self.organization_pages = tk.asbool(config.get('ckanext.pages.organization', False))
+        self.group_pages = tk.asbool(config.get('ckanext.pages.group', False))
 
-        toolkit.add_template_directory(config, '../theme/templates_main')
+        tk.add_template_directory(config, '../theme/templates_main')
         if self.group_pages:
-            toolkit.add_template_directory(config, '../theme/templates_group')
+            tk.add_template_directory(config, '../theme/templates_group')
         if self.organization_pages:
-            toolkit.add_template_directory(config, '../theme/templates_organization')
+            tk.add_template_directory(config, '../theme/templates_organization')
 
-        toolkit.add_resource('../assets', 'pages')
-        toolkit.add_public_directory(config, 'public')
+        tk.add_resource('../assets', 'pages')
+        tk.add_public_directory(config, 'public')
 
-        toolkit.add_resource('../theme/public', 'ckanext-pages')
-        toolkit.add_resource('../theme/resources', 'pages-theme')
-        toolkit.add_public_directory(config, '../theme/public')
+        tk.add_resource('../theme/public', 'ckanext-pages')
+        tk.add_resource('../theme/resources', 'pages-theme')
+        tk.add_public_directory(config, '../theme/public')
 
-        toolkit.add_public_directory(config, '../theme/public/vendor/ckeditor/skins/moono')
+        tk.add_public_directory(config, '../theme/public/vendor/ckeditor/skins/moono')
 
     def get_helpers(self):
         return {
@@ -192,11 +192,11 @@ class TextBoxView(p.SingletonPlugin):
     p.implements(p.IResourceView, inherit=True)
 
     def update_config(self, config):
-        toolkit.add_resource('textbox/theme', 'textbox')
-        toolkit.add_template_directory(config, 'textbox/templates')
+        tk.add_resource('textbox/theme', 'textbox')
+        tk.add_template_directory(config, 'textbox/templates')
 
     def info(self):
-        ignore_missing = toolkit.get_validator('ignore_missing')
+        ignore_missing = tk.get_validator('ignore_missing')
         schema = {
             'content': [ignore_missing],
         }
