@@ -1,6 +1,8 @@
 {% set pages_total = pages|length %}
 {% set action = '{0}_show'.format(type) %}
 
+{% set ckan_29_or_higher = h.ckan_version().split('.')[1] | int >= 9 %}
+
 {#
 {% if type == 'blog' %}
   <h2>{{ _('1 blog article') if pages_total == 1 else _('{0} blog articles').format(pages_total) }}</h2>
@@ -19,12 +21,24 @@
   {% set editor = h.get_wysiwyg_editor() %}
 
     {% for page in pages %}
-      {% if id %} {# this is for orgs and groups #}
-        {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action=action, id=id, page='/' + page.name) %}
-      {% elif type == 'blog' %}
-        {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + page.name) %}
+      {% if ckan_29_or_higher %}
+        {% if id %} {# this is for orgs and groups #}
+          {% set url = h.url_for('pages.' + action, id=id, page=page.name) %}
+        {% elif type == 'blog' %}
+          {% set url = h.url_for('pages.blog_show', page=page.name) %}
+        {% else %}
+          {% set url = h.url_for('pages.show', page=page.name) %}
+        {% endif %}
+
       {% else %}
-        {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + page.name) %}
+        {% if id %} {# this is for orgs and groups #}
+          {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action=action, id=id, page='/' + page.name) %}
+        {% elif type == 'blog' %}
+          {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + page.name) %}
+        {% else %}
+          {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action='pages_show', page='/' + page.name) %}
+        {% endif %}
+
       {% endif %}
       <div class="row page-list-item dataset-item">
       {% if page.image %}

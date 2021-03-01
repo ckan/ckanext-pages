@@ -1,0 +1,23 @@
+main-js:
+  filters: rjsmin
+  output: ckanext-pages/%(version)s_main.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - ckeditor_path.js
+    - vendor/ckeditor/ckeditor.js
+    - vendor/ckeditor/adapters/jquery.js
+    - vendor/datepicker/js/bootstrap-datepicker.js
+    - ckedit.js
+    - datepicker.js
+
+main-css:
+  output: ckanext-pages/%(version)s_main.css
+  filters: cssrewrite
+  contents:
+
+    - vendor/ckeditor/skins/moono/editor_gecko.css
+    - vendor/datepicker/css/datepicker.css
+    - ckedit.css
+

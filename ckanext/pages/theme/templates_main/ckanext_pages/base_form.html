@@ -3,6 +3,7 @@
 
 {% set data = data or {} %}
 {% set errors = errors or {} %}
+{% set ckan_29_or_higher = h.ckan_version().split('.')[1] | int >= 9 %}
 
 {% if type == 'org' %}
     {% set prefix = 'organization_pages_' %}
@@ -17,13 +18,21 @@
     {% set prefix = 'pages_' %}
     {% set args = {} %}
 {% endif %}
-{% set page_url = '/' + page %}
+{% if ckan_29_or_higher %}
+  {% set page_url = page %}
+{% else %}
+  {% set page_url = '/' + page %}
+{% endif %}
 {% set action_url = h.url_for(prefix + 'edit', page=page_url, **args) %}
 {% set cancel_url = h.url_for(prefix + 'index', **args) %}
 {% set slug_prefix = cancel_url ~ '/' %}
 {% set slug_domain = h.url_for(prefix + 'index', qualified=true, **args) %}
 {% if page %}
-   {% set delete_url = h.url_for(prefix + 'delete', page=page_url, **args) %}
+  {% if ckan_29_or_higher %}
+    {% set delete_url = h.url_for('pages.delete', page=page_url, **args) %}
+  {% else %}
+    {% set delete_url = h.url_for(prefix + 'delete', page=page_url, **args) %}
+  {% endif %}
 {% endif %}
 
 {% if type == 'blog' %}
@@ -46,6 +55,8 @@
 
 
 <form class="form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form">
+
+  {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
 
   {{ form.input('title', id='field-title', label=_('Title'), placeholder=title_placeholder, value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
 
@@ -88,7 +99,11 @@
   {% if editor == 'medium' %}
     {{ wysiwyg.editor('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content|safe, error=errors.content) }}
   {% elif editor == 'ckeditor' %}
-    {% resource 'ckanext-pages/main' %}
+
+    {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
+    {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-js' %}
+    {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-css' %}
+    <div id='YOOOO' >HHASHASHAHS</div>
     <div class="control-group">
         <label for="field-content-ck" class="control-label">{{ _('Content') }}</label>
     </div>

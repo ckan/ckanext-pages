@@ -111,7 +111,6 @@ def get_plus_icon():
 class PagesPlugin(PagesPluginBase, MixinPlugin):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
-    p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IActions, inherit=True)
     p.implements(p.IAuthFunctions, inherit=True)
 
@@ -125,15 +124,14 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
         if self.organization_pages:
             toolkit.add_template_directory(config, '../theme/templates_organization')
 
-        toolkit.add_resource('../fanstatic', 'pages')
+        toolkit.add_resource('../assets', 'pages')
         toolkit.add_public_directory(config, 'public')
 
         toolkit.add_resource('../theme/public', 'ckanext-pages')
         toolkit.add_resource('../theme/resources', 'pages-theme')
         toolkit.add_public_directory(config, '../theme/public')
 
-    def configure(self, config):
-        return
+        toolkit.add_public_directory(config, '../theme/public/vendor/ckeditor/skins/moono')
 
     def get_helpers(self):
         return {

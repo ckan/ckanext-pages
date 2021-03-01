@@ -9,38 +9,55 @@ def index():
     return utils.pages_list_pages('page')
 
 
-def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type='pages'):
-    return utils.pages_edit(page, data, errors, error_summary, page_type)
+def blog_index():
+    return utils.pages_list_pages('blog')
 
 
-pages.add_url_rule(
-    "/pages",
-    view_func=index,
-)
-
-pages.add_url_rule("/pages_edit", view_func=pages_edit, endpoint='new')
-pages.add_url_rule("/pages_edit/<page>", view_func=pages_edit, endpoint='edit')
+def show(page):
+    return utils.pages_show(page, page_type='page')
 
 
+def blog_show(page):
+    return utils.pages_show(page, page_type='blog')
 
-'''
-        map.connect('pages_delete', '/pages_delete{page:/.*|}',
-                    action='pages_delete', ckan_icon='delete', controller=controller)
-        map.connect('pages_edit', '/pages_edit{page:/.*|}',
-                    action='pages_edit', ckan_icon='edit', controller=controller)
-        map.connect('pages_index', '/pages',
-                    action='pages_index', ckan_icon='file', controller=controller, highlight_actions='pages_edit pages_index pages_show')
-        map.connect('pages_show', '/pages{page:/.*|}',
-                    action='pages_show', ckan_icon='file', controller=controller, highlight_actions='pages_edit pages_index pages_show')
-        map.connect('pages_upload', '/pages_upload',
-                    action='pages_upload', controller=controller)
 
-        map.connect('blog_delete', '/blog_delete{page:/.*|}',
-                    action='blog_delete', ckan_icon='delete', controller=controller)
-        map.connect('blog_edit', '/blog_edit{page:/.*|}',
-                    action='blog_edit', ckan_icon='edit', controller=controller)
-        map.connect('blog_index', '/blog',
-                    action='blog_index', ckan_icon='file', controller=controller, highlight_actions='blog_edit blog_index blog_show')
-        map.connect('blog_show', '/blog{page:/.*|}',
-                    action='blog_show', ckan_icon='file', controller=controller, highlight_actions='blog_edit blog_index blog_show')
-'''
+def pages_edit(page=None, data=None, errors=None, error_summary=None):
+    return utils.pages_edit(page, data, errors, error_summary, 'page')
+
+
+def blog_edit(page=None, data=None, errors=None, error_summary=None):
+    return utils.pages_edit(page, data, errors, error_summary, 'blog')
+
+
+def pages_delete(page):
+    return utils.pages_delete(page, page_type='pages')
+
+
+def blog_delete(page):
+    return utils.pages_delete(page, page_type='blog')
+
+
+def upload():
+    return utils.pages_upload()
+
+
+pages.add_url_rule("/pages", view_func=index)
+pages.add_url_rule("/pages/<page>", view_func=show)
+
+pages.add_url_rule("/pages_edit", view_func=pages_edit, endpoint='new', methods=['GET', 'POST'])
+pages.add_url_rule("/pages_edit/", view_func=pages_edit, endpoint='new', methods=['GET', 'POST'])
+pages.add_url_rule("/pages_edit/<page>", view_func=pages_edit, endpoint='edit', methods=['GET', 'POST'])
+
+pages.add_url_rule("/pages_delete/<page>", view_func=pages_delete, endpoint='delete', methods=['GET', 'POST'])
+
+pages.add_url_rule("/pages_upload", view_func=upload, methods=['GET', 'POST'])
+
+
+pages.add_url_rule("/blog", view_func=blog_index)
+pages.add_url_rule("/blog/<page>", view_func=blog_show)
+
+pages.add_url_rule("/blog_edit", view_func=blog_edit, endpoint='blog_new', methods=['GET', 'POST'])
+pages.add_url_rule("/blog_edit/", view_func=blog_edit, endpoint='blog_new', methods=['GET', 'POST'])
+pages.add_url_rule("/blog_edit/<page>", view_func=blog_edit, endpoint='blog_edit', methods=['GET', 'POST'])
+
+pages.add_url_rule("/blog_delete/<page>", view_func=blog_delete, endpoint='blog_delete', methods=['GET', 'POST'])

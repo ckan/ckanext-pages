@@ -7,7 +7,12 @@
 
     {% block ckanext_pages_actions %}
       {% if h.check_access('ckanext_pages_update') %}
-        {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
+
+        {% if h.ckan_version().split('.')[1] | int >= 9 %}
+          {% link_for _('Edit'), named_route='pages.edit', page=c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
+        {% else %}
+          {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
+        {% endif %}
       {% endif %}
     {% endblock %}
     <h1 class="page-heading">{{ c.page.title }}</h1>
