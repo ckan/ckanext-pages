@@ -5,6 +5,7 @@ import urllib
 import ckantoolkit as tk
 
 import ckan.plugins as p
+from ckan.lib.helpers import build_nav_main as core_build_nav_main
 
 from ckanext.pages import actions
 from ckanext.pages import auth
@@ -20,8 +21,10 @@ else:
 
 if tk.check_ckan_version(u'2.9'):
     from ckanext.pages.plugin.flask_plugin import MixinPlugin
+    ckan_29_or_higher = True
 else:
     from ckanext.pages.plugin.pylons_plugin import MixinPlugin
+    ckan_29_or_higher = False
 
 
 log = logging.getLogger(__name__)
@@ -48,16 +51,20 @@ def build_pages_nav_main(*args):
             continue
         new_args.append(arg)
 
-    output = tk.h.build_nav_main(*new_args)
+    output = core_build_nav_main(*new_args)
 
-    # do not display any private datasets in menu even for sysadmins
+    # do not display any private pages in menu even for sysadmins
     pages_list = tk.get_action('ckanext_pages_list')(None, {'order': True, 'private': False})
 
     page_name = ''
-
-    if (hasattr(tk.c, 'action') and tk.c.action in ('pages_show', 'blog_show')
-       and tk.c.controller == 'ckanext.pages.controller:PagesController'):
-        page_name = tk.c.environ['routes.url'].current().split('/')[-1]
+    if ckan_29_or_higher:
+        is_current_page = tk.get_endpoint() in (('pages', 'show'), ('pages', 'blog_show'))
+    else:
+        is_current_page = (
+            hasattr(tk.c, 'action') and tk.c.action in ('pages_show', 'blog_show')
+            and tk.c.controller == 'ckanext.pages.controller:PagesController')
+    if is_current_page:
+        page_name = tk.request.path.split('/')[-1]
 
     for page in pages_list:
         type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
