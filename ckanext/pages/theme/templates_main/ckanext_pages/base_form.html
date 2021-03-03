@@ -113,14 +113,22 @@
   {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
   {% set editor = h.get_wysiwyg_editor() %}
   {% if editor == 'medium' %}
-    {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-js' %}
-    {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-css' %}
+    {% if ckan_29_or_higher %}
+      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-js' %}
+      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-css' %}
+    {% else %}
+      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium' %}
+    {% endif %}
+
 
     {{ wysiwyg.editor('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content|safe, error=errors.content) }}
   {% elif editor == 'ckeditor' %}
-
-    {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-js' %}
-    {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-css' %}
+    {% if ckan_29_or_higher %}
+      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-js' %}
+      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-css' %}
+    {% else %}
+      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main' %}
+    {% endif %}
     <div class="control-group">
         <label for="field-content-ck" class="control-label">{{ _('Content') }}</label>
     </div>

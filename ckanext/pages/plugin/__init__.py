@@ -133,6 +133,7 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
 
         tk.add_resource('../assets', 'pages')
 
+        tk.add_public_directory(config, '../assets/')
         tk.add_public_directory(config, '../assets/vendor/ckeditor/')
 
     def get_helpers(self):

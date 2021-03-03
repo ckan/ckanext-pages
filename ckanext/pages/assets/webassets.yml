@@ -43,7 +43,7 @@ blog-css:
   contents:
     - css/blog.css
 
-pages-css:
+index-css:
   output: ckanext-pages/%(version)s_pages.css
   filters: cssrewrite
   contents:
