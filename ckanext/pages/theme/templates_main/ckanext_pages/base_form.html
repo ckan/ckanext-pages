@@ -110,12 +110,15 @@
     </div>
   {% endif %}
 
+  {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
   {% set editor = h.get_wysiwyg_editor() %}
   {% if editor == 'medium' %}
+    {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-js' %}
+    {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-css' %}
+
     {{ wysiwyg.editor('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content|safe, error=errors.content) }}
   {% elif editor == 'ckeditor' %}
 
-    {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
     {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-js' %}
     {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-css' %}
     <div class="control-group">

@@ -132,10 +132,6 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
             tk.add_template_directory(config, '../theme/templates_organization')
 
         tk.add_resource('../assets', 'pages')
-        tk.add_public_directory(config, 'public')
-
-        tk.add_resource('../theme/public', 'ckanext-pages')
-        tk.add_resource('../theme/resources', 'pages-theme')
 
         tk.add_public_directory(config, '../assets/vendor/ckeditor/')
 

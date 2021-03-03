@@ -20,6 +20,23 @@ main-css:
     - vendor/datepicker/css/datepicker.css
     - css/ckedit.css
 
+medium-js:
+  filters: rjsmin
+  output: ckanext-pages/%(version)s_medium.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - vendor/medium/medium-editor.js
+    - js/pages-editor.js
+
+medium-css:
+  output: ckanext-pages/%(version)s_medium.css
+  filters: cssrewrite
+  contents:
+    - vendor/medium/medium-editor.css
+    - css/bootstrap.css
+
 blog-css:
   output: ckanext-pages/%(version)s_blog.css
   filters: cssrewrite
