@@ -23,7 +23,7 @@
     {% for page in pages %}
       {% if ckan_29_or_higher %}
         {% if id %} {# this is for orgs and groups #}
-          {% set url = h.url_for('pages.' + action, id=id, page=page.name) %}
+          {% set url = h.url_for('pages.{}_pages_show'.format(c.group_dict['type']), id=id, page=page.name) %}
         {% elif type == 'blog' %}
           {% set url = h.url_for('pages.blog_show', page=page.name) %}
         {% else %}

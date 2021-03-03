@@ -23,13 +23,24 @@
 {% else %}
   {% set page_url = '/' + page %}
 {% endif %}
+
+{% if ckan_29_or_higher %}
+    {% set prefix = 'pages.' + prefix %}
+{% endif %}
 {% set action_url = h.url_for(prefix + 'edit', page=page_url, **args) %}
 {% set cancel_url = h.url_for(prefix + 'index', **args) %}
 {% set slug_prefix = cancel_url ~ '/' %}
 {% set slug_domain = h.url_for(prefix + 'index', qualified=true, **args) %}
 {% if page %}
   {% if ckan_29_or_higher %}
-    {% set delete_url = h.url_for('pages.delete', page=page_url, **args) %}
+
+    {% if type == 'org' %}
+      {% set delete_url = h.url_for('pages.organization_pages_delete', page=page_url, **args) %}
+    {% elif type == 'group' %}
+      {% set delete_url = h.url_for('pages.group_pages_delete', page=page_url, **args) %}
+    {% else %}
+      {% set delete_url = h.url_for('pages.delete', page=page_url, **args) %}
+    {% endif %}
   {% else %}
     {% set delete_url = h.url_for(prefix + 'delete', page=page_url, **args) %}
   {% endif %}
@@ -103,7 +114,6 @@
     {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
     {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-js' %}
     {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-css' %}
-    <div id='YOOOO' >HHASHASHAHS</div>
     <div class="control-group">
         <label for="field-content-ck" class="control-label">{{ _('Content') }}</label>
     </div>

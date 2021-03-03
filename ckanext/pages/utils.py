@@ -78,8 +78,7 @@ def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type=
             error_summary = e.error_summary
             tk.h.flash_error(error_summary)
             return pages_edit(
-                '/' + page if page else None,
-                data, errors, error_summary, page_type=page_type)
+                page, data, errors, error_summary, page_type=page_type)
         if ckan_29_or_higher:
             endpoint = 'show' if page_type in ('pages', 'page') else '%s_show' % page_type
             return tk.redirect_to('pages.%s' % endpoint, page=page_dict['name'])
@@ -156,7 +155,10 @@ def _inject_views_into_page(_page):
         elif not helpers.resource_view_is_iframed(view):
             resource_view_html = helpers.rendered_resource_view(view, resource, package)
         else:
-            src = helpers.url_for(qualified=True, controller='package', action='resource_view', id=package['name'], resource_id=resource['id'], view_id=view['id'])
+            if ckan_29_or_higher:
+                src = helpers.url_for('resource.view', id=package['name'], resource_id=resource['id'], view_id=view['id'], _external=True)
+            else:
+                src = helpers.url_for(qualified=True, controller='package', action='resource_view', id=package['name'], resource_id=resource['id'], view_id=view['id'])
             message = _('Your browser does not support iframes.')
             resource_view_html = '<iframe src="{src}" frameborder="0" width="100%" height="100%" style="display:block"> <p>{message}</p> </iframe>'.format(src=src, message=message)
 
@@ -242,3 +244,160 @@ def pages_upload():
     return """<script type='text/javascript'>
                   window.parent.CKEDITOR.tools.callFunction(%s, '%s');
               </script>""" % (func_num, url['url'])
+
+
+def group_list_pages(id, group_type, group_dict=None):
+    tk.c.pages_dict = tk.get_action('ckanext_pages_list')(
+        data_dict={'org_id': tk.c.group_dict['id']}
+    )
+    return tk.render(
+        'ckanext_pages/{}_page_list.html'.format(group_type),
+        extra_vars={
+            'group_type': group_type,
+            'group_dict': group_dict
+        })
+
+
+def _template_setup_group(id, group_type):
+    if not id:
+        return
+    context = {'for_view': True}
+    action = 'organization_show' if group_type == 'organization' else 'group_show'
+    try:
+        tk.c.group_dict = tk.get_action(action)(context, {'id': id})
+    except tk.ObjectNotFound:
+        tk.abort(404, _('{} not found'.format(group_type.title())))
+    except tk.NotAuthorized:
+        tk.abort(401, _('Unauthorized to read {} {}'.format(group_type, id)))
+
+
+def group_show(id, group_type, page=None):
+
+    if page and page.startswith('/'):
+        page = page[1:]
+
+    _template_setup_group(id, group_type)
+
+    context = {'for_view': True}
+
+    action = 'organization_show' if group_type == 'organization' else 'group_show'
+
+    group_dict = tk.get_action(action)(context, {'id': id})
+
+    if not page:
+        return group_list_pages(id, group_type, group_dict)
+
+    _page = tk.get_action('ckanext_pages_show')(
+        data_dict={'org_id': tk.c.group_dict['id'],
+                   'page': page}
+    )
+    if _page is None:
+        return group_list_pages(id, group_type, group_dict)
+
+    tk.c.page = _page
+
+    return tk.render(
+        'ckanext_pages/{}_page.html'.format(group_type),
+        {
+            'group_type': group_type,
+            'group_dict': group_dict
+        }
+    )
+
+
+def group_edit(id, group_type, page=None, data=None, errors=None, error_summary=None):
+
+    _template_setup_group(id, group_type)
+
+    page_dict = None
+    if page:
+        if page.startswith('/'):
+            page = page[1:]
+        page_dict = tk.get_action('ckanext_pages_show')(
+            data_dict={'org_id': tk.c.group_dict['id'], 'page': page}
+        )
+    if page_dict is None:
+        page_dict = {}
+
+    if tk.request.method == 'POST' and not data:
+
+        data = _parse_form_data(tk.request)
+
+        page_dict.update(data)
+
+        data = _parse_form_data(tk.request)
+        page_dict['org_id'] = tk.c.group_dict['id']
+        page_dict['page'] = page
+        try:
+            tk.get_action('ckanext_org_pages_update')(
+                data_dict=page_dict
+            )
+        except tk.ValidationError as e:
+            errors = e.error_dict
+            error_summary = e.error_summary
+            return group_edit(id, group_type, page, data, errors, error_summary)
+        if ckan_29_or_higher:
+            endpoint = 'pages.{}_pages_show'.format(group_type)
+            return tk.redirect_to(endpoint, id=id, page=page_dict['name'])
+        else:
+            endpoint = '{}_pages'.format(group_type)
+            tk.redirect_to(endpoint, id=id, page='/' + page_dict['name'])
+
+    if not data:
+        data = page_dict
+
+    errors = errors or {}
+    error_summary = error_summary or {}
+
+    context = {'for_view': True}
+
+    action = 'organization_show' if group_type == 'organization' else 'group_show'
+    group_dict = tk.get_action(action)(context, {'id': id})
+
+    vars = {'data': data, 'errors': errors,
+            'error_summary': error_summary, 'page': page,
+            'group_type': group_type, 'group_dict': group_dict}
+
+    return tk.render(
+        'ckanext_pages/{}_page_edit.html'.format(group_type), extra_vars=vars)
+
+
+def group_delete(id, group_type, page):
+
+    _template_setup_group(id, group_type)
+
+    if page.startswith('/'):
+        page = page[1:]
+
+    if 'cancel' in tk.request.params:
+        if ckan_29_or_higher:
+            return tk.redirect_to('pages.%s_edit' % group_type, id=tk.c.group_dict['name'], page=page)
+        else:
+            tk.redirect_to('%s_edit' % group_type, id=tk.c.group_dict['name'], page='/' + page)
+
+    try:
+        if tk.request.method == 'POST':
+            action = 'ckanext_org_pages_delete' if group_type == 'organization' else 'ckanext_group_pages_delete'
+            action = tk.get_action(action)
+            action({}, {'org_id': tk.c.group_dict['id'], 'page': page})
+            if ckan_29_or_higher:
+                endpoint = 'pages.{}_pages_index'.format(group_type)
+                return tk.redirect_to(endpoint, id=id)
+            else:
+                tk.redirect_to('{}_pages_index'.format(group_type), id=id)
+        else:
+            tk.abort(404, _('Page Not Found'))
+    except tk.NotAuthorized:
+        tk.abort(401, _('Unauthorized to delete page'))
+    except tk.ObjectNotFound:
+        tk.abort(404, _('{} not found'.format(group_type.title())))
+
+    context = {'for_view': True}
+
+    action = 'organization_show' if group_type == 'organization' else 'group_show'
+    group_dict = tk.get_action(action)(context, {'id': id})
+
+    return tk.render(
+        'ckanext_pages/confirm_delete.html',
+        {'page': page, 'group_type': group_type, 'group_dict': group_dict}
+    )
