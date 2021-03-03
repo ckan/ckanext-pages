@@ -39,7 +39,7 @@
     {% elif type == 'group' %}
       {% set delete_url = h.url_for('pages.group_pages_delete', page=page_url, **args) %}
     {% else %}
-      {% set delete_url = h.url_for('pages.delete', page=page_url, **args) %}
+      {% set delete_url = h.url_for('pages.blog_delete' if type == 'blog' else 'pages.delete', page=page_url, **args) %}
     {% endif %}
   {% else %}
     {% set delete_url = h.url_for(prefix + 'delete', page=page_url, **args) %}
