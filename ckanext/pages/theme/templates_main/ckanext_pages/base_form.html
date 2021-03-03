@@ -15,19 +15,23 @@
     {% set prefix = 'blog_' %}
     {% set args = {} %}
 {% else %}
-    {% set prefix = 'pages_' %}
+    {% if ckan_29_or_higher %}
+       {% set prefix = '' %}
+    {% else %}
+       {% set prefix = 'pages_' %}
+    {% endif %}
     {% set args = {} %}
 {% endif %}
+
 {% if ckan_29_or_higher %}
   {% set page_url = page %}
 {% else %}
   {% set page_url = '/' + page %}
 {% endif %}
-
 {% if ckan_29_or_higher %}
-    {% set prefix = 'pages.' + prefix %}
+   {% set prefix = 'pages.' + prefix %}
 {% endif %}
-{% set action_url = h.url_for(prefix + 'edit', page=page_url, **args) %}
+
 {% set cancel_url = h.url_for(prefix + 'index', **args) %}
 {% set slug_prefix = cancel_url ~ '/' %}
 {% set slug_domain = h.url_for(prefix + 'index', qualified=true, **args) %}
