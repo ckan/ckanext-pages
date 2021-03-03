@@ -28,6 +28,9 @@ class TestPages():
             },
             extra_environ=env,
         )
+        if not ckan_29_or_higher:
+            response = response.follow(extra_environ=env)
+
         assert '<h1 class="page-heading">Page Title</h1>' in response.body
 
     @pytest.mark.ckan_config('ckanext.pages.allow_html', 'True')
@@ -61,7 +64,7 @@ class TestPages():
         page = 'test_html_page'
         page = '/' + page if not ckan_29_or_higher else page
         response = app.post(
-            url=toolkit.url_for('pages_edit', page='test_html_page'),
+            url=toolkit.url_for('pages_edit', page=page),
             params={
                 'title': 'Disallowed',
                 'name': 'page_html_disallowed',

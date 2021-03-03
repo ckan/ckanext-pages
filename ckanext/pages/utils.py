@@ -83,7 +83,8 @@ def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type=
             endpoint = 'show' if page_type in ('pages', 'page') else '%s_show' % page_type
             return tk.redirect_to('pages.%s' % endpoint, page=page_dict['name'])
         else:
-            tk.redirect_to('%s_show' % page_type, page='/' + page_dict['name'])
+            endpoint = 'pages_show' if page_type == 'page' else '%s_show' % page_type
+            tk.redirect_to(endpoint, page='/' + page_dict['name'])
 
     try:
         tk.check_access('ckanext_pages_update', {'user': tk.c.user or tk.c.author})
