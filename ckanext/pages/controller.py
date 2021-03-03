@@ -50,7 +50,7 @@ class PagesController(p.toolkit.BaseController):
     def blog_edit(self, page=None, data=None, errors=None, error_summary=None):
         return utils.pages_edit(page, data, errors, error_summary, page_type='blog')
 
-    def pages_edit(self, page=None, data=None, errors=None, error_summary=None, page_type='pages'):
+    def pages_edit(self, page=None, data=None, errors=None, error_summary=None, page_type='page'):
         return utils.pages_edit(page, data, errors, error_summary, page_type)
 
     def pages_upload(self):
