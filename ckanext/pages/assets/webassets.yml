@@ -5,12 +5,11 @@ main-js:
     preload:
       - base/main
   contents:
-    - ckeditor_path.js
     - vendor/ckeditor/ckeditor.js
     - vendor/ckeditor/adapters/jquery.js
     - vendor/datepicker/js/bootstrap-datepicker.js
-    - ckedit.js
-    - datepicker.js
+    - js/ckedit.js
+    - js/datepicker.js
 
 main-css:
   output: ckanext-pages/%(version)s_main.css
@@ -19,5 +18,17 @@ main-css:
 
     - vendor/ckeditor/skins/moono/editor_gecko.css
     - vendor/datepicker/css/datepicker.css
-    - ckedit.css
+    - css/ckedit.css
+
+blog-css:
+  output: ckanext-pages/%(version)s_blog.css
+  filters: cssrewrite
+  contents:
+    - css/blog.css
+
+pages-css:
+  output: ckanext-pages/%(version)s_pages.css
+  filters: cssrewrite
+  contents:
+    - css/pages.css
 

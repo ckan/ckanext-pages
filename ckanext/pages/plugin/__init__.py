@@ -136,9 +136,8 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
 
         tk.add_resource('../theme/public', 'ckanext-pages')
         tk.add_resource('../theme/resources', 'pages-theme')
-        tk.add_public_directory(config, '../theme/public')
 
-        tk.add_public_directory(config, '../theme/public/vendor/ckeditor/skins/moono')
+        tk.add_public_directory(config, '../assets/vendor/ckeditor/')
 
     def get_helpers(self):
         return {
