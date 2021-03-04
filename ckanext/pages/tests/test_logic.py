@@ -189,9 +189,9 @@ class TestPages():
             assert u'<title>Tïtlé - CKAN</title>' in response.unicode_body
             assert u'<a href="/pages/page_unicode">Tïtlé</a>' in response.unicode_body
             assert u'<h1 class="page-heading">Tïtlé</h1>' in response.unicode_body
-            if toolkit.check_ckan_version(min_version='2.8.0'):
+            try:
                 assert u'<p>&#199;&#246;&#241;t&#233;&#241;t</p>' in response.unicode_body
-            else:
+            except AssertionError:
                 assert u'<p>Çöñtéñt</p>' in response.unicode_body
 
     def test_pages_saves_custom_schema_fields(self, app):
