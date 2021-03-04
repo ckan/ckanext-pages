@@ -1,3 +1,5 @@
+import six
+
 import ckantoolkit as tk
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.plugins as p
@@ -166,7 +168,7 @@ def _inject_views_into_page(_page):
         view_element = lxml.html.fromstring(resource_view_html)
         element.append(view_element)
 
-    new_content = lxml.html.tostring(root)
+    new_content = six.ensure_text(lxml.html.tostring(root))
     if new_content.startswith('<div>') and new_content.endswith('</div>'):
         # lxml will add a <div> tag to text that starts with an HTML tag,
         # which will cause the rendering to fail

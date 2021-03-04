@@ -1,6 +1,11 @@
-import cgi
+
 import logging
-import urllib
+try:
+    from html import escape as html_escape
+except ImportError:
+    from cgi import escape as html_escape
+import six
+from six.moves.urllib.parse import quote
 
 import ckantoolkit as tk
 
@@ -68,8 +73,11 @@ def build_pages_nav_main(*args):
 
     for page in pages_list:
         type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
-        name = urllib.quote(page['name'].encode('utf-8')).decode('utf-8')
-        title = cgi.escape(page['title'])
+        if six.PY2:
+            name = quote(page['name'].encode('utf-8')).decode('utf-8')
+        else:
+            name = quote(page['name'])
+        title = html_escape(page['title'])
         link = tk.h.literal(u'<a href="/{}/{}">{}</a>'.format(type_, name, title))
         if page['name'] == page_name:
             li = tk.literal('<li class="active">') + link + tk.literal('</li>')
