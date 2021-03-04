@@ -7,7 +7,10 @@ import ckan.lib.navl.dictization_functions as df
 import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
 from ckan.plugins import toolkit as tk
-from HTMLParser import HTMLParser
+try:
+    from html.parser import HTMLParser
+except ImportError:
+    from HTMLParser import HTMLParser
 from ckanext.pages.logic.schema import update_pages_schema
 
 try:
@@ -15,8 +18,7 @@ try:
 except ImportError:
     import ckan.new_authz as authz
 
-
-import db
+from ckanext.pages import db
 
 
 class HTMLFirstImage(HTMLParser):
