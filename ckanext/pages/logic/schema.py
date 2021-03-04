@@ -13,7 +13,7 @@ def default_pages_schema():
         unicode_safe = p.toolkit.get_validator('unicode_safe')
     except p.toolkit.UnknownValidator:
         # CKAN 2.7
-        unicode_safe = unicode
+        unicode_safe = unicode  # noqa: F821
     return {
         'id': [ignore_empty, unicode_safe],
         'title': [not_empty, unicode_safe],
