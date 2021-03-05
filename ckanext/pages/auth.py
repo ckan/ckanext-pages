@@ -5,7 +5,7 @@ try:
 except ImportError:
     import ckan.new_authz as authz
 
-import db
+from ckanext.pages import db
 
 
 def sysadmin(context, data_dict):

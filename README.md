@@ -1,5 +1,6 @@
-[![Build Status](https://travis-ci.org/ckan/ckanext-pages.svg?branch=master)](https://travis-ci.org/ckan/ckanext-pages)
-[![Coverage Status](https://coveralls.io/repos/ckan/ckanext-pages/badge.svg?branch=master&service=github)](https://coveralls.io/github/ckan/ckanext-pages?branch=master)
+
+![Tests](https://github.com/ckan/ckanext-pages/workflows/Tests/badge.svg?branch=master)
+
 ckanext-pages
 =============
 
@@ -7,7 +8,7 @@ This extension gives you an easy way to add simple pages to CKAN.
 
 By default you can add pages to the main CKAN menu.
 
-Works for ckan>=2.3
+Tested on CKAN 2.7, 2.8 and 2.9.
 
 ## Installation
 
@@ -36,7 +37,7 @@ ckanext.pages.organization = True
 ckanext.pages.group = True
 ```
 
-These options are False by default and this feature is experimental.
+These options are False by default.
 
 
 This module also gives you a quick way to remove default elements from the CKAN menu and you may need todo this
@@ -108,7 +109,7 @@ If you want to override, make sure your extension is added before `pages` in the
 
 ## Dependencies
 
-* lxml
+* lxml (optional, only used for injecting resource views into pages)
 
 
 ## License

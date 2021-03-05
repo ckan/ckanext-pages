@@ -1,0 +1,50 @@
+main-js:
+  filters: rjsmin
+  output: ckanext-pages/%(version)s_main.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - vendor/ckeditor/adapters/jquery.js
+    - vendor/datepicker/js/bootstrap-datepicker.js
+    - js/ckedit.js
+    - js/datepicker.js
+
+main-css:
+  output: ckanext-pages/%(version)s_main.css
+  filters: cssrewrite
+  contents:
+
+    - vendor/ckeditor/skins/moono/editor_gecko.css
+    - vendor/datepicker/css/datepicker.css
+    - css/ckedit.css
+
+medium-js:
+  filters: rjsmin
+  output: ckanext-pages/%(version)s_medium.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - vendor/medium/medium-editor.js
+    - js/pages-editor.js
+
+medium-css:
+  output: ckanext-pages/%(version)s_medium.css
+  filters: cssrewrite
+  contents:
+    - vendor/medium/medium-editor.css
+    - css/bootstrap.css
+
+blog-css:
+  output: ckanext-pages/%(version)s_blog.css
+  filters: cssrewrite
+  contents:
+    - css/blog.css
+
+index-css:
+  output: ckanext-pages/%(version)s_pages.css
+  filters: cssrewrite
+  contents:
+    - css/pages.css
+

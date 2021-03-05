@@ -2,11 +2,12 @@ import datetime
 import uuid
 import json
 
+from six import text_type
 import sqlalchemy as sa
 from sqlalchemy.orm import class_mapper
 try:
     from sqlalchemy.engine.result import RowProxy
-except:
+except ImportError:
     from sqlalchemy.engine.base import RowProxy
 
 pages_table = None
@@ -14,7 +15,7 @@ Page = None
 
 
 def make_uuid():
-    return unicode(uuid.uuid4())
+    return text_type(uuid.uuid4())
 
 
 def init_db(model):
@@ -150,11 +151,11 @@ def table_dictize(obj, context, **kw):
         elif isinstance(value, list):
             result_dict[name] = value
         else:
-            result_dict[name] = unicode(value)
+            result_dict[name] = text_type(value)
 
     result_dict.update(kw)
 
-    ##HACK For optimisation to get metadata_modified created faster.
+    # HACK For optimisation to get metadata_modified created faster.
 
     context['metadata_modified'] = max(result_dict.get('revision_timestamp', ''),
                                        context.get('metadata_modified', ''))

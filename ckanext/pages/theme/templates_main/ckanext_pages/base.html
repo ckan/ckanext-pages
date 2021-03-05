@@ -2,7 +2,9 @@
 
 {% block styles %}
   {{ super() }}
-  {% resource 'pages-theme/styles/pages.css' %}
+  {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
+  {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/index-css' %}
+
 {% endblock %}
 
 {% block page_header %}{% endblock %}

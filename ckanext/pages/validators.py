@@ -1,6 +1,7 @@
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
-import db
+from ckanext.pages import db
+
 
 def page_name_validator(key, data, errors, context):
     session = context['session']
@@ -14,6 +15,7 @@ def page_name_validator(key, data, errors, context):
     if result:
         errors[key].append(
             p.toolkit._('Page name already exists in database'))
+
 
 def not_empty_if_blog(key, data, errors, context):
     value = data.get(key)
