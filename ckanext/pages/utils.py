@@ -1,4 +1,5 @@
 import six
+import json
 
 import ckantoolkit as tk
 import ckan.lib.navl.dictization_functions as dict_fns
@@ -241,7 +242,11 @@ def pages_upload():
         upload_info = tk.get_action('ckanext_pages_upload')(None, data_dict)
     except tk.NotAuthorized:
         return tk.abort(401, _('Unauthorized to upload file %s') % id)
-    return upload_info
+    if ckan_29_or_higher:
+        return upload_info
+    else:
+        return json.dumps(upload_info)
+
 
 
 def group_list_pages(id, group_type, group_dict=None):
