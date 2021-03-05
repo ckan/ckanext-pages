@@ -14,8 +14,6 @@ main-css:
   output: ckanext-pages/%(version)s_main.css
   filters: cssrewrite
   contents:
-
-    - vendor/ckeditor/skins/moono/editor_gecko.css
     - vendor/datepicker/css/datepicker.css
     - css/ckedit.css
 

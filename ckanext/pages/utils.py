@@ -1,4 +1,5 @@
 import six
+import json
 
 import ckantoolkit as tk
 import ckan.lib.navl.dictization_functions as dict_fns
@@ -235,18 +236,17 @@ def pages_upload():
                 )
             )
         )
-        func_num = tk.request.args['CKEditorFuncNum']
     else:
         data_dict = tk.request.POST
-        func_num = tk.request.GET['CKEditorFuncNum']
     try:
-        url = tk.get_action('ckanext_pages_upload')(None, data_dict)
+        upload_info = tk.get_action('ckanext_pages_upload')(None, data_dict)
     except tk.NotAuthorized:
         return tk.abort(401, _('Unauthorized to upload file %s') % id)
+    if ckan_29_or_higher:
+        return upload_info
+    else:
+        return json.dumps(upload_info)
 
-    return """<script type='text/javascript'>
-                  window.parent.CKEDITOR.tools.callFunction(%s, '%s');
-              </script>""" % (func_num, url['url'])
 
 
 def group_list_pages(id, group_type, group_dict=None):
