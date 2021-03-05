@@ -3,6 +3,14 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 0.3.0 (2021-03-05)
+
+## Added
+
+- CKAN 2.9 and Python 3 support ([#109](https://github.com/ckan/ckanext-pages/pull/109))
+- Upgrade CKEditor version ([97a3ecc](ehttps://github.com/ckan/ckanext-pages/commit/97a3ecce))
+
 ## 0.2.4 (2021-02-17)
 
 
