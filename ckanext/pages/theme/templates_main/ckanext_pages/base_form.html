@@ -69,24 +69,22 @@
 {% endif %}
 
 
-<form class="form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form">
+<form class="dataset-form pages-form" method="post" action="{{ action_url }}" data-module="basic-form" class="dataset-form">
 
   {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
 
-  {{ form.input('title', id='field-title', label=_('Title'), placeholder=title_placeholder, value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
+  {{ form.input('title', id='field-title', label=_('Title'), placeholder=title_placeholder, value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'class': 'form-control'}) }}
 
   {% set domain = slug_domain|replace("http://", "")|replace("https://", "") %}
   {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain~'/', 'data-module-placeholder': '<page>'} %}
   {{ form.prepend('name', id='field-name', label=_('URL'), prepend=slug_prefix, placeholder=_(url_placeholder), value=data.name, error=errors.name, attrs=attrs) }}
 
-  {{ form.input('publish_date', id='field-publish_date', label=_('Publish Date'), placeholder=_('2005-01-01'), value=data.publish_date, error=errors.publish_date, classes=[], attrs={'data-module': 'datepicker', 'data-date-format': 'yyyy-mm-dd'}) }}
+  {{ form.input('publish_date', id='field-publish_date', label=_('Publish Date'), placeholder=_('2021-04-23'), value=data.publish_date, error=errors.publish_date, classes=[], attrs={'data-module': 'datepicker', 'data-date-format': 'yyyy-mm-dd'}) }}
 
   {% block extra_pages_form %}
   {% endblock extra_pages_form %}
 
-  {#{{ form.input('name', id='field-name', label=_('Name'), placeholder=_('my-name'), value=data.name, error=errors.name, classes=['control-full']) }}#}
-
-  <div class="control-group">
+  <div class="control-group form-group">
     <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
     <div class="controls">
       <select id="field-private" class="form-control" name="private">
@@ -98,7 +96,7 @@
   </div>
 
   {% if not hide_field_order %}
-    <div class="control-group">
+    <div class="control-group form-group">
       <label for="field-order" class="control-label">{{ _('Header Order') }}</label>
       <div class="controls">
         <select id="field-order" class="form-control" name="order">
@@ -139,7 +137,7 @@
 
   <div class="form-actions">
     {% if not page %}
-      <a class="btn pull-left" href="{{ cancel_url }}">{{ _('Cancel') }}</a>
+      <a class="btn btn-default pull-left" href="{{ cancel_url }}">{{ _('Cancel') }}</a>
       <button class="btn btn-primary" name="save" value="save" type="submit">{{ _('Add') }}</button>
     {% else %}
 
