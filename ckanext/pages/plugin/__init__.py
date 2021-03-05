@@ -143,7 +143,7 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
 
         tk.add_public_directory(config, '../assets/')
         tk.add_public_directory(config, '../assets/vendor/ckeditor/')
-        tk.add_public_directory(config, '../assets/vendor/ckeditor/skins/moono')
+        tk.add_public_directory(config, '../assets/vendor/ckeditor/skins/moono-lisa')
 
     def get_helpers(self):
         return {

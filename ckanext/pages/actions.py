@@ -168,7 +168,7 @@ def pages_upload(context, data_dict):
            'uploads/page_images/%s' % image_url,
             qualified=True
         )
-    return {'url': image_url}
+    return {'url': image_url, 'fileName': upload.filename, 'uploaded': 1}
 
 @tk.side_effect_free
 def pages_show(context, data_dict):
