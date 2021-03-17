@@ -42,7 +42,11 @@
         {% for post in posts %}
             <div class="blog-title">
                 <h3 class="dataset-heading">
-                    <a href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + post.name) }}">{{ post.title or post.name }}</a>
+                    {% if h.ckan_version().split('.')[1] | int >= 9 %}
+                      <a href="{{ h.url_for('pages.blog_show', page='/' + post.name) }}">{{ post.title or post.name }}</a>
+                    {% else %}
+                      <a href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + post.name) }}">{{ post.title or post.name }}</a>
+                    {% endif %}
                     <br>
                     {% if post.publish_date %}
                         <small> {{ h.render_datetime(post.publish_date) }} </small>
@@ -53,7 +57,11 @@
                 {{ h.markdown_extract(post.content) }}
                 {% if post.publish_date %}
                    <br>
-                   <a class="btn btn-small btn-primary more" href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + post.name) }}">{{ _('More') }}</a>
+                    {% if h.ckan_version().split('.')[1] | int >= 9 %}
+                      <a class="btn btn-small btn-primary more" href="{{ h.url_for('pages.blog_show', page='/' + post.name) }}">{{ _('More') }}</a>
+                    {% else %}
+                      <a class="btn btn-small btn-primary more" href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + post.name) }}">{{ _('More') }}</a>
+                    {% endif %}
                 {% endif %}
             </div>
         {% endfor %}
