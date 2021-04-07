@@ -4,6 +4,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## 0.3.1 (2021-04-07)
+
+## Fixed
+
+- Fix links in blog page ([#111](https://github.com/ckan/ckanext-pages/pull/111))
+
+## Added
+
+- Wrap form fields in blocks for easier extending ([3618dd7](https://github.com/ckan/ckanext-pages/commit/3618dd7))
+
+
+
 ## 0.3.0 (2021-03-05)
 
 ## Added
