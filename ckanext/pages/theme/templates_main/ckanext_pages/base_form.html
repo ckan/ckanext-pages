@@ -73,85 +73,96 @@
 
   {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
 
-  {{ form.input('title', id='field-title', label=_('Title'), placeholder=title_placeholder, value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'class': 'form-control'}) }}
+  {% block form_basic_fields %}
+    {{ form.input('title', id='field-title', label=_('Title'), placeholder=title_placeholder, value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'class': 'form-control'}) }}
 
-  {% set domain = slug_domain|replace("http://", "")|replace("https://", "") %}
-  {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain~'/', 'data-module-placeholder': '<page>'} %}
-  {{ form.prepend('name', id='field-name', label=_('URL'), prepend=slug_prefix, placeholder=_(url_placeholder), value=data.name, error=errors.name, attrs=attrs) }}
+    {% set domain = slug_domain|replace("http://", "")|replace("https://", "") %}
+    {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain~'/', 'data-module-placeholder': '<page>'} %}
+    {{ form.prepend('name', id='field-name', label=_('URL'), prepend=slug_prefix, placeholder=_(url_placeholder), value=data.name, error=errors.name, attrs=attrs) }}
 
-  {{ form.input('publish_date', id='field-publish_date', label=_('Publish Date'), placeholder=_('2021-04-23'), value=data.publish_date, error=errors.publish_date, classes=[], attrs={'data-module': 'datepicker', 'data-date-format': 'yyyy-mm-dd'}) }}
+    {{ form.input('publish_date', id='field-publish_date', label=_('Publish Date'), placeholder=_('2021-04-23'), value=data.publish_date, error=errors.publish_date, classes=[], attrs={'data-module': 'datepicker', 'data-date-format': 'yyyy-mm-dd'}) }}
+
+  {% endblock %}
 
   {% block extra_pages_form %}
   {% endblock extra_pages_form %}
 
-  <div class="control-group form-group">
-    <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
-    <div class="controls">
-      <select id="field-private" class="form-control" name="private">
-        {% for option in [(true, _('Private')), (false, _('Public'))] %}
-        <option value="{{ option[0] }}" {% if option[0] == data.private %}selected="selected"{% endif %}>{{ option[1] }}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
-
-  {% if not hide_field_order %}
+  {% block form_visibility_fields %}
     <div class="control-group form-group">
-      <label for="field-order" class="control-label">{{ _('Header Order') }}</label>
+      <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
       <div class="controls">
-        <select id="field-order" class="form-control" name="order">
-            {% for option in [('', _('Not in Menu')), ('1','1'), ('2', '2'), ('3', '3') , ('4', '4')] %}
-          <option value="{{ option[0] }}" {% if option[0] == data.order %}selected="selected"{% endif %}>{{ option[1] }}</option>
+        <select id="field-private" class="form-control" name="private">
+          {% for option in [(true, _('Private')), (false, _('Public'))] %}
+          <option value="{{ option[0] }}" {% if option[0] == data.private %}selected="selected"{% endif %}>{{ option[1] }}</option>
           {% endfor %}
         </select>
       </div>
     </div>
-  {% endif %}
 
-  {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
-  {% set editor = h.get_wysiwyg_editor() %}
-  {% if editor == 'medium' %}
-    {% if ckan_29_or_higher %}
-      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-js' %}
-      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-css' %}
-    {% else %}
-      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium' %}
+    {% if not hide_field_order %}
+      <div class="control-group form-group">
+        <label for="field-order" class="control-label">{{ _('Header Order') }}</label>
+        <div class="controls">
+          <select id="field-order" class="form-control" name="order">
+              {% for option in [('', _('Not in Menu')), ('1','1'), ('2', '2'), ('3', '3') , ('4', '4')] %}
+            <option value="{{ option[0] }}" {% if option[0] == data.order %}selected="selected"{% endif %}>{{ option[1] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
     {% endif %}
 
+  {% endblock %}
 
-    {{ wysiwyg.editor('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content|safe, error=errors.content) }}
-  {% elif editor == 'ckeditor' %}
-    {% if ckan_29_or_higher %}
-      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-js' %}
-      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-css' %}
+  {% block form_content %}
+    {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
+    {% set editor = h.get_wysiwyg_editor() %}
+    {% if editor == 'medium' %}
+      {% if ckan_29_or_higher %}
+        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-js' %}
+        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-css' %}
+      {% else %}
+        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium' %}
+      {% endif %}
+
+
+      {{ wysiwyg.editor('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content|safe, error=errors.content) }}
+    {% elif editor == 'ckeditor' %}
+      {% if ckan_29_or_higher %}
+        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-js' %}
+        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-css' %}
+      {% else %}
+        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main' %}
+      {% endif %}
+      <div class="control-group">
+          <label for="field-content-ck" class="control-label">{{ _('Content') }}</label>
+      </div>
+      <textarea id="field-content-ck" name="content" placeholder="{{_('My content')}}" data-module="ckedit" style="height:400px" data-module-site_url="{{ h.dump_json(h.url('/', locale='default', qualified=true)) }}"> {{ data.content }}</textarea>
     {% else %}
-      {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main' %}
+      {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content, error=errors.content) }}
     {% endif %}
-    <div class="control-group">
-        <label for="field-content-ck" class="control-label">{{ _('Content') }}</label>
+
+  {% endblock %}
+
+  {% block form_actions %}
+    <div class="form-actions">
+      {% if not page %}
+        <a class="btn btn-default pull-left" href="{{ cancel_url }}">{{ _('Cancel') }}</a>
+        <button class="btn btn-primary" name="save" value="save" type="submit">{{ _('Add') }}</button>
+      {% else %}
+
+        {% block delete_button %}
+          {% if h.check_access('ckanext_%spages_delete'|format(type ~ '_' if type in ('group', 'org') else ''), {'id': data.id})  %}
+            {% set locale = h.dump_json({'content': _('Are you sure you want to delete this Page?')}) %}
+            <a class="btn btn-danger pull-left" href="{{ delete_url }}" data-module="confirm-action" data-module-i18n="{{ locale }}">{% block delete_button_text %}{{ _('Delete') }}{% endblock %}</a>
+          {% endif %}
+        {% endblock %}
+
+        <button class="btn btn-primary" name="save" value="save" type="submit">{{ _('Save') }}</button>
+      {% endif %}
     </div>
-    <textarea id="field-content-ck" name="content" placeholder="{{_('My content')}}" data-module="ckedit" style="height:400px" data-module-site_url="{{ h.dump_json(h.url('/', locale='default', qualified=true)) }}"> {{ data.content }}</textarea>
-  {% else %}
-    {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content, error=errors.content) }}
-  {% endif %}
 
-  <div class="form-actions">
-    {% if not page %}
-      <a class="btn btn-default pull-left" href="{{ cancel_url }}">{{ _('Cancel') }}</a>
-      <button class="btn btn-primary" name="save" value="save" type="submit">{{ _('Add') }}</button>
-    {% else %}
-
-      {% block delete_button %}
-        {% if h.check_access('ckanext_%spages_delete'|format(type ~ '_' if type in ('group', 'org') else ''), {'id': data.id})  %}
-          {% set locale = h.dump_json({'content': _('Are you sure you want to delete this Page?')}) %}
-          <a class="btn btn-danger pull-left" href="{{ delete_url }}" data-module="confirm-action" data-module-i18n="{{ locale }}">{% block delete_button_text %}{{ _('Delete') }}{% endblock %}</a>
-        {% endif %}
-      {% endblock %}
-
-      <button class="btn btn-primary" name="save" value="save" type="submit">{{ _('Save') }}</button>
-    {% endif %}
-  </div>
-
+  {% endblock %}
 </form>
 
 {% block scripts %}
