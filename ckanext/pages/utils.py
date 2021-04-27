@@ -404,3 +404,9 @@ def group_delete(id, group_type, page):
         'ckanext_pages/confirm_delete.html',
         {'page': page, 'group_type': group_type, 'group_dict': group_dict}
     )
+
+def initdb():
+    import ckanext.pages.db as db
+    from ckan import model
+    if db.pages_table is None:
+        db.init_db(model)

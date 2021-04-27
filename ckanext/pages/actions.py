@@ -32,8 +32,6 @@ class HTMLFirstImage(HTMLParser):
 
 
 def _pages_show(context, data_dict):
-    if db.pages_table is None:
-        db.init_db(context['model'])
     org_id = data_dict.get('org_id')
     page = data_dict.get('page')
     out = db.Page.get(group_id=org_id, name=page)
@@ -44,8 +42,6 @@ def _pages_show(context, data_dict):
 
 def _pages_list(context, data_dict):
     search = {}
-    if db.pages_table is None:
-        db.init_db(context['model'])
     org_id = data_dict.get('org_id')
     ordered = data_dict.get('order')
     order_publish_date = data_dict.get('order_publish_date')
@@ -95,8 +91,6 @@ def _pages_list(context, data_dict):
     return out_list
 
 def _pages_delete(context, data_dict):
-    if db.pages_table is None:
-        db.init_db(context['model'])
     org_id = data_dict.get('org_id')
     page = data_dict.get('page')
     out = db.Page.get(group_id=org_id, name=page)
@@ -107,8 +101,6 @@ def _pages_delete(context, data_dict):
 
 
 def _pages_update(context, data_dict):
-    if db.pages_table is None:
-        db.init_db(context['model'])
     org_id = data_dict.get('org_id')
     page = data_dict.get('page')
     # we need the page in the context for name validation

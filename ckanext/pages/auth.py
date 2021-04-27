@@ -44,8 +44,6 @@ def page_group_admin(context, data_dict):
 
 
 def page_privacy(context, data_dict):
-    if db.pages_table is None:
-        db.init_db(context['model'])
     org_id = data_dict.get('org_id')
     page = data_dict.get('page')
     out = db.Page.get(group_id=org_id, name=page)
