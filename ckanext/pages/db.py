@@ -9,42 +9,17 @@ try:
     from sqlalchemy.engine.result import RowProxy
 except ImportError:
     from sqlalchemy.engine.base import RowProxy
+from ckan import model
+from ckan.model.domain_object import DomainObject
 
 pages_table = None
-Page = None
-
 
 def make_uuid():
     return text_type(uuid.uuid4())
 
 
 def init_db(model):
-    class _Page(model.DomainObject):
 
-        @classmethod
-        def get(cls, **kw):
-            '''Finds a single entity in the register.'''
-            query = model.Session.query(cls).autoflush(False)
-            return query.filter_by(**kw).first()
-
-        @classmethod
-        def pages(cls, **kw):
-            '''Finds a single entity in the register.'''
-            order = kw.pop('order', False)
-            order_publish_date = kw.pop('order_publish_date', False)
-
-            query = model.Session.query(cls).autoflush(False)
-            query = query.filter_by(**kw)
-            if order:
-                query = query.order_by(sa.cast(cls.order, sa.Integer)).filter(cls.order != '')
-            elif order_publish_date:
-                query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)
-            else:
-                query = query.order_by(cls.created.desc())
-            return query.all()
-
-    global Page
-    Page = _Page
     # We will just try to create the table.  If it already exists we get an
     # error but we can just skip it and carry on.
     sql = '''
@@ -94,31 +69,60 @@ def init_db(model):
         pass
     model.Session.commit()
 
+    if pages_table is None:
+        define_tables()
+
+
+class Page(DomainObject):
+
+    @classmethod
+    def get(cls, **kw):
+        '''Finds a single entity in the register.'''
+        query = model.Session.query(cls).autoflush(False)
+        return query.filter_by(**kw).first()
+
+    @classmethod
+    def pages(cls, **kw):
+        '''Finds a single entity in the register.'''
+        order = kw.pop('order', False)
+        order_publish_date = kw.pop('order_publish_date', False)
+
+        query = model.Session.query(cls).autoflush(False)
+        query = query.filter_by(**kw)
+        if order:
+            query = query.order_by(sa.cast(cls.order, sa.Integer)).filter(cls.order != '')
+        elif order_publish_date:
+            query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)
+        else:
+            query = query.order_by(cls.created.desc())
+        return query.all()
+
+
+def define_tables():
     types = sa.types
     global pages_table
     pages_table = sa.Table('ckanext_pages', model.meta.metadata,
-        sa.Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
-        sa.Column('title', types.UnicodeText, default=u''),
-        sa.Column('name', types.UnicodeText, default=u''),
-        sa.Column('content', types.UnicodeText, default=u''),
-        sa.Column('lang', types.UnicodeText, default=u''),
-        sa.Column('order', types.UnicodeText, default=u''),
-        sa.Column('private',types.Boolean,default=True),
-        sa.Column('group_id', types.UnicodeText, default=None),
-        sa.Column('user_id', types.UnicodeText, default=u''),
-        sa.Column('publish_date', types.DateTime),
-        sa.Column('page_type', types.DateTime),
-        sa.Column('created', types.DateTime, default=datetime.datetime.utcnow),
-        sa.Column('modified', types.DateTime, default=datetime.datetime.utcnow),
-        sa.Column('extras', types.UnicodeText, default=u'{}'),
-        extend_existing=True
-    )
+                           sa.Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
+                           sa.Column('title', types.UnicodeText, default=u''),
+                           sa.Column('name', types.UnicodeText, default=u''),
+                           sa.Column('content', types.UnicodeText, default=u''),
+                           sa.Column('lang', types.UnicodeText, default=u''),
+                           sa.Column('order', types.UnicodeText, default=u''),
+                           sa.Column('private',types.Boolean,default=True),
+                           sa.Column('group_id', types.UnicodeText, default=None),
+                           sa.Column('user_id', types.UnicodeText, default=u''),
+                           sa.Column('publish_date', types.DateTime),
+                           sa.Column('page_type', types.DateTime),
+                           sa.Column('created', types.DateTime, default=datetime.datetime.utcnow),
+                           sa.Column('modified', types.DateTime, default=datetime.datetime.utcnow),
+                           sa.Column('extras', types.UnicodeText, default=u'{}'),
+                           extend_existing=True
+                           )
 
     model.meta.mapper(
         Page,
         pages_table,
     )
-
 
 def table_dictize(obj, context, **kw):
     '''Get any model object and represent it as a dict'''
