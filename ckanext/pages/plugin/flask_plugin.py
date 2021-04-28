@@ -5,6 +5,7 @@ import ckan.plugins as p
 from ckanext.pages.blueprint import pages as pages_blueprint
 import ckanext.pages.cli as cli
 
+
 class MixinPlugin(p.SingletonPlugin):
 
     p.implements(p.IBlueprint)

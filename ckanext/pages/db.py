@@ -14,6 +14,7 @@ from ckan.model.domain_object import DomainObject
 
 pages_table = None
 
+
 def make_uuid():
     return text_type(uuid.uuid4())
 
@@ -45,7 +46,7 @@ class Page(DomainObject):
         if order:
             query = query.order_by(sa.cast(cls.order, sa.Integer)).filter(cls.order != '')
         elif order_publish_date:
-            query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)
+            query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)  # noqa: E711
         else:
             query = query.order_by(cls.created.desc())
         return query.all()
@@ -61,7 +62,7 @@ def define_tables():
                            sa.Column('content', types.UnicodeText, default=u''),
                            sa.Column('lang', types.UnicodeText, default=u''),
                            sa.Column('order', types.UnicodeText, default=u''),
-                           sa.Column('private',types.Boolean,default=True),
+                           sa.Column('private', types.Boolean, default=True),
                            sa.Column('group_id', types.UnicodeText, default=None),
                            sa.Column('user_id', types.UnicodeText, default=u''),
                            sa.Column('publish_date', types.DateTime),
@@ -76,6 +77,7 @@ def define_tables():
         Page,
         pages_table,
     )
+
 
 def table_dictize(obj, context, **kw):
     '''Get any model object and represent it as a dict'''

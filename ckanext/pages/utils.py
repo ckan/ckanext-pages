@@ -143,7 +143,8 @@ def _inject_views_into_page(_page):
             if not height.endswith('%') and not height.endswith('px'):
                 height = height + 'px'
             align = element.attrib.pop('align', 'none')
-            style = "width: %s; height: %s; float: %s; overflow: auto; vertical-align:middle; position:relative" % (width, height, align)
+            style = "width: %s; height: %s; float: %s; overflow: auto; vertical-align:middle; position:relative" \
+                    % (width, height, align)
             element.attrib['style'] = style
             element.attrib['class'] = 'pages-embed'
             view = tk.get_action('resource_view_show')({}, {'id': iframe_src[-36:]})
@@ -160,11 +161,15 @@ def _inject_views_into_page(_page):
             resource_view_html = helpers.rendered_resource_view(view, resource, package)
         else:
             if ckan_29_or_higher:
-                src = helpers.url_for('resource.view', id=package['name'], resource_id=resource['id'], view_id=view['id'], _external=True)
+                src = helpers.url_for('resource.view', id=package['name'],
+                                      resource_id=resource['id'], view_id=view['id'], _external=True)
             else:
-                src = helpers.url_for(qualified=True, controller='package', action='resource_view', id=package['name'], resource_id=resource['id'], view_id=view['id'])
+                src = helpers.url_for(qualified=True, controller='package',
+                                      action='resource_view', id=package['name'],
+                                      resource_id=resource['id'], view_id=view['id'])
             message = _('Your browser does not support iframes.')
-            resource_view_html = '<iframe src="{src}" frameborder="0" width="100%" height="100%" style="display:block"> <p>{message}</p> </iframe>'.format(src=src, message=message)
+            resource_view_html = '<iframe src="{src}" frameborder="0" width="100%" height="100%" ' \
+                                 'style="display:block"> <p>{message}</p> </iframe>'.format(src=src, message=message)
 
         view_element = lxml.html.fromstring(resource_view_html)
         element.append(view_element)
@@ -246,7 +251,6 @@ def pages_upload():
         return upload_info
     else:
         return json.dumps(upload_info)
-
 
 
 def group_list_pages(id, group_type, group_dict=None):
@@ -404,6 +408,7 @@ def group_delete(id, group_type, page):
         'ckanext_pages/confirm_delete.html',
         {'page': page, 'group_type': group_type, 'group_dict': group_dict}
     )
+
 
 def initdb():
     import ckanext.pages.db as db

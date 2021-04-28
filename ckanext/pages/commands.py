@@ -1,16 +1,21 @@
 import sys
 
-
 from ckan.plugins.toolkit import CkanCommand
 import ckanext.pages.utils as utils
 
+
 class PagesCommand(CkanCommand):
-    """
+    """Adds simple pages to ckan
+
+    Usage:
+
+        pages initdb
+        - Creates the necessary tables in the database
     """
     summary = __doc__.split('\n')[0]
     usage = __doc__
     max_args = 1
-    min_args = 1
+    min_args = 0
 
     def __init__(self, name):
         super(PagesCommand, self).__init__(name)
@@ -30,3 +35,4 @@ class PagesCommand(CkanCommand):
 
     def initdb(self):
         utils.initdb()
+        print("DB tables created")
