@@ -25,6 +25,20 @@ Make sure to add `pages` to `ckan.plugins` in your config file:
 ckan.plugins = pages
 ```
 
+## Database initialization
+
+You need to initialize database from command line with the following commands:
+
+ON CKAN >= 2.9:
+```
+(pyenv) $ ckan --config=/etc/ckan/default/ckan.ini pages initdb
+```
+
+ON CKAN <= 2.8:
+```
+(pyenv) $ paster --plugin=ckanext-pages pages initdb --config=/etc/ckan/default/production.ini
+```
+
 ## Configuration
 
 

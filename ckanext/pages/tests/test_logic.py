@@ -11,7 +11,7 @@ from ckanext.pages.logic import schema
 ckan_29_or_higher = toolkit.check_ckan_version(u'2.9')
 
 
-@pytest.mark.usefixtures("clean_db", "clean_pages", "pages_setup")
+@pytest.mark.usefixtures("clean_db", "pages_setup")
 class TestPages():
 
     def test_create_page(self, app):

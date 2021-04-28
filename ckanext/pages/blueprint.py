@@ -85,14 +85,20 @@ pages.add_url_rule("/blog_delete/<page>", view_func=blog_delete, endpoint='blog_
 
 pages.add_url_rule("/organization/pages/<id>", view_func=org_show, endpoint='organization_pages_index')
 pages.add_url_rule("/organization/pages/<id>/<page>", view_func=org_show, endpoint='organization_pages_show')
-pages.add_url_rule("/organization/pages_edit/<id>", view_func=org_edit, endpoint='organization_pages_new', methods=['GET', 'POST'])
-pages.add_url_rule("/organization/pages_edit/<id>/", view_func=org_edit, endpoint='organization_pages_new', methods=['GET', 'POST'])
-pages.add_url_rule("/organization/pages_edit/<id>/<page>", view_func=org_edit, endpoint='organization_pages_edit', methods=['GET', 'POST'])
-pages.add_url_rule("/organization/pages_delete/<id>/<page>", view_func=org_delete, endpoint='organization_pages_delete', methods=['GET', 'POST'])
+pages.add_url_rule("/organization/pages_edit/<id>", view_func=org_edit,
+                   endpoint='organization_pages_new', methods=['GET', 'POST'])
+pages.add_url_rule("/organization/pages_edit/<id>/", view_func=org_edit,
+                   endpoint='organization_pages_new', methods=['GET', 'POST'])
+pages.add_url_rule("/organization/pages_edit/<id>/<page>", view_func=org_edit,
+                   endpoint='organization_pages_edit', methods=['GET', 'POST'])
+pages.add_url_rule("/organization/pages_delete/<id>/<page>", view_func=org_delete,
+                   endpoint='organization_pages_delete', methods=['GET', 'POST'])
 
 pages.add_url_rule("/group/pages/<id>", view_func=group_show, endpoint='group_pages_index')
 pages.add_url_rule("/group/pages/<id>/<page>", view_func=group_show, endpoint='group_pages_show')
 pages.add_url_rule("/group/pages_edit/<id>", view_func=group_edit, endpoint='group_pages_new', methods=['GET', 'POST'])
 pages.add_url_rule("/group/pages_edit/<id>/", view_func=group_edit, endpoint='group_pages_new', methods=['GET', 'POST'])
-pages.add_url_rule("/group/pages_edit/<id>/<page>", view_func=group_edit, endpoint='group_pages_edit', methods=['GET', 'POST'])
-pages.add_url_rule("/group/pages_delete/<id>/<page>", view_func=group_delete, endpoint='group_pages_delete', methods=['GET', 'POST'])
+pages.add_url_rule("/group/pages_edit/<id>/<page>", view_func=group_edit,
+                   endpoint='group_pages_edit', methods=['GET', 'POST'])
+pages.add_url_rule("/group/pages_delete/<id>/<page>", view_func=group_delete,
+                   endpoint='group_pages_delete', methods=['GET', 'POST'])
