@@ -201,6 +201,7 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
     def configure(self, config):
         db.init_db()
 
+
 class TextBoxView(p.SingletonPlugin):
 
     p.implements(p.IConfigurer, inherit=True)
