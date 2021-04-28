@@ -22,6 +22,9 @@ def init_db():
     if pages_table is None:
         define_tables()
 
+    if not pages_table.exists():
+        pages_table.create()
+
 
 class Page(DomainObject):
 
