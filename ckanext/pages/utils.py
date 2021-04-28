@@ -407,5 +407,4 @@ def group_delete(id, group_type, page):
 
 def initdb():
     import ckanext.pages.db as db
-    from ckan import model
-    db.init_db(model)
+    db.init_db()

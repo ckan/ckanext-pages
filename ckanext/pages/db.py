@@ -18,57 +18,7 @@ def make_uuid():
     return text_type(uuid.uuid4())
 
 
-def init_db(model):
-
-    # We will just try to create the table.  If it already exists we get an
-    # error but we can just skip it and carry on.
-    sql = '''
-                CREATE TABLE ckanext_pages (
-                    id text NOT NULL,
-                    title text,
-                    name text,
-                    content text,
-                    lang text,
-                    "order" text,
-                    private boolean,
-                    group_id text,
-                    user_id text NOT NULL,
-                    created timestamp without time zone,
-                    modified timestamp without time zone
-                );
-    '''
-    conn = model.Session.connection()
-    try:
-        conn.execute(sql)
-    except sa.exc.ProgrammingError:
-        pass
-    model.Session.commit()
-
-    sql_upgrade_01 = (
-        "ALTER TABLE ckanext_pages add column publish_date timestamp;",
-        "ALTER TABLE ckanext_pages add column page_type Text;",
-        "UPDATE ckanext_pages set page_type = 'page';",
-    )
-
-    conn = model.Session.connection()
-    try:
-        for statement in sql_upgrade_01:
-            conn.execute(statement)
-    except sa.exc.ProgrammingError:
-        pass
-    model.Session.commit()
-
-    sql_upgrade_02 = ('ALTER TABLE ckanext_pages add column extras Text;',
-                      "UPDATE ckanext_pages set extras = '{}';")
-
-    conn = model.Session.connection()
-    try:
-        for statement in sql_upgrade_02:
-            conn.execute(statement)
-    except sa.exc.ProgrammingError:
-        pass
-    model.Session.commit()
-
+def init_db():
     if pages_table is None:
         define_tables()
 
@@ -112,7 +62,7 @@ def define_tables():
                            sa.Column('group_id', types.UnicodeText, default=None),
                            sa.Column('user_id', types.UnicodeText, default=u''),
                            sa.Column('publish_date', types.DateTime),
-                           sa.Column('page_type', types.DateTime),
+                           sa.Column('page_type', types.UnicodeText),
                            sa.Column('created', types.DateTime, default=datetime.datetime.utcnow),
                            sa.Column('modified', types.DateTime, default=datetime.datetime.utcnow),
                            sa.Column('extras', types.UnicodeText, default=u'{}'),
