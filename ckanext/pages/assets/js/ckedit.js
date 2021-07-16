@@ -30,7 +30,7 @@ this.ckan.module('ckedit', function (jQuery, _) {
       // need to have in the Standard(s) toolbar.
       config.removeButtons = 'Underline,Subscript,Superscript';
 
-      // Se the most common block elements.
+      // Set the most common block elements.
       config.format_tags = 'p;h1;h2;h3;pre';
 
       // Make dialogs simpler.
@@ -40,6 +40,11 @@ this.ckan.module('ckedit', function (jQuery, _) {
       config.height = '400px';
       config.customConfig = false;
       config.allowedContent = true;
+
+      // Override default config options with ones provided by plugins
+      if (window.ckan.pages && window.ckan.pages.override_config) {
+        $.extend(config, window.ckan.pages.override_config);
+      }
 
       var editor = $(this.el).ckeditor(config);
     },
