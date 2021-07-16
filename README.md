@@ -107,6 +107,37 @@ and also extends `ckanext_pages/base_form.html` and override the `extra_pages_fo
 
 If you want to override, make sure your extension is added before `pages` in the `ckan.plugins` config.
 
+## Extending the default CKEditor configuration
+
+The default configuration used by the CKEditor widget is defined in the [`ckanext/pages/assets/js/ckedit.js`](https://github.com/ckan/ckanext-pages/blob/master/ckanext/pages/assets/js/ckedit.js) file. This configuration can be overriden from your own plugin setting the `window.ckan.pages.override_config` variable. For example, create the following script in your extension:
+
+    ```js
+    this.ckan = this.ckan || {};
+    this.ckan.pages = this.ckan.pages || {};
+
+    $(document).ready(function() {
+
+      window.ckan.pages.override_config = {
+          toolbarGroups: [
+            //... your custom toolbar
+          ],
+          extraPlugins: '', // Add extra plugins here (make sure to also load their js/css assets from your plugin)
+          // ...
+
+      }
+
+    });
+    ```
+
+Configure your [plugin assets](https://docs.ckan.org/en/2.9/theming/webassets.html) to serve the script above, and extend the `ckanext_pages/base_form.html` template to add the asset to the ckanext-pages form page:
+
+    ```
+    {% ckan_extends %}
+
+    {% asset 'my-plugin/pages-extra-config.js' %}
+
+    ```
+
 ## Dependencies
 
 * lxml (optional, only used for injecting resource views into pages)
