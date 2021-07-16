@@ -36,7 +36,7 @@ this.ckan.module('ckedit', function (jQuery, _) {
       // Make dialogs simpler.
       config.removeDialogTabs = 'image:advanced;link:advanced';
       config.filebrowserUploadUrl = this.options.site_url + 'pages_upload';
-      config.extraPlugins = 'divarea,ckanview,templates';
+      config.extraPlugins = 'divarea,ckanview,templates,font';
       config.height = '400px';
       config.customConfig = false;
       config.allowedContent = true;
