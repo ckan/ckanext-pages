@@ -32,8 +32,6 @@ class HTMLFirstImage(HTMLParser):
 
 
 def _pages_show(context, data_dict):
-    if db.pages_table is None:
-        db.init_db(context['model'])
     org_id = data_dict.get('org_id')
     page = data_dict.get('page')
     out = db.Page.get(group_id=org_id, name=page)
@@ -44,8 +42,6 @@ def _pages_show(context, data_dict):
 
 def _pages_list(context, data_dict):
     search = {}
-    if db.pages_table is None:
-        db.init_db(context['model'])
     org_id = data_dict.get('org_id')
     ordered = data_dict.get('order')
     order_publish_date = data_dict.get('order_publish_date')
@@ -85,7 +81,7 @@ def _pages_list(context, data_dict):
                   'publish_date': pg.publish_date.isoformat() if pg.publish_date else None,
                   'group_id': pg.group_id,
                   'page_type': pg.page_type,
-                 }
+                  }
         if img:
             pg_row['image'] = img
         extras = pg.extras
@@ -94,9 +90,8 @@ def _pages_list(context, data_dict):
         out_list.append(pg_row)
     return out_list
 
+
 def _pages_delete(context, data_dict):
-    if db.pages_table is None:
-        db.init_db(context['model'])
     org_id = data_dict.get('org_id')
     page = data_dict.get('page')
     out = db.Page.get(group_id=org_id, name=page)
@@ -107,8 +102,6 @@ def _pages_delete(context, data_dict):
 
 
 def _pages_update(context, data_dict):
-    if db.pages_table is None:
-        db.init_db(context['model'])
     org_id = data_dict.get('org_id')
     page = data_dict.get('page')
     # we need the page in the context for name validation
@@ -128,8 +121,10 @@ def _pages_update(context, data_dict):
         out.name = page
     items = ['title', 'content', 'name', 'private',
              'order', 'page_type', 'publish_date']
+
+    # backward compatible with older version where page_type does not exist
     for item in items:
-        setattr(out, item, data.get(item,'page' if item =='page_type' else None)) #backward compatible with older version where page_type does not exist
+        setattr(out, item, data.get(item, 'page' if item == 'page_type' else None))
 
     extras = {}
 
@@ -146,6 +141,7 @@ def _pages_update(context, data_dict):
     session = context['session']
     session.add(out)
     session.commit()
+
 
 def pages_upload(context, data_dict):
 
@@ -165,10 +161,11 @@ def pages_upload(context, data_dict):
     image_url = data_dict.get('image_url')
     if image_url and image_url[0:6] not in {'http:/', 'https:'}:
         image_url = h.url_for_static(
-           'uploads/page_images/%s' % image_url,
+            'uploads/page_images/%s' % image_url,
             qualified=True
         )
     return {'url': image_url, 'fileName': upload.filename, 'uploaded': 1}
+
 
 @tk.side_effect_free
 def pages_show(context, data_dict):
@@ -194,6 +191,7 @@ def pages_delete(context, data_dict):
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_delete(context, data_dict)
 
+
 @tk.side_effect_free
 def pages_list(context, data_dict):
     try:
@@ -201,6 +199,7 @@ def pages_list(context, data_dict):
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_list(context, data_dict)
+
 
 @tk.side_effect_free
 def org_pages_show(context, data_dict):
@@ -228,6 +227,7 @@ def org_pages_delete(context, data_dict):
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_delete(context, data_dict)
 
+
 @tk.side_effect_free
 def org_pages_list(context, data_dict):
     try:
@@ -235,6 +235,7 @@ def org_pages_list(context, data_dict):
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_list(context, data_dict)
+
 
 @tk.side_effect_free
 def group_pages_show(context, data_dict):
@@ -261,6 +262,7 @@ def group_pages_delete(context, data_dict):
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_delete(context, data_dict)
+
 
 @tk.side_effect_free
 def group_pages_list(context, data_dict):

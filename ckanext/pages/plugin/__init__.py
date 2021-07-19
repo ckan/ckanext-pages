@@ -12,7 +12,7 @@ import ckantoolkit as tk
 import ckan.plugins as p
 from ckan.lib.helpers import build_nav_main as core_build_nav_main
 
-from ckanext.pages import actions
+from ckanext.pages import actions, db
 from ckanext.pages import auth
 
 if tk.check_ckan_version(min_version='2.5'):
@@ -128,6 +128,7 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
     p.implements(p.ITemplateHelpers, inherit=True)
     p.implements(p.IActions, inherit=True)
     p.implements(p.IAuthFunctions, inherit=True)
+    p.implements(p.IConfigurable, inherit=True)
 
     def update_config(self, config):
         self.organization_pages = tk.asbool(config.get('ckanext.pages.organization', False))
@@ -196,6 +197,9 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
             'ckanext_group_pages_delete': auth.group_pages_delete,
             'ckanext_group_pages_list': auth.group_pages_list,
         }
+
+    def configure(self, config):
+        db.init_db()
 
 
 class TextBoxView(p.SingletonPlugin):

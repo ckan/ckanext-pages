@@ -58,6 +58,8 @@ setup(
         textboxview=ckanext.pages.plugin:TextBoxView
         [babel.extractors]
         ckan = ckan.lib.extract:extract_ckan
+        [paste.paster_command]
+        pages = ckanext.pages.commands:PagesCommand
     """,
     message_extractors={
         'ckanext': [
