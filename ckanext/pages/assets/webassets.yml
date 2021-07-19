@@ -15,6 +15,7 @@ main-css:
   filters: cssrewrite
   contents:
     - vendor/datepicker/css/datepicker.css
+    - vendor/ckeditor/contents.css
     - css/ckedit.css
 
 medium-js:
