@@ -9,6 +9,9 @@
       {% if h.check_access('ckanext_pages_update') %}
 
         {% if h.ckan_version().split('.')[1] | int >= 9 %}
+
+          {% snippet 'ckanext_pages/snippets/pages_asset.html', name='pages/main-css' %}
+
           {% link_for _('Edit'), named_route='pages.edit', page=c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
         {% else %}
           {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
