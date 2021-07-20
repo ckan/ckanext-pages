@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.3.3 (2021-07-20)
+
+## Fixed
+
+- Fix content styles ([1d96e35](https://github.com/ckan/ckanext-pages/commit/1d96e35))
+
 
 ## 0.3.2 (2021-07-19)
 
