@@ -1,0 +1,30 @@
+.page-card {
+    background-color:#ecedef;
+    padding:2rem 2rem;
+}
+
+.col-md-4 {
+    margin-left:15px;
+    width:31.6%; /* non-css3 fallback */
+    width: calc( 33.33333333% - 15px ); /* css3 calculation */
+}
+
+.read-more {
+    display:block;
+    width:fit-content;
+    text-decoration: none;
+    padding: 5px;
+    color: var(--color-1) !important;
+    border: 1px solid var(--color-1) !important;
+    margin-top: 15px;
+    border-radius: 3px;
+    background-color: transparent;
+    width:max-content;
+}
+
+.read-more:hover {
+    text-decoration:none;
+    border: 1px solid white!important;
+    color: white!important;
+    background: var(--color-2);
+}
