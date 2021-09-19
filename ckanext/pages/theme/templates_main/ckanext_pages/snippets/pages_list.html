@@ -48,14 +48,14 @@
         </div>
         <div class="span8" style="margin-top:1rem;">
            <h3 class="dataset-heading">
-              <a href="{{ url }}" >{{ page.title }}</a>
+              <a href="{{ url }}" class="page-title">{{ page.title }}</a>
               {% if page.publish_date %}
                  <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
               {% endif %}
             </h3>
             {% if page.content %}
               {% if editor %}
-              <div>
+              <div class="page-content">
                 {{page.content|striptags|truncate}}
               </div>
               {% else %}
@@ -72,14 +72,14 @@
       </div>
           <div class="span11" style="margin-top:1rem;">
           <h3 class="dataset-heading">
-            <a href="{{ url }}" >{{ page.title }}</a>
+            <a href="{{ url }}"  class="page-title">{{ page.title }}</a>
             {% if page.publish_date %}
                <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
             {% endif %}
           </h3>
           {% if page.content %}
             {% if editor %}
-            <div>
+            <div class="page-content">
               {{page.content|striptags|truncate}}
             </div>
             {% else %}

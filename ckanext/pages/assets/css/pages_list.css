@@ -28,3 +28,17 @@
     color: white!important;
     background: var(--color-2);
 }
+
+a.page-title {
+    font-size: 15pt;
+    height: 2.35em !important;
+    font-weight: bold;
+    overflow: hidden;
+    color: var(--color-1) !important;
+}
+
+div.page-content {
+    color: var(--color-1) !important;
+    height: 5.8em !important;
+    overflow: hidden !important;
+}
