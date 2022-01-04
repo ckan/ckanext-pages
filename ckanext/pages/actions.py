@@ -144,6 +144,13 @@ def _pages_update(context, data_dict):
 
 
 def pages_upload(context, data_dict):
+    """ Upload a file to the CKAN server.
+
+    This method implements the logic for file uploads used by CKEditor. For
+    more details on implementation and expected return values see:
+     - https://ckeditor.com/docs/ckeditor4/latest/guide/dev_file_upload.html#server-side-configuration
+
+    """
 
     try:
         p.toolkit.check_access('ckanext_pages_upload', context, data_dict)
@@ -167,12 +174,7 @@ def pages_upload(context, data_dict):
             "Can't upload the file, size is too big. "
             "(Max allowed is {0}mb)".format(max_image_size)
             )
-        return {
-            'uploaded': 0,
-            'error': {
-                'message': message
-                }
-            }
+        return {'uploaded': 0, 'error': {'message': message}}
 
     image_url = data_dict.get('image_url')
     if image_url and image_url[0:6] not in {'http:/', 'https:'}:
