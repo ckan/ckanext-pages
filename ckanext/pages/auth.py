@@ -1,9 +1,6 @@
 import ckan.plugins as p
 
-try:
-    import ckan.authz as authz
-except ImportError:
-    import ckan.new_authz as authz
+import ckan.authz as authz
 
 from ckanext.pages import db
 
@@ -12,14 +9,9 @@ def sysadmin(context, data_dict):
     return {'success':  False}
 
 
+@p.toolkit.auth_allow_anonymous_access
 def anyone(context, data_dict):
     return {'success': True}
-
-
-# Starting from 2.2 you need to explicitly flag auth functions that allow
-# anonymous access
-if p.toolkit.check_ckan_version(min_version='2.2'):
-    anyone = p.toolkit.auth_allow_anonymous_access(anyone)
 
 
 def group_admin(context, data_dict):
@@ -44,6 +36,7 @@ def page_group_admin(context, data_dict):
     return group_admin(context, {'id': group_id})
 
 
+@p.toolkit.auth_allow_anonymous_access
 def page_privacy(context, data_dict):
     org_id = data_dict.get('org_id')
     page = data_dict.get('page')
@@ -66,13 +59,6 @@ def page_privacy(context, data_dict):
                     'User %s not authorized to read this page') % user}
     else:
         return {'success': True}
-
-
-# Starting from 2.2 you need to explicitly flag auth functions that allow
-# anonymous access
-if p.toolkit.check_ckan_version(min_version='2.2'):
-    anyone = p.toolkit.auth_allow_anonymous_access(anyone)
-    page_privacy = p.toolkit.auth_allow_anonymous_access(page_privacy)
 
 
 pages_show = page_privacy

@@ -13,10 +13,7 @@ except ImportError:
     from HTMLParser import HTMLParser
 from ckanext.pages.logic.schema import update_pages_schema
 
-try:
-    import ckan.authz as authz
-except ImportError:
-    import ckan.new_authz as authz
+import ckan.authz as authz
 
 from ckanext.pages import db
 
@@ -157,10 +154,7 @@ def pages_upload(context, data_dict):
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
 
-    if p.toolkit.check_ckan_version(min_version='2.5'):
-        upload = uploader.get_uploader('page_images')
-    else:
-        upload = uploader.Upload('page_images')
+    upload = uploader.get_uploader('page_images')
 
     upload.update_data_dict(data_dict, 'image_url',
                             'upload', 'clear_upload')
@@ -171,7 +165,7 @@ def pages_upload(context, data_dict):
         upload.upload(max_image_size)
     except p.toolkit.ValidationError:
         message = (
-            "Can't upload the file, size is too big. "
+            "Can't upload the file, size is too large. "
             "(Max allowed is {0}mb)".format(max_image_size)
             )
         return {'uploaded': 0, 'error': {'message': message}}
