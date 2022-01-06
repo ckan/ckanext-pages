@@ -13,10 +13,7 @@ except ImportError:
     from HTMLParser import HTMLParser
 from ckanext.pages.logic.schema import update_pages_schema
 
-try:
-    import ckan.authz as authz
-except ImportError:
-    import ckan.new_authz as authz
+import ckan.authz as authz
 
 from ckanext.pages import db
 
@@ -121,10 +118,6 @@ def _pages_update(context, data_dict):
         out.name = page
     items = ['title', 'content', 'name', 'private',
              'order', 'page_type', 'publish_date']
-
-    # backward compatible with older version where page_type does not exist
-    for item in items:
-        setattr(out, item, data.get(item, 'page' if item == 'page_type' else None))
 
     extras = {}
 
