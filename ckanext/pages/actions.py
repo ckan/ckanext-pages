@@ -168,7 +168,7 @@ def pages_upload(context, data_dict):
         upload.upload(max_image_size)
     except p.toolkit.ValidationError:
         message = (
-            "Can't upload the file, size is too big. "
+            "Can't upload the file, size is too large. "
             "(Max allowed is {0}mb)".format(max_image_size)
             )
         return {'uploaded': 0, 'error': {'message': message}}
