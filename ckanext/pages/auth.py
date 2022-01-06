@@ -8,6 +8,7 @@ from ckanext.pages import db
 def sysadmin(context, data_dict):
     return {'success':  False}
 
+
 @p.toolkit.auth_allow_anonymous_access
 def anyone(context, data_dict):
     return {'success': True}
