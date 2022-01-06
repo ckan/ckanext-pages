@@ -15,14 +15,8 @@ from ckan.lib.helpers import build_nav_main as core_build_nav_main
 from ckanext.pages import actions, db
 from ckanext.pages import auth
 
-if tk.check_ckan_version(min_version='2.5'):
-    from ckan.lib.plugins import DefaultTranslation
+from ckan.lib.plugins import DefaultTranslation
 
-    class PagesPluginBase(p.SingletonPlugin, DefaultTranslation):
-        p.implements(p.ITranslation, inherit=True)
-else:
-    class PagesPluginBase(p.SingletonPlugin):
-        pass
 
 if tk.check_ckan_version(u'2.9'):
     from ckanext.pages.plugin.flask_plugin import MixinPlugin
@@ -90,11 +84,8 @@ def build_pages_nav_main(*args):
 
 def render_content(content):
     allow_html = tk.asbool(tk.config.get('ckanext.pages.allow_html', False))
-    try:
-        return tk.h.render_markdown(content, allow_html=allow_html)
-    except TypeError:
-        # allow_html is only available in CKAN >= 2.3
-        return tk.h.render_markdown(content)
+    return tk.h.render_markdown(content, allow_html=allow_html)
+
 
 
 def get_wysiwyg_editor():
@@ -121,6 +112,9 @@ def get_plus_icon():
     if tk.check_ckan_version(min_version='2.7'):
         return 'plus-square'
     return 'plus-sign-alt'
+
+class PagesPluginBase(p.SingletonPlugin, DefaultTranslation):
+    p.implements(p.ITranslation, inherit=True)
 
 
 class PagesPlugin(PagesPluginBase, MixinPlugin):
