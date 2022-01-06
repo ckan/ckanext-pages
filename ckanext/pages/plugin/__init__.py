@@ -87,7 +87,6 @@ def render_content(content):
     return tk.h.render_markdown(content, allow_html=allow_html)
 
 
-
 def get_wysiwyg_editor():
     return tk.config.get('ckanext.pages.editor', '')
 
@@ -112,6 +111,7 @@ def get_plus_icon():
     if tk.check_ckan_version(min_version='2.7'):
         return 'plus-square'
     return 'plus-sign-alt'
+
 
 class PagesPluginBase(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.ITranslation, inherit=True)
