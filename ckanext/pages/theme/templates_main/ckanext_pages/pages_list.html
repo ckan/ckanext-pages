@@ -1,5 +1,10 @@
 {% extends 'ckanext_pages/edit_base.html' %} 
 
+{% block styles %}
+  {{super()}}
+  <link rel="stylesheet" href="/css/pages_list.css">
+{% endblock %}
+
 {% block page_primary_action %}
   {% if h.check_access('ckanext_pages_update', {}) %}
     {% if h.ckan_version().split('.')[1] | int >= 9 %}

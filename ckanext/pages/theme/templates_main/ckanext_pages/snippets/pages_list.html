@@ -19,7 +19,7 @@
 
 {% if pages %}
   {% set editor = h.get_wysiwyg_editor() %}
-
+  <div class="container" style="width:100%;">
     {% for page in pages %}
       {% if ckan_29_or_higher %}
         {% if id %} {# this is for orgs and groups #}
@@ -40,22 +40,22 @@
         {% endif %}
 
       {% endif %}
-      <div class="row page-list-item dataset-item">
+      <div class="col-md-4 page-list-item page-card">
       {% if page.image %}
         <div class="span3 image">
           <a style="background-image:url({{ page.image }})" href="{{ url }}">
           </a>
         </div>
-        <div class="span8">
+        <div class="span8" style="margin-top:1rem;">
            <h3 class="dataset-heading">
-              <a href="{{ url }}" >{{ page.title }}</a>
+              <a href="{{ url }}" class="page-title">{{ page.title }}</a>
               {% if page.publish_date %}
                  <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
               {% endif %}
             </h3>
             {% if page.content %}
               {% if editor %}
-              <div>
+              <div class="page-content">
                 {{page.content|striptags|truncate}}
               </div>
               {% else %}
@@ -64,31 +64,39 @@
             {% else %}
               <p class="empty">{{ _('This page currently has no content') }}</p>
             {% endif %}
+            <a class="read-more"  href="{{ url }}">Read More</a>
         </div>
       {% else %}
-        <div class="span11">
+      <div class="span3 image">
+          <img class="feed-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRdmmJPKK_ynmtZgkngAz35PeqZueJv1RNIEzUZV6TNZV8ijqLe" alt="No Image Found" style="display: block;height: 136px;background-position: center center;background-size: cover;">
+      </div>
+          <div class="span11" style="margin-top:1rem;">
           <h3 class="dataset-heading">
-            <a href="{{ url }}" >{{ page.title }}</a>
+            <a href="{{ url }}"  class="page-title">{{ page.title }}</a>
             {% if page.publish_date %}
                <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
             {% endif %}
           </h3>
           {% if page.content %}
             {% if editor %}
-            <div>
+            <div class="page-content">
               {{page.content|striptags|truncate}}
             </div>
             {% else %}
               {{ h.markdown_extract(page.content) }}
             {% endif %}
+
+            
           {% else %}
             <p class="empty">{{ _('This page currently has no content') }}</p>
           {% endif %}
+          <a class="read-more"  href="{{ url }}">Read More</a>
         </div>
       {% endif %}
       </div>
+    
     {% endfor %}
-
+  </div>
 {% else %}
     {% if type == 'blog' %}
       <p class="empty">{{ _('There are currently no blog articles here') }}</p>
