@@ -38,7 +38,7 @@ def pages_list_pages(page_type):
     if page_type == 'blog':
         data_dict['order_publish_date'] = True
     tk.c.pages_dict = tk.get_action('ckanext_pages_list')(
-        data_dict=data_dict
+        context={}, data_dict=data_dict
     )
     tk.c.page = helpers.Page(
         collection=tk.c.pages_dict,
@@ -59,7 +59,7 @@ def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type=
         if page.startswith('/'):
             page = page[1:]
         page_dict = tk.get_action('ckanext_pages_show')(
-            data_dict={'org_id': None, 'page': page}
+            context={}, data_dict={'org_id': None, 'page': page}
         )
     if page_dict is None:
         page_dict = {}
@@ -74,7 +74,7 @@ def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type=
 
         try:
             tk.get_action('ckanext_pages_update')(
-                data_dict=page_dict
+                context={}, data_dict=page_dict
             )
         except tk.ValidationError as e:
             errors = e.error_dict
@@ -193,7 +193,7 @@ def pages_show(page=None, page_type='page'):
     if not page:
         return pages_list_pages(page_type)
     _page = tk.get_action('ckanext_pages_show')(
-        data_dict={'org_id': None,
+        context={}, data_dict={'org_id': None,
                    'page': page}
     )
     if _page is None:
@@ -255,7 +255,7 @@ def pages_upload():
 
 def group_list_pages(id, group_type, group_dict=None):
     tk.c.pages_dict = tk.get_action('ckanext_pages_list')(
-        data_dict={'org_id': tk.c.group_dict['id']}
+        context={}, data_dict={'org_id': tk.c.group_dict['id']}
     )
     return tk.render(
         'ckanext_pages/{}_page_list.html'.format(group_type),
@@ -295,7 +295,7 @@ def group_show(id, group_type, page=None):
         return group_list_pages(id, group_type, group_dict)
 
     _page = tk.get_action('ckanext_pages_show')(
-        data_dict={'org_id': tk.c.group_dict['id'],
+        context={}, data_dict={'org_id': tk.c.group_dict['id'],
                    'page': page}
     )
     if _page is None:
@@ -321,7 +321,7 @@ def group_edit(id, group_type, page=None, data=None, errors=None, error_summary=
         if page.startswith('/'):
             page = page[1:]
         page_dict = tk.get_action('ckanext_pages_show')(
-            data_dict={'org_id': tk.c.group_dict['id'], 'page': page}
+            context={}, data_dict={'org_id': tk.c.group_dict['id'], 'page': page}
         )
     if page_dict is None:
         page_dict = {}
@@ -337,7 +337,7 @@ def group_edit(id, group_type, page=None, data=None, errors=None, error_summary=
         page_dict['page'] = page
         try:
             tk.get_action('ckanext_org_pages_update')(
-                data_dict=page_dict
+                context={}, data_dict=page_dict
             )
         except tk.ValidationError as e:
             errors = e.error_dict

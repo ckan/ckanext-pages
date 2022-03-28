@@ -5,10 +5,15 @@ import json
 from six import text_type
 import sqlalchemy as sa
 from sqlalchemy.orm import class_mapper
+
 try:
-    from sqlalchemy.engine.result import RowProxy
+    from sqlalchemy.engine import Row
 except ImportError:
-    from sqlalchemy.engine.base import RowProxy
+    try:
+        from sqlalchemy.engine.result import RowProxy as Row
+    except ImportError:
+        from sqlalchemy.engine.base import RowProxy as Row
+
 from ckan import model
 from ckan.model.domain_object import DomainObject
 
@@ -83,7 +88,7 @@ def table_dictize(obj, context, **kw):
     '''Get any model object and represent it as a dict'''
     result_dict = {}
 
-    if isinstance(obj, RowProxy):
+    if isinstance(obj, Row):
         fields = obj.keys()
     else:
         ModelClass = obj.__class__
