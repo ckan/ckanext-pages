@@ -1,5 +1,5 @@
 
-![Tests](https://github.com/ckan/ckanext-pages/workflows/Tests/badge.svg?branch=master)
+[![Tests](https://github.com/ckan/ckanext-pages/workflows/Tests/badge.svg?branch=master)](https://github.com/ckan/ckanext-pages/actions)
 
 ckanext-pages
 =============

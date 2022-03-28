@@ -193,8 +193,9 @@ def pages_show(page=None, page_type='page'):
     if not page:
         return pages_list_pages(page_type)
     _page = tk.get_action('ckanext_pages_show')(
-        context={}, data_dict={'org_id': None,
-                   'page': page}
+        context={},
+        data_dict={
+            'org_id': None, 'page': page}
     )
     if _page is None:
         return pages_list_pages(page_type)
@@ -295,8 +296,9 @@ def group_show(id, group_type, page=None):
         return group_list_pages(id, group_type, group_dict)
 
     _page = tk.get_action('ckanext_pages_show')(
-        context={}, data_dict={'org_id': tk.c.group_dict['id'],
-                   'page': page}
+        context={},
+        data_dict={
+            'org_id': tk.c.group_dict['id'], 'page': page}
     )
     if _page is None:
         return group_list_pages(id, group_type, group_dict)
