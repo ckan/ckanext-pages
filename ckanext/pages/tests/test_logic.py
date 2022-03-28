@@ -128,7 +128,7 @@ class TestPages():
         env = {'REMOTE_USER': user['name'].encode('ascii')}
         url = toolkit.url_for('pages_index')
         response = app.get(url, status=200, extra_environ=env)
-        assert '<h2>Pages</h2>' in response.body
+        assert '<h1 class="page-heading page-list-header">Pages</h1>' in response.body
         assert 'Add page</a>' in response.body
 
     def test_blog_index(self, app):
@@ -137,7 +137,7 @@ class TestPages():
         endpoint = 'pages.blog_index' if ckan_29_or_higher else 'blog_index'
         url = toolkit.url_for(endpoint)
         response = app.get(url, status=200, extra_environ=env)
-        assert '<h2>Blog</h2>' in response.body
+        assert '<h1 class="page-heading page-list-header">Blog</h1>' in response.body
         assert 'Add Article</a>' in response.body
 
     def test_organization_pages_index(self, app):
@@ -148,7 +148,7 @@ class TestPages():
         endpoint = 'pages.organization_pages_index' if ckan_29_or_higher else 'organization_pages_index'
         url = toolkit.url_for(endpoint, id=org['id'])
         response = app.get(url, status=200, extra_environ=env)
-        assert '<h2>Pages</h2>' in response.body
+        assert '<h1 class="page-heading page-list-header">Pages</h1>' in response.body
         assert 'Add page</a>' in response.body
 
     def test_group_pages_index(self, app):
@@ -158,7 +158,7 @@ class TestPages():
         endpoint = 'pages.group_pages_index' if ckan_29_or_higher else 'group_pages_index'
         url = toolkit.url_for(endpoint, id=group['id'])
         response = app.get(url, status=200, extra_environ=env)
-        assert '<h2>Pages</h2>' in response.body
+        assert '<h1 class="page-heading page-list-header">Pages</h1>' in response.body
         assert 'Add page</a>' in response.body
 
     def test_unicode(self, app):
