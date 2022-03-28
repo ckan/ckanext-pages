@@ -3,14 +3,17 @@
 
 {% set ckan_29_or_higher = h.ckan_version().split('.')[1] | int >= 9 %}
 
+<h1 class="page-heading page-list-header">
 {% if type == 'blog' %}
-  <h2>Blog</h2>
+  Blog
 {% else %}
-  <h2>Pages</h2>
+  Pages
 {% endif %}
+</h1>
 
 {% if pages %}
-  {% set editor = h.get_wysiwyg_editor() %}
+  <div class="page-list">
+    {% set editor = h.get_wysiwyg_editor() %}
 
     {% for page in pages %}
       {% if ckan_29_or_higher %}
@@ -80,7 +83,7 @@
       {% endif %}
       </div>
     {% endfor %}
-
+  </div>
 {% else %}
     {% if type == 'blog' %}
       <p class="empty">{{ _('There are currently no blog articles here') }}</p>

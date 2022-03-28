@@ -1,14 +1,28 @@
+.page-list {
+  margin-top: 2.5em;
+}
+
+.page-list-header {
+  margin-left: 10px;
+}
+
+.page-list-item {
+  margin: 1.5em 0;
+}
+
 .page-list-item .image {
   width: 168px;
   /* hack for default theme */
-
+  margin-bottom: 1em;
 }
+
 .page-list-item .image a {
   display: block;
   height: 136px;
   background-position: center center;
   background-size: cover;
 }
+
 .page-list-item h3 a {
   display: block;
 }

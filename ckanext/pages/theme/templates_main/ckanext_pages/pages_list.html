@@ -11,7 +11,6 @@
 {% endblock %}
 
 {% block primary_content_inner %}
-  <h1 class="hide-heading">{{ _('Pages') }}</h1>
   {% snippet 'ckanext_pages/snippets/pages_list.html', pages=c.page.items %}
   {{ c.page.pager() }}
 {% endblock %}
