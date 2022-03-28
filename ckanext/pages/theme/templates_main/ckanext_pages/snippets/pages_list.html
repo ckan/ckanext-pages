@@ -3,9 +3,7 @@
 
 {% set ckan_29_or_higher = h.ckan_version().split('.')[1] | int >= 9 %}
 
-<h1 class="page-heading page-list-header">
-  {{ title or "Blog" if type == "blog" else "Pages" }}
-</h1>
+<h1 class="page-heading page-list-header">{{ title or "Blog" if type == "blog" else "Pages" }}</h1>
 
 {% if pages %}
   <div class="page-list">
