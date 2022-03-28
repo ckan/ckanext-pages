@@ -3,22 +3,13 @@
 
 {% set ckan_29_or_higher = h.ckan_version().split('.')[1] | int >= 9 %}
 
-{#
-{% if type == 'blog' %}
-  <h2>{{ _('1 blog article') if pages_total == 1 else _('{0} blog articles').format(pages_total) }}</h2>
-{% else %}
-  <h2>{{ _('1 page') if pages_total == 1 else _('{0} pages').format(pages_total) }}</h2>
-{% endif %}
-#}
-
-{% if type == 'blog' %}
-  <h2>Blog</h2>
-{% else %}
- <h2>Pages</h2>
-{% endif %}
+<h1 class="page-heading page-list-header">
+  {{ title or "Blog" if type == "blog" else "Pages" }}
+</h1>
 
 {% if pages %}
-  {% set editor = h.get_wysiwyg_editor() %}
+  <div class="page-list">
+    {% set editor = h.get_wysiwyg_editor() %}
 
     {% for page in pages %}
       {% if ckan_29_or_higher %}
@@ -42,11 +33,11 @@
       {% endif %}
       <div class="row page-list-item dataset-item">
       {% if page.image %}
-        <div class="span3 image">
+        <div class="span3 col-md-2 image">
           <a style="background-image:url({{ page.image }})" href="{{ url }}">
           </a>
         </div>
-        <div class="span8">
+        <div class="span8 col-md-10">
            <h3 class="dataset-heading">
               <a href="{{ url }}" >{{ page.title }}</a>
               {% if page.publish_date %}
@@ -66,7 +57,7 @@
             {% endif %}
         </div>
       {% else %}
-        <div class="span11">
+        <div class="span11 col-md-12">
           <h3 class="dataset-heading">
             <a href="{{ url }}" >{{ page.title }}</a>
             {% if page.publish_date %}
@@ -88,7 +79,7 @@
       {% endif %}
       </div>
     {% endfor %}
-
+  </div>
 {% else %}
     {% if type == 'blog' %}
       <p class="empty">{{ _('There are currently no blog articles here') }}</p>
