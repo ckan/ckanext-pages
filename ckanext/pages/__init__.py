@@ -1,3 +1,3 @@
 # encoding: utf-8
 
-__version__ = u'0.3.6'
+__version__ = u'0.3.7'
