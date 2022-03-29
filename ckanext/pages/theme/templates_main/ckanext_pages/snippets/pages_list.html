@@ -10,6 +10,7 @@
     {% set editor = h.get_wysiwyg_editor() %}
 
     {% for page in pages %}
+
       {% if ckan_29_or_higher %}
         {% if id %} {# this is for orgs and groups #}
           {% set url = h.url_for('pages.{}_pages_show'.format(c.group_dict['type']), id=id, page=page.name) %}
@@ -29,54 +30,11 @@
         {% endif %}
 
       {% endif %}
-      <div class="row page-list-item dataset-item">
-      {% if page.image %}
-        <div class="span3 col-md-2 image">
-          <a style="background-image:url({{ page.image }})" href="{{ url }}">
-          </a>
-        </div>
-        <div class="span8 col-md-10">
-           <h3 class="dataset-heading">
-              <a href="{{ url }}" >{{ page.title }}</a>
-              {% if page.publish_date %}
-                 <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
-              {% endif %}
-            </h3>
-            {% if page.content %}
-              {% if editor %}
-              <div>
-                {{page.content|striptags|truncate}}
-              </div>
-              {% else %}
-                {{ h.markdown_extract(page.content) }}
-              {% endif %}
-            {% else %}
-              <p class="empty">{{ _('This page currently has no content') }}</p>
-            {% endif %}
-        </div>
-      {% else %}
-        <div class="span11 col-md-12">
-          <h3 class="dataset-heading">
-            <a href="{{ url }}" >{{ page.title }}</a>
-            {% if page.publish_date %}
-               <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
-            {% endif %}
-          </h3>
-          {% if page.content %}
-            {% if editor %}
-            <div>
-              {{page.content|striptags|truncate}}
-            </div>
-            {% else %}
-              {{ h.markdown_extract(page.content) }}
-            {% endif %}
-          {% else %}
-            <p class="empty">{{ _('This page currently has no content') }}</p>
-          {% endif %}
-        </div>
-      {% endif %}
-      </div>
+
+      {%- snippet 'ckanext_pages/snippets/page_item.html', page=page -%}
+
     {% endfor %}
+
   </div>
 {% else %}
     {% if type == 'blog' %}
