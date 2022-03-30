@@ -1,9 +1,12 @@
 # encoding: utf-8
 
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 import pytest
 
 from ckan.plugins import toolkit
-import mock
 from ckantoolkit.tests import factories, helpers
 
 from ckanext.pages.logic import schema
