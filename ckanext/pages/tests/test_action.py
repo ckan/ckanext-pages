@@ -1,6 +1,5 @@
 import pytest
 
-from ckan.plugins import toolkit
 from ckan.tests import factories, helpers
 
 @pytest.mark.usefixtures("clean_db", "pages_setup")
