@@ -7,7 +7,7 @@ except ImportError:
 import pytest
 
 from ckan.plugins import toolkit
-from ckantoolkit.tests import factories, helpers
+from ckan.tests import factories, helpers
 
 from ckanext.pages.logic import schema
 

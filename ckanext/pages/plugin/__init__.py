@@ -7,9 +7,9 @@ except ImportError:
 import six
 from six.moves.urllib.parse import quote
 
-import ckantoolkit as tk
-
 import ckan.plugins as p
+import ckan.plugins.toolkit as tk
+
 from ckan.lib.helpers import build_nav_main as core_build_nav_main
 
 from ckanext.pages import actions, db

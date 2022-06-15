@@ -50,7 +50,7 @@ setup(
     },
     zip_safe=False,
     install_requires=[
-        'six', 'ckantoolkit',
+        'six',
     ],
     entry_points="""
         [ckan.plugins]

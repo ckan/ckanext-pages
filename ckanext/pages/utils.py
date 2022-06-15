@@ -1,9 +1,9 @@
 import six
 import json
 
-import ckantoolkit as tk
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.plugins as p
+import ckan.plugins.toolkit as tk
 import ckan.logic as logic
 import ckan.lib.helpers as helpers
 
