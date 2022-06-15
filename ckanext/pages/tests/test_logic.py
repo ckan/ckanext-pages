@@ -36,6 +36,40 @@ class TestPages():
 
         assert '<h1 class="page-heading">Page Title</h1>' in response.body
 
+    def test_cannot_create_page_with_same_name(self, app):
+        user = factories.Sysadmin()
+        env = {'REMOTE_USER': user['name'].encode('ascii')}
+        page = 'test_page'
+        page = '/' + page if not ckan_29_or_higher else page
+        response = app.post(
+            url=toolkit.url_for('pages.new', page=page),
+            params={
+                'title': 'Page Title',
+                'name': 'page_name',
+                'private': False,
+            },
+            extra_environ=env,
+        )
+        if not ckan_29_or_higher:
+            response = response.follow(extra_environ=env)
+
+        assert '<h1 class="page-heading">Page Title</h1>' in response.body
+
+        response = app.post(
+            url=toolkit.url_for('pages.new', page=page),
+            params={
+                'title': 'Page Title',
+                'name': 'page_name',
+                'private': False,
+            },
+            extra_environ=env,
+        )
+        if not ckan_29_or_higher:
+            response = response.follow(extra_environ=env)
+
+        assert '<div class="flash-messages">' in response.body
+        assert 'Page name already exists' in response.body
+
     @pytest.mark.ckan_config('ckanext.pages.allow_html', 'True')
     def test_rendering_with_html_allowed(self, app):
         user = factories.Sysadmin()
