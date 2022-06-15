@@ -2,6 +2,7 @@ import pytest
 
 from ckan.tests import factories, helpers
 
+
 @pytest.mark.usefixtures("clean_db", "pages_setup")
 class TestPagesActions():
 
