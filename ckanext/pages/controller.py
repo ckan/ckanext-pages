@@ -1,10 +1,8 @@
-import ckantoolkit
-
 import ckan.plugins as p
 
 import ckanext.pages.utils as utils
 
-config = ckantoolkit.config
+config = p.toolkit.config
 
 _ = p.toolkit._
 
