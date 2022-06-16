@@ -55,3 +55,50 @@ class TestPagesActions():
         assert page['name'] == 'page_name'
         assert page['title'] == 'New Page Updated'
         assert page['content'] == 'This is a test content updated'
+
+
+    def test_pages_list(self, app):
+        sysadmin = factories.Sysadmin()
+        helpers.call_action(
+            'ckanext_pages_update',
+            {'user': sysadmin['name']},
+            name='page_name_1', title='New Page 1', content='This is a test content', private=False
+        )
+        helpers.call_action(
+            'ckanext_pages_update',
+            {'user': sysadmin['name']},
+            name='page_name_2', title='New Page 2', content='This is a test content', private=False
+        )
+        helpers.call_action(
+            'ckanext_pages_update',
+            {'user': sysadmin['name']},
+            name='page_name_3', title='New Page 3', content='This is a test content', private=False
+        )
+
+        results = helpers.call_action(
+            'ckanext_pages_list',
+            {'user': sysadmin['name']}
+            )
+
+        assert len(results) == 3
+        assert results[0]['title'] == 'New Page 3'
+        assert results[2]['title'] == 'New Page 1'
+
+        helpers.call_action(
+            'ckanext_pages_update',
+            {'user': sysadmin['name']},
+            name='page_name_4', title='New Page 4', content='This is a test content', private=True
+        )
+
+        results = helpers.call_action(
+            'ckanext_pages_list',
+            {'user': sysadmin['name']}
+            )
+        assert len(results) == 4
+
+        user = factories.User()
+        results = helpers.call_action(
+            'ckanext_pages_list',
+            {'user': user['name'], 'ignore_auth': False}
+            )
+        assert len(results) == 3
