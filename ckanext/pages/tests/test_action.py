@@ -56,7 +56,6 @@ class TestPagesActions():
         assert page['title'] == 'New Page Updated'
         assert page['content'] == 'This is a test content updated'
 
-
     def test_pages_list(self, app):
         sysadmin = factories.Sysadmin()
         helpers.call_action(
