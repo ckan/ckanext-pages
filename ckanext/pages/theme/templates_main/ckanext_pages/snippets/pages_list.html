@@ -3,14 +3,14 @@
 
 {#
 {% if type == 'blog' %}
-  <h2>{{ _('1 blog article') if pages_total == 1 else _('{0} blog articles').format(pages_total) }}</h2>
+  <h2>{{ _('1 News article') if pages_total == 1 else _('{0} blog articles').format(pages_total) }}</h2>
 {% else %}
   <h2>{{ _('1 page') if pages_total == 1 else _('{0} pages').format(pages_total) }}</h2>
 {% endif %}
 #}
 
 {% if type == 'blog' %}
-  <h2>Blog</h2>
+  <h2>News</h2>
 {% else %}
  <h2>Pages</h2>
 {% endif %}
@@ -77,7 +77,7 @@
 
 {% else %}
     {% if type == 'blog' %}
-      <p class="empty">{{ _('There are currently no blog articles here') }}</p>
+      <p class="empty">{{ _('There are currently no news articles here') }}</p>
     {% else %}
       <p class="empty">{{ _('There are currently no pages here') }}</p>
     {% endif %}
