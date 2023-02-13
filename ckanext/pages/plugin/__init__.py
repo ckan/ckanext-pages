@@ -1,10 +1,7 @@
 
 import logging
-try:
-    from html import escape as html_escape
-except ImportError:
-    from cgi import escape as html_escape
-import six
+from html import escape as html_escape
+
 from six.moves.urllib.parse import quote
 
 import ckantoolkit as tk
@@ -17,13 +14,7 @@ from ckanext.pages import auth
 
 from ckan.lib.plugins import DefaultTranslation
 
-
-if tk.check_ckan_version(u'2.9'):
-    from ckanext.pages.plugin.flask_plugin import MixinPlugin
-    ckan_29_or_higher = True
-else:
-    from ckanext.pages.plugin.pylons_plugin import MixinPlugin
-    ckan_29_or_higher = False
+from ckanext.pages.plugin.flask_plugin import MixinPlugin
 
 
 log = logging.getLogger(__name__)
@@ -35,18 +26,13 @@ def build_pages_nav_main(*args):
     group_menu = tk.asbool(tk.config.get('ckanext.pages.group_menu', True))
     org_menu = tk.asbool(tk.config.get('ckanext.pages.organization_menu', True))
 
-    # Different CKAN versions use different route names - gotta catch em all!
-    about_menu_routes = ['about', 'home.about']
-    group_menu_routes = ['group_index', 'home.group_index']
-    org_menu_routes = ['organizations_index', 'home.organizations_index']
-
     new_args = []
     for arg in args:
-        if arg[0] in about_menu_routes and not about_menu:
+        if arg[0] in 'home.about' and not about_menu:
             continue
-        if arg[0] in org_menu_routes and not org_menu:
+        if arg[0] in 'home.group_index' and not org_menu:
             continue
-        if arg[0] in group_menu_routes and not group_menu:
+        if arg[0] in 'home.organizations_index' and not group_menu:
             continue
         new_args.append(arg)
 
@@ -56,21 +42,14 @@ def build_pages_nav_main(*args):
     pages_list = tk.get_action('ckanext_pages_list')(None, {'order': True, 'private': False})
 
     page_name = ''
-    if ckan_29_or_higher:
-        is_current_page = tk.get_endpoint() in (('pages', 'show'), ('pages', 'blog_show'))
-    else:
-        is_current_page = (
-            hasattr(tk.c, 'action') and tk.c.action in ('pages_show', 'blog_show')
-            and tk.c.controller == 'ckanext.pages.controller:PagesController')
+    is_current_page = tk.get_endpoint() in (('pages', 'show'), ('pages', 'blog_show'))
+
     if is_current_page:
         page_name = tk.request.path.split('/')[-1]
 
     for page in pages_list:
         type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
-        if six.PY2:
-            name = quote(page['name'].encode('utf-8')).decode('utf-8')
-        else:
-            name = quote(page['name'])
+        name = quote(page['name'])
         title = html_escape(page['title'])
         link = tk.h.literal(u'<a href="/{}/{}">{}</a>'.format(type_, name, title))
         if page['name'] == page_name:

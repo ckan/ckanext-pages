@@ -1,6 +1,5 @@
 import click
-
-import ckanext.pages.utils as utils
+import ckanext.pages.db as db
 
 
 def get_commands():
@@ -21,5 +20,5 @@ def initdb():
         pages initdb
         - Creates the necessary tables in the database
     """
-    utils.initdb()
+    db.init_db()
     click.secho(u"DB tables created", fg=u"green")
