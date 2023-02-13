@@ -185,3 +185,31 @@ class TestPages():
 
         pages = helpers.call_action('ckanext_pages_list', context)
         assert pages[0]['new_field'] == 'new_field_value'
+
+    def test_cannot_create_page_with_same_name(self, app):
+        user = factories.Sysadmin()
+        env = {'REMOTE_USER': user['name'].encode('ascii')}
+        page = 'test_page'
+        response = app.post(
+            url=toolkit.url_for('pages.new', page=page),
+            params={
+                'title': 'Page Title',
+                'name': 'page_name',
+                'private': False,
+            },
+            extra_environ=env,
+        )
+        assert '<h1 class="page-heading">Page Title</h1>' in response.body
+
+        response = app.post(
+            url=toolkit.url_for('pages.new', page=page),
+            params={
+                'title': 'Page Title',
+                'name': 'page_name',
+                'private': False,
+            },
+            extra_environ=env,
+        )
+
+        assert '<div class="flash-messages">' in response.body
+        assert 'Page name already exists' in response.body
