@@ -6,7 +6,7 @@
   <section class="module-content">
     {% if h.check_access('ckanext_pages_update') %}
       {% asset 'pages/main-css' %}
-      {% link_for _('Edit'), named_route='pages.blog_edit', page=c.page.name, class_='btn btn-primary pull-right', icon=h.pages_get_plus_icon() %}
+      {% link_for _('Edit'), named_route='pages.blog_edit', page=c.page.name, class_='btn btn-primary pull-right', icon='plus-square' %}
     {% endif %}
     <h1 class="page-heading">{{ c.page.title }}</h1>
       {% if c.page.publish_date %}

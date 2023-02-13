@@ -86,12 +86,6 @@ def get_recent_blog_posts(number=5, exclude=None):
     return new_list
 
 
-def get_plus_icon():
-    if tk.check_ckan_version(min_version='2.7'):
-        return 'plus-square'
-    return 'plus-sign-alt'
-
-
 class PagesPluginBase(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.ITranslation, inherit=True)
 
@@ -125,7 +119,6 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
             'render_content': render_content,
             'get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
-            'pages_get_plus_icon': get_plus_icon
         }
 
     def get_actions(self):

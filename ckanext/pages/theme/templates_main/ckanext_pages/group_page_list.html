@@ -4,9 +4,9 @@
   {% if h.check_access('package_create', {'group_id': c.group_dict.id}) %}
 
     {% if h.ckan_version().split('.')[1] | int >= 9 %}
-      {% link_for _('Add page'), named_route='pages.group_pages_edit', id=c.group_dict.name, page='', class_='btn btn-primary', icon=h.pages_get_plus_icon() %}
+      {% link_for _('Add page'), named_route='pages.group_pages_edit', id=c.group_dict.name, page='', class_='btn btn-primary', icon='plus-square' %}
     {% else %}
-      {% link_for _('Add page'), controller='ckanext.pages.controller:PagesController', action='group_edit', id=c.group_dict.name, page='', class_='btn btn-primary', icon=h.pages_get_plus_icon() %}
+      {% link_for _('Add page'), controller='ckanext.pages.controller:PagesController', action='group_edit', id=c.group_dict.name, page='', class_='btn btn-primary', icon='plus-square' %}
     {% endif %}
   {% endif %}
 {% endblock %}
