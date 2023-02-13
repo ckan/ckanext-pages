@@ -54,6 +54,7 @@
 
 
 <form class="dataset-form pages-form" method="post" action="{{ action_url }}" data-module="basic-form">
+  {{ h.csrf_input() if 'csrf_input' in h }}
   {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
 
   {% block form_basic_fields %}
