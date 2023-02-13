@@ -29,7 +29,7 @@ def pages_list_pages(page_type):
     )
     tk.g.page = helpers.Page(
         collection=tk.c.pages_dict,
-        page=tk.request.params.get('page', 1),
+        page=tk.request.args.get('page', 1),
         url=helpers.pager_url,
         items_per_page=21
     )
@@ -190,7 +190,7 @@ def pages_show(page=None, page_type='page'):
 def pages_delete(page, page_type='pages'):
     if page.startswith('/'):
         page = page[1:]
-    if 'cancel' in tk.request.params:
+    if 'cancel' in tk.request.args:
         return tk.redirect_to('pages.%s_edit' % page_type, page=page)
 
     try:
@@ -346,7 +346,7 @@ def group_delete(id, group_type, page):
     if page.startswith('/'):
         page = page[1:]
 
-    if 'cancel' in tk.request.params:
+    if 'cancel' in tk.request.args:
         return tk.redirect_to('pages.%s_edit' % group_type, id=tk.c.group_dict['name'], page=page)
 
     try:
