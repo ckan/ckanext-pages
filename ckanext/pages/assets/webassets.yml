@@ -5,6 +5,7 @@ main-js:
     preload:
       - base/main
   contents:
+    - vendor/ckeditor/ckeditor.js
     - vendor/ckeditor/adapters/jquery.js
     - vendor/datepicker/js/bootstrap-datepicker.js
     - js/ckedit.js

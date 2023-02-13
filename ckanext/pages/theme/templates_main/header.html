@@ -2,12 +2,12 @@
 
 {% block header_account_logged %}
   <li>
-    <a href="{{ h.url_for('pages_index') }}" title="{{ _('Pages') }}">
+    <a href="{{ h.url_for('pages.pages_index') }}" title="{{ _('Pages') }}">
       <i class="fa fa-file icon-file"></i>
     </a>
   </li>
   <li>
-    <a href="{{ h.url_for('pages.blog_index' if h.ckan_version().split('.')[1] | int >= 9 else 'blog_index') }}" title="{{ _('Blog') }}">
+    <a href="{{ h.url_for('pages.blog_index') }}" title="{{ _('Blog') }}">
       <i class="fa fa-pencil icon-pencil"></i>
     </a>
   </li>
