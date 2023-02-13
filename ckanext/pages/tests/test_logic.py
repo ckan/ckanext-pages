@@ -107,7 +107,7 @@ class TestPages():
     def test_pages_index(self, app):
         user = factories.Sysadmin()
         env = {'REMOTE_USER': user['name'].encode('ascii')}
-        url = toolkit.url_for('pages_index')
+        url = toolkit.url_for('pages.pages_index')
         response = app.get(url, status=200, extra_environ=env)
         assert '<h1 class="page-heading page-list-header">Pages</h1>' in response.body
         assert 'Add page</a>' in response.body
