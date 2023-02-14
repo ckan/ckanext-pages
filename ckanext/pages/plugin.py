@@ -125,7 +125,7 @@ class PagesPlugin(PagesPluginBase):
         return {
             'build_nav_main': build_pages_nav_main,
             'render_content': render_content,
-            'get_wysiwyg_editor': get_wysiwyg_editor,
+            'pages_get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
         }
 

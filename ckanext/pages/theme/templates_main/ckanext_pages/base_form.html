@@ -99,7 +99,7 @@
   {% endblock %}
 
   {% block form_content %}
-    {% set editor = h.get_wysiwyg_editor() %}
+    {% set editor = h.pages_get_wysiwyg_editor() %}
     {% if editor == 'medium' %}
       {% asset 'pages/medium-js' %}
       {% asset 'pages/medium-css' %}
