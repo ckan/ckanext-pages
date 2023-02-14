@@ -1,7 +1,14 @@
 # Change log for ckanext-pages
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
-and this project adheres to [Semantic Versioning](http://semver.org/).
+
+## 0.4.0 (2023-02-14)
+* Drop support for CKAN 2.7 and 2.8
+* Drop support for PY2
+* Removes get_plus_icon() helper
+* Adds support for CSRF token
+* Rename helper `get_wysiwyg_editor` to `pages_get_wysiwyg_editor` to avoid name clash with other extensions (like `ckanext-showcase`)
+
 
 ## 0.3.3 (2021-07-20)
 
@@ -46,7 +53,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Do not prefix absolute HTTP URLs of uploaded image 
+- Do not prefix absolute HTTP URLs of uploaded image
   ([#107](https://github.com/ckan/ckanext-pages/pull/107))
 
 
