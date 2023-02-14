@@ -10,7 +10,7 @@ By default you can add pages to the main CKAN menu.
 
 Tested on CKAN 2.9 and 2.10.
 
-Note: For CKAN 2.7 and 2.8 use v0.3.4 or older versions.
+Note: For CKAN 2.7 and 2.8 use v0.3.7 or older versions.
 
 ## Installation
 
