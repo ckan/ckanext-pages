@@ -9,11 +9,8 @@ def default_pages_schema():
     not_empty = p.toolkit.get_validator('not_empty')
     isodate = p.toolkit.get_validator('isodate')
     name_validator = p.toolkit.get_validator('name_validator')
-    try:
-        unicode_safe = p.toolkit.get_validator('unicode_safe')
-    except p.toolkit.UnknownValidator:
-        # CKAN 2.7
-        unicode_safe = unicode  # noqa: F821
+    unicode_safe = p.toolkit.get_validator('unicode_safe')
+
     return {
         'id': [ignore_empty, unicode_safe],
         'title': [not_empty, unicode_safe],

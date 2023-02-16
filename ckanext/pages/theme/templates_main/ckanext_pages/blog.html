@@ -5,22 +5,15 @@
 {% block primary_content %}
   <section class="module-content">
     {% if h.check_access('ckanext_pages_update') %}
-      {% if h.ckan_version().split('.')[1] | int >= 9 %}
-
-        {% snippet 'ckanext_pages/snippets/pages_asset.html', name='pages/main-css' %}
-
-        {% link_for _('Edit'), named_route='pages.blog_edit', page=c.page.name, class_='btn btn-primary pull-right', icon=h.pages_get_plus_icon() %}
-      {% else %}
-        {% link_for _('Edit'), controller='ckanext.pages.controller:PagesController', action='blog_edit', page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
-      {% endif %}
-
+      {% asset 'pages/main-css' %}
+      {% link_for _('Edit'), named_route='pages.blog_edit', page=c.page.name, class_='btn btn-primary pull-right', icon='plus-square' %}
     {% endif %}
     <h1 class="page-heading">{{ c.page.title }}</h1>
       {% if c.page.publish_date %}
          <span class="muted date"> {{ h.render_datetime(c.page.publish_date) }} </span>
       {% endif %}
     {% if c.page.content %}
-      {% set editor = h.get_wysiwyg_editor() %}
+      {% set editor = h.pages_get_wysiwyg_editor() %}
       {% if editor %}
         <div>
             {{c.page.content|safe}}
@@ -45,11 +38,7 @@
         {% for post in posts %}
             <div class="blog-title">
                 <h3 class="dataset-heading">
-                    {% if h.ckan_version().split('.')[1] | int >= 9 %}
-                      <a href="{{ h.url_for('pages.blog_show', page='/' + post.name) }}">{{ post.title or post.name }}</a>
-                    {% else %}
-                      <a href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + post.name) }}">{{ post.title or post.name }}</a>
-                    {% endif %}
+                    <a href="{{ h.url_for('pages.blog_show', page='/' + post.name) }}">{{ post.title or post.name }}</a>
                     <br>
                     {% if post.publish_date %}
                         <small> {{ h.render_datetime(post.publish_date) }} </small>
@@ -60,21 +49,13 @@
                 {{ h.markdown_extract(post.content) }}
                 {% if post.publish_date %}
                    <br>
-                    {% if h.ckan_version().split('.')[1] | int >= 9 %}
-                      <a class="btn btn-small btn-primary more" href="{{ h.url_for('pages.blog_show', page='/' + post.name) }}">{{ _('More') }}</a>
-                    {% else %}
-                      <a class="btn btn-small btn-primary more" href="{{ h.url_for(controller='ckanext.pages.controller:PagesController', action='blog_show', page='/' + post.name) }}">{{ _('More') }}</a>
-                    {% endif %}
+                    <a class="btn btn-small btn-primary more" href="{{ h.url_for('pages.blog_show', page='/' + post.name) }}">{{ _('More') }}</a>
                 {% endif %}
             </div>
         {% endfor %}
     </div>
   </div>
 
-
-
-
-{% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
-{% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/blog-css' %}
+{% asset 'pages/blog-css' %}
 
 {% endblock %}

@@ -3,7 +3,6 @@
 
 {% set data = data or {} %}
 {% set errors = errors or {} %}
-{% set ckan_29_or_higher = h.ckan_version().split('.')[1] | int >= 9 %}
 
 {% if type == 'org' %}
     {% set prefix = 'organization_pages_' %}
@@ -15,29 +14,17 @@
     {% set prefix = 'blog_' %}
     {% set args = {} %}
 {% else %}
-    {% if ckan_29_or_higher %}
-       {% set prefix = '' %}
-    {% else %}
-       {% set prefix = 'pages_' %}
-    {% endif %}
+     {% set prefix = 'pages_' %}
     {% set args = {} %}
 {% endif %}
 
-{% if ckan_29_or_higher %}
-  {% set page_url = page %}
-{% else %}
-  {% set page_url = '/' + page %}
-{% endif %}
-{% if ckan_29_or_higher %}
-   {% set prefix = 'pages.' + prefix %}
-{% endif %}
+{% set page_url = page %}
+{% set prefix = 'pages.' + prefix %}
 
 {% set cancel_url = h.url_for(prefix + 'index', **args) %}
 {% set slug_prefix = cancel_url ~ '/' %}
 {% set slug_domain = h.url_for(prefix + 'index', qualified=true, **args) %}
 {% if page %}
-  {% if ckan_29_or_higher %}
-
     {% if type == 'org' %}
       {% set delete_url = h.url_for('pages.organization_pages_delete', page=page_url, **args) %}
     {% elif type == 'group' %}
@@ -45,9 +32,6 @@
     {% else %}
       {% set delete_url = h.url_for('pages.blog_delete' if type == 'blog' else 'pages.delete', page=page_url, **args) %}
     {% endif %}
-  {% else %}
-    {% set delete_url = h.url_for(prefix + 'delete', page=page_url, **args) %}
-  {% endif %}
 {% endif %}
 
 {% if type == 'blog' %}
@@ -69,8 +53,8 @@
 {% endif %}
 
 
-<form class="dataset-form pages-form" method="post" action="{{ action_url }}" data-module="basic-form" class="dataset-form">
-
+<form class="dataset-form pages-form" method="post" action="{{ action_url }}" data-module="basic-form">
+  {{ h.csrf_input() if 'csrf_input' in h }}
   {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
 
   {% block form_basic_fields %}
@@ -115,27 +99,16 @@
   {% endblock %}
 
   {% block form_content %}
-    {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
-    {% set editor = h.get_wysiwyg_editor() %}
+    {% set editor = h.pages_get_wysiwyg_editor() %}
     {% if editor == 'medium' %}
-      {% if ckan_29_or_higher %}
-        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-js' %}
-        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium-css' %}
-      {% else %}
-        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/medium' %}
-      {% endif %}
-
-
+      {% asset 'pages/medium-js' %}
+      {% asset 'pages/medium-css' %}
       {{ wysiwyg.editor('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content|safe, error=errors.content) }}
     {% elif editor == 'ckeditor' %}
-      {% if ckan_29_or_higher %}
-        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-js' %}
-        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main-css' %}
-      {% else %}
-        {% snippet 'ckanext_pages/snippets/pages_' ~ type ~ '.html', name='pages/main' %}
-      {% endif %}
+      {% asset 'pages/main-js' %}
+      {% asset 'pages/main-css' %}
       <div class="control-group">
-          <label for="field-content-ck" class="control-label">{{ _('Content') }}</label>
+        <label for="field-content-ck" class="control-label">{{ _('Content') }}</label>
       </div>
       <textarea id="field-content-ck" name="content" placeholder="{{_('My content')}}" data-module="ckedit" style="height:400px" data-module-site_url="{{ h.dump_json(h.url_for('/', locale='default', qualified=true)) }}"> {{ data.content }}</textarea>
     {% else %}
@@ -164,9 +137,3 @@
 
   {% endblock %}
 </form>
-
-{% block scripts %}
-  {% if ckan_29_or_higher %}
-    <script src="/vendor/ckeditor/ckeditor.js"></script>
-  {% endif %}
-{% endblock %}

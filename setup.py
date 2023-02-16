@@ -32,10 +32,9 @@ setup(
         'License :: OSI Approved :: GNU Affero General Public License v3',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: Content Management System',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
     keywords='CKAN CMS',
     author='David Raznick',
@@ -50,7 +49,6 @@ setup(
     },
     zip_safe=False,
     install_requires=[
-        'six', 'ckantoolkit',
     ],
     entry_points="""
         [ckan.plugins]
@@ -58,8 +56,6 @@ setup(
         textboxview=ckanext.pages.plugin:TextBoxView
         [babel.extractors]
         ckan = ckan.lib.extract:extract_ckan
-        [paste.paster_command]
-        pages = ckanext.pages.commands:PagesCommand
     """,
     message_extractors={
         'ckanext': [

@@ -65,7 +65,7 @@ def group_edit(id, page=None, data=None, errors=None, error_summary=None):
     return utils.group_edit(id, 'group', page, data, errors, error_summary)
 
 
-pages.add_url_rule("/pages", view_func=index)
+pages.add_url_rule("/pages", view_func=index, endpoint="pages_index")
 pages.add_url_rule("/pages/<page>", view_func=show)
 pages.add_url_rule("/pages_edit", view_func=pages_edit, endpoint='new', methods=['GET', 'POST'])
 pages.add_url_rule("/pages_edit/", view_func=pages_edit, endpoint='new', methods=['GET', 'POST'])

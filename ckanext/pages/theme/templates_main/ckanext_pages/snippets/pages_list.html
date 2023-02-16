@@ -7,7 +7,7 @@
 
 {% if pages %}
   <div class="page-list">
-    {% set editor = h.get_wysiwyg_editor() %}
+    {% set editor = h.pages_get_wysiwyg_editor() %}
 
     {% for page in pages %}
 

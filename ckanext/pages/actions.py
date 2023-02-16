@@ -7,10 +7,8 @@ import ckan.lib.navl.dictization_functions as df
 import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
 from ckan.plugins import toolkit as tk
-try:
-    from html.parser import HTMLParser
-except ImportError:
-    from HTMLParser import HTMLParser
+from html.parser import HTMLParser
+
 from ckanext.pages.logic.schema import update_pages_schema
 
 import ckan.authz as authz
@@ -167,7 +165,7 @@ def pages_upload(context, data_dict):
         message = (
             "Can't upload the file, size is too large. "
             "(Max allowed is {0}mb)".format(max_image_size)
-            )
+        )
         return {'uploaded': 0, 'error': {'message': message}}
 
     image_url = data_dict.get('image_url')

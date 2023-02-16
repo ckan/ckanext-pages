@@ -5,14 +5,14 @@
 {% block primary_content_inner %}
     {% if h.check_access('ckanext_org_pages_update', {'id': c.page.id}) %}
       {% if h.ckan_version().split('.')[1] | int >= 9 %}
-        {% link_for _('Edit page'), named_route='pages.organization_pages_edit', id=c.group_dict.name, page=c.page.name, class_='btn btn-primary pull-right', icon=h.pages_get_plus_icon() %}
+        {% link_for _('Edit page'), named_route='pages.organization_pages_edit', id=c.group_dict.name, page=c.page.name, class_='btn btn-primary pull-right', icon='plus-square' %}
       {% else %}
         {% link_for _('Edit page'), controller='ckanext.pages.controller:PagesController', action='org_edit', id=c.group_dict.name, page='/' + c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
       {% endif %}
     {% endif %}
   <h1 class="page-heading">{{ c.page.title }}</h1>
   {% if c.page.content %}
-    {% set editor = h.get_wysiwyg_editor() %}
+    {% set editor = h.pages_get_wysiwyg_editor() %}
     {% if editor %}
       <div>
           {{c.page.content|safe}}
