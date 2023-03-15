@@ -28,10 +28,6 @@
       {% endif %}
       <div class="row page-list-item dataset-item">
       {% if page.image %}
-        <div class="span3 image">
-          <a style="background-image:url({{ page.image }})" href="{{ url }}">
-          </a>
-        </div>
         <div class="span8">
            <h3 class="dataset-heading">
               <a href="{{ url }}" >{{ page.title }}</a>
@@ -50,6 +46,10 @@
             {% else %}
               <p class="empty">{{ _('This page currently has no content') }}</p>
             {% endif %}
+        </div>
+        <div class="span3 image">
+          <a style="background-image:url({{ page.image }})" href="{{ url }}">
+          </a>
         </div>
       {% else %}
         <div class="span11">
