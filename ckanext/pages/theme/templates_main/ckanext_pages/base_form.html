@@ -137,3 +137,11 @@
 
   {% endblock %}
 </form>
+
+{% block scripts %}
+ <!--
+  CKEditor needs to be loaded here instead of using webassets
+  or it won't load properly when setting debug=False
+  -->
+  <script src="/vendor/ckeditor/ckeditor.js"></script>
+{% endblock %}
