@@ -196,7 +196,7 @@ def pages_delete(page, page_type='pages'):
     try:
         if tk.request.method == 'POST':
             tk.get_action('ckanext_pages_delete')({}, {'page': page})
-            endpoint = 'index' if page_type in ('pages', 'page') else '%s_index' % page_type
+            endpoint = page_type + '_index'
             return tk.redirect_to('pages.%s' % endpoint)
         else:
             return tk.abort(404, _('Page Not Found'))
