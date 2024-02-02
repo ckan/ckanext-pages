@@ -1,0 +1,20 @@
+{% extends "base_cms.html" %}
+
+{% block subtitle %}{{ _('Header Management') }}{% endblock %}
+
+{% block breadcrumb_content %}
+    <li class="breadcrumb-item">
+        <a href="{{ h.url_for('header_management.index') }}" aria-label="{{ _('Header Management') }}">
+                <span>{{ _('Header Management') }}</span>
+        </a>
+    </li>
+{% endblock %}
+
+{% block page_primary_action %}
+<section>
+  <!-- Header Management Heading -->
+  <h1 class="page-heading" style="font-size: 24px; font-weight: bold; margin-bottom: 1px;">
+    {{ _('Header Management') }}
+  </h1>
+</section>
+{% endblock %}

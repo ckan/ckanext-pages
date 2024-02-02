@@ -220,12 +220,13 @@ class HeaderLogo(DomainObject, BaseModel):
     id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
     logo_en = Column(types.UnicodeText, nullable=False)
     logo_ar = Column(types.UnicodeText, nullable=False)
+    is_visible  = Column(types.Boolean, default=True)
     created = Column(types.DateTime, default=datetime.datetime.utcnow)
     modified = Column(types.DateTime, default=datetime.datetime.utcnow)
 
     @classmethod
-    def get_all(cls):
-        return Session.query(cls).order_by(cls.order).all()
+    def get(cls):
+        return Session.query(cls).first()
 
 
 class HeaderMainMenu(DomainObject, BaseModel):
@@ -248,6 +249,15 @@ class HeaderMainMenu(DomainObject, BaseModel):
     def get_all(cls):
         return Session.query(cls).order_by(cls.order).all()
 
+    @classmethod
+    def toggle_visibility(cls, id):
+        menu_item = Session.query(cls).get(id)
+        if menu_item:
+            menu_item.is_visible = not menu_item.is_visible
+            menu_item.save()
+            return menu_item
+        return None
+
 
 class HeaderSecondaryMenu(DomainObject, BaseModel):
     __tablename__ = 'header_secondary_menu'
@@ -262,6 +272,14 @@ class HeaderSecondaryMenu(DomainObject, BaseModel):
     created = Column(types.DateTime, default=datetime.datetime.utcnow)
     modified = Column(types.DateTime, default=datetime.datetime.utcnow)
 
+    @classmethod
+    def toggle_visibility(cls, id):
+        menu_item = Session.query(cls).get(id)
+        if menu_item:
+            menu_item.is_visible = not menu_item.is_visible
+            menu_item.save()
+            return menu_item
+        return None
 
 def table_dictize(obj, context, **kw):
     '''Get any model object and represent it as a dict'''

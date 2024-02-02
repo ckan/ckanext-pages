@@ -85,3 +85,19 @@ group_pages_show = page_privacy
 group_pages_update = page_group_admin
 group_pages_delete = page_group_admin
 group_pages_list = anyone
+
+
+def header_management_access(context, data_dict):
+    """
+    Only sysadmin and content writers can manage headers
+    """
+    # todo: remove this line
+    # return {'success': True}
+    user = context.get('auth_user_obj')
+    if not user:
+        return {'success': False}
+
+    is_sysadmin = user.sysadmin
+    is_content_writer = user.has_role('content_writer') if hasattr(user, 'has_role') else False
+
+    return {'success': is_sysadmin or is_content_writer}

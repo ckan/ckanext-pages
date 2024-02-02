@@ -1,0 +1,72 @@
+<h5 class="mt-5">{{ _('Main Menu') }}</h5>
+<div class="d-flex flex-row justify-content-between mt-3">
+  <a href="{{ h.url_for('header_management.new_main_menu') }}" class="redbtn">
+    <img src="/images/addition.png"> {{ _('Add New') }}
+  </a>
+  <div class="d-flex flex-row">
+    <p class="semibold mt-1 me-2">{{ _('Filter By Type') }}</p>
+    <div class="dropdown">
+      <a class="btn btn-white dropdown-toggle" href="#" role="button"
+         id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ menu_type if menu_type else _('Link') }}
+      </a>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <li><a class="dropdown-item" href="{{ h.url_for('header_management.index', menu_type='link') }}">
+          {{ _('Link') }}
+        </a></li>
+        <li><a class="dropdown-item" href="{{ h.url_for('header_management.index', menu_type='menu') }}">
+          {{ _('Menu') }}
+        </a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="tablebody table-responsive mt-2">
+  <table class="table">
+    <thead>
+      <tr>
+        <th style="font-weight: bold !important;">{{ _('Title En') }}</th>
+        <th style="font-weight: bold !important;">{{ _('Link En') }}</th>
+        <th style="font-weight: bold !important;">{{ _('Type') }}</th>
+        <th style="font-weight: bold !important;">{{ _('Parent') }}</th>
+        <th style="font-weight: bold !important;">{{ _('Order') }}</th>
+        <th style="font-weight: bold !important; width:12%;">{{ _('Actions') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in main_menu %}
+        <tr class="{{ 'text-muted' if not item.is_visible }}">
+          <td>{{ item.title_en }}</td>
+          <td>{{ item.link_en }}</td>
+          <td>{{ item.menu_type }}</td>
+          <td>{{ item.parent.title_en if item.parent else '' }}</td>
+          <td>{{ item.order }}</td>
+          <td>
+            <div class="d-flex flex-row">
+              <a href="{{ h.url_for('header_management.edit_main_menu', id=item.id) }}" class="me-1">
+                <img src="/images/edit.png" alt="Edit">
+              </a>
+              <form method="POST"
+                    action="{{ h.url_for('header_management.toggle_main_menu_visibility', id=item.id) }}"
+                    style="display:inline">
+                {{ h.csrf_input() }}
+                <button type="submit" class="btn-link p-0 me-1">
+                  <img src="/images/visibility.png" alt="Toggle visibility">
+                </button>
+              </form>
+              <form method="POST"
+                    action="{{ h.url_for('header_management.delete_main_menu', id=item.id) }}"
+                    style="display:inline">
+                {{ h.csrf_input() }}
+                <button type="submit" class="btn-link p-0">
+                  <img src="/images/delete.png" alt="Delete">
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

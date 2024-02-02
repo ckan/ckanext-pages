@@ -98,10 +98,6 @@ class PagesPlugin(PagesPluginBase):
     p.implements(p.IAuthFunctions, inherit=True)
     p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IBlueprint)
-    p.implements(p.IClick)
-
-    def get_commands(self):
-        return cli.get_commands()
 
     def get_blueprint(self):
         return [blueprint.pages, blueprint.header_management]
@@ -117,33 +113,27 @@ class PagesPlugin(PagesPluginBase):
         tk.add_resource('assets', 'pages')
         tk.add_public_directory(config, 'assets/')
         tk.add_public_directory(config, 'assets/vendor/ckeditor/')
-        tk.add_public_directory(config, 'assets/vendor/ckeditor/skins/moono-lisa')
-
-
-
-    def get_helpers(self):
-        return {
-            'build_nav_main': build_pages_nav_main,
-            'render_content': render_content,
-            'pages_get_wysiwyg_editor': get_wysiwyg_editor,
-            'get_recent_blog_posts': get_recent_blog_posts,
-            'get_main_page_sections': get_main_page_sections
-        }
 
     def get_actions(self):
         actions_dict = {
-            'ckanext_pages_edit': actions.pages_edit_action,
             'ckanext_pages_show': actions.pages_show,
             'ckanext_pages_update': actions.pages_update,
             'ckanext_pages_delete': actions.pages_delete,
             'ckanext_pages_list': actions.pages_list,
-            'ckanext_news_list': actions.news_list,
-            'ckanext_news_toggle_visibility': actions.news_toggle_visibility,
-            'ckanext_events_list': actions.events_list,
             'ckanext_pages_upload': actions.pages_upload,
             'ckanext_main_page_show': actions.main_page_show,
             'ckanext_event_edit':actions.event_edit,
             'ckanext_news_edit':actions.news_edit,
+            # Header Management Actions
+            'ckanext_header_main_menu_list': actions.header_main_menu_list,
+            'ckanext_header_secondary_menu_list': actions.header_secondary_menu_list,
+            'ckanext_header_logo_get': actions.header_logo_get,
+            'ckanext_header_main_menu_toggle_visibility': actions.header_main_menu_toggle_visibility,
+            'ckanext_header_main_menu_delete': actions.header_main_menu_delete,
+            'ckanext_header_secondary_menu_toggle_visibility': actions.header_secondary_menu_toggle_visibility,
+            'ckanext_header_logo_update': actions.header_logo_update,
+            'ckanext_header_logo_delete': actions.header_logo_delete,
+            'ckanext_header_logo_toggle_visibility': actions.header_logo_toggle_visibility
         }
         return actions_dict
 
@@ -153,5 +143,7 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_pages_update': auth.pages_update,
             'ckanext_pages_delete': auth.pages_delete,
             'ckanext_pages_list': auth.pages_list,
-            'ckanext_pages_upload': auth.pages_upload
+            'ckanext_pages_upload': auth.pages_upload,
+            # Header Management Auth Functions
+            'ckanext_header_management_access': auth.header_management_access
         }

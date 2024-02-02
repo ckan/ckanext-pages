@@ -122,30 +122,44 @@ def update_events_schema(schema = default_events_schema, **kwargs):
 
 def header_logo_schema():
     return {
-        'id': [ignore_missing, unicode_safe],
-        'logo_en': [not_empty, unicode_safe],
-        'logo_ar': [not_empty, unicode_safe],
+        'id': [tk.get_validator('ignore_missing'),
+               tk.get_validator('unicode_safe')],
+        'logo_en': [tk.get_validator('ignore_missing'),
+                   tk.get_validator('unicode_safe')],
+        'logo_ar': [tk.get_validator('ignore_missing'),
+                   tk.get_validator('unicode_safe')]
     }
 
-def header_main_menu_schema():
+def header_menu_schema():
     return {
-        'id': [ignore_missing, unicode_safe],
-        'title_en': [not_empty, unicode_safe],
-        'title_ar': [not_empty, unicode_safe],
-        'link_en': [not_empty, unicode_safe],
-        'link_ar': [not_empty, unicode_safe],
-        'menu_type': [not_empty, unicode_safe],
-        'parent_id': [ignore_missing, unicode_safe],
-        'order': [ignore_missing, int],
-        'is_visible': [ignore_missing, boolean_validator],
+        'id': [tk.get_validator('ignore_missing'),
+               tk.get_validator('unicode_safe')],
+        'title_en': [tk.get_validator('not_empty'),
+                    tk.get_validator('unicode_safe')],
+        'title_ar': [tk.get_validator('not_empty'),
+                    tk.get_validator('unicode_safe')],
+        'link_en': [tk.get_validator('not_empty'),
+                   tk.get_validator('unicode_safe')],
+        'link_ar': [tk.get_validator('not_empty'),
+                   tk.get_validator('unicode_safe')],
+        'menu_type': [tk.get_validator('not_empty'),
+                     tk.get_validator('unicode_safe'),
+                     tk.get_validator('one_of')(['link', 'menu'])],
+        'parent_id': [tk.get_validator('ignore_missing'),
+                     tk.get_validator('unicode_safe')],
+        'order': [tk.get_validator('ignore_missing'),
+                 tk.get_validator('int_validator')],
+        'is_visible': [tk.get_validator('ignore_missing'),
+                      tk.get_validator('boolean_validator')]
     }
 
-def header_secondary_menu_schema():
+def header_logo_upload_schema():
+    """Schema for logo upload validation."""
     return {
-        'id': [ignore_missing, unicode_safe],
-        'title_en': [not_empty, unicode_safe],
-        'title_ar': [not_empty, unicode_safe],
-        'link_en': [not_empty, unicode_safe],
-        'link_ar': [not_empty, unicode_safe],
-        'is_visible': [ignore_missing, boolean_validator],
+        'logo_en_upload': [tk.get_validator('ignore_missing'),
+                          tk.get_validator('unicode_safe')],
+        'logo_ar_upload': [tk.get_validator('ignore_missing'),
+                          tk.get_validator('unicode_safe')],
+        'clear_upload': [tk.get_validator('ignore_missing'),
+                        tk.get_validator('boolean_validator')]
     }

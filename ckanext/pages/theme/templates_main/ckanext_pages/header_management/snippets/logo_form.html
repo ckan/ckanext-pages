@@ -1,51 +1,144 @@
 {% import 'macros/form.html' as form %}
 
-{% if errors %}
-  <div class="alert alert-danger">
-    <strong>{{ _('Error(s)') }}:</strong>
-    <ul>
-      {% for field, error in errors.items() %}
-        <li>{{ error }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-{% endif %}
+<form method="post"
+      action="{{ h.url_for('header_management.edit_logo', id=data.id) }}"
+      enctype="multipart/form-data">
+    {{ h.csrf_input() }}
 
-<form method="post" action="{{ h.url_for('header_management.update_logo') }}" enctype="multipart/form-data">
-  {{ h.csrf_input() }}
-
-  <!-- Logo (English) -->
-  <div class="control-group">
-    <label class="control-label" for="logo_en">{{ _('English Logo') }}</label>
-    <div class="controls">
-      <input type="file" id="logo_en" name="logo_en" accept="image/*">
-      {% if errors.logo_en %}
-        <span class="error-block">{{ errors.logo_en }}</span>
-      {% endif %}
+    {# Arabic Logo Section #}
+    <p class="boldfont mt-3">
+        {{ _('Header Logo In Arabic') }}
+        <span class="Recomndation ms-2">{{ _('Recomndation Size 250*55') }}</span>
+    </p>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="file-container">
+                <input type="file"
+                       id="logo_ar"
+                       name="logo_ar"
+                       accept="image/*"
+                       class="hidden-file-input"
+                       data-filename="{{ data.logo_ar or '' }}">
+                <label for="logo_ar" class="file-trigger">Choose File</label>
+                <span class="file-name">{{ data.logo_ar or 'No file chosen' }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="actionbtn mt-0 w-100" onclick="document.getElementById('logo_ar').click()">
+                {{ _('Upload') }}
+            </button>
+        </div>
     </div>
-  </div>
 
-  <!-- Logo (Arabic) -->
-  <div class="control-group">
-    <label class="control-label" for="logo_ar">{{ _('Arabic Logo') }}</label>
-    <div class="controls">
-      <input type="file" id="logo_ar" name="logo_ar" accept="image/*">
-      {% if errors.logo_ar %}
-        <span class="error-block">{{ errors.logo_ar }}</span>
-      {% endif %}
+    {# English Logo Section #}
+    <p class="boldfont mt-3">
+        {{ _('Header Logo In English') }}
+        <span class="Recomndation ms-2">{{ _('Recomndation Size 250*55') }}</span>
+    </p>
+    <div class="row mt-3">
+        <div class="col-md-9">
+            <div class="file-container">
+                <input type="file"
+                       id="logo_en"
+                       name="logo_en"
+                       accept="image/*"
+                       class="hidden-file-input"
+                       data-filename="{{ data.logo_en or '' }}">
+                <label for="logo_en" class="file-trigger">Choose File</label>
+                <span class="file-name">{{ data.logo_en or 'No file chosen' }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="actionbtn mt-0 w-100" onclick="document.getElementById('logo_en').click()">
+                {{ _('Upload') }}
+            </button>
+        </div>
     </div>
-  </div>
 
-  <!-- Visibility Toggle -->
-  <div class="control-group">
-    <label class="control-label" for="is_visible">{{ _('Visible') }}</label>
-    <div class="controls">
-      <input type="checkbox" id="is_visible" name="is_visible" {% if data.is_visible %}checked{% endif %}>
+    <div class="d-flex flex-row mt-3 mb-3 justify-content-end mt-5">
+        <button type="button" onclick="window.location='{{ h.url_for('header_management.index') }}'"
+                class="redbtn d-inline-flex align-items-center justify-content-center me-2">{{ _('Cancel') }}</button>
+        <button type="submit"
+                class="graybtn d-inline-flex align-items-center justify-content-center">{{ _('Save') }}</button>
     </div>
-  </div>
-
-  <div class="form-actions">
-    {{ form.button(_('Save'), type='submit', class_='btn btn-primary') }}
-    <a href="{{ h.url_for('header_management.delete_logo', id=data.id) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this logo?');">{{ _('Delete') }}</a>
-  </div>
 </form>
+
+<style>
+    .file-container {
+        display: flex;
+        align-items: center;
+        border: 1px solid #cdd3da;
+        padding: 4px 17px;
+        background: white;
+    }
+
+    .hidden-file-input {
+        display: none;
+    }
+
+    .file-trigger {
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        padding: 2px 12px;
+        margin-right: 8px;
+        border-radius: 2px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .file-name {
+        color: #555;
+        font-size: 13px;
+    }
+
+    .Recomndation {
+        color: #999;
+        font-size: 14px;
+    }
+
+    .boldfont {
+        font-weight: bold;
+    }
+
+    .actionbtn {
+        background: #DA1F3D;
+        color: white;
+        border: none;
+        padding: 6px 20px;
+        border-radius: 4px;
+    }
+
+    .actionbtn:hover {
+        background: #c01834;
+        color: white;
+    }
+
+    .redbtn, .graybtn {
+        min-width: 80px;
+        height: 35px;
+        padding: 6px 20px;
+        border-radius: 4px;
+        border: none;
+    }
+
+    .redbtn {
+        background: #DA1F3D;
+        color: white;
+    }
+
+    .graybtn {
+        background: #607D8B;
+        color: white;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.hidden-file-input').forEach(input => {
+            input.addEventListener('change', function () {
+                const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
+                this.nextElementSibling.nextElementSibling.textContent = fileName;
+            });
+        });
+    });
+</script>

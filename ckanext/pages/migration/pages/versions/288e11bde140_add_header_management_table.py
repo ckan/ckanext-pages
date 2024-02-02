@@ -29,6 +29,7 @@ def upgrade():
         sa.Column("id", sa.UnicodeText, primary_key=True, default=make_uuid),
         sa.Column("logo_en", sa.UnicodeText, nullable=False),
         sa.Column("logo_ar", sa.UnicodeText, nullable=False),
+        sa.Column("is_visible", sa.Boolean, default=True),
         sa.Column("created", sa.DateTime, default=datetime.datetime.utcnow),
         sa.Column("modified", sa.DateTime, default=datetime.datetime.utcnow),
     )

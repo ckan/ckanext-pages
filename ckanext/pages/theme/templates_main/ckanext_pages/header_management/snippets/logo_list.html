@@ -1,0 +1,85 @@
+<h5 class="mt-4">{{ _('Header Logo') }}</h5>
+
+<div class="tablebody table-responsive mt-3">
+    <table class="table">
+        <thead>
+        <tr>
+            <th style="font-weight: bold !important;">{{ _('Header Logo Arabic') }}</th>
+            <th style="font-weight: bold !important;">{{ _('Header Logo English') }}</th>
+            <th style="font-weight: bold !important; width:12%;">{{ _('Actions') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if logo %}
+            <tr>
+                <td>
+                    {{ logo.logo_ar }}
+                </td>
+                <td>
+                    {{ logo.logo_en }}
+                </td>
+                <td>
+                    <div class="d-flex flex-row">
+                        <!-- Edit Button -->
+                        <a href="{{ h.url_for('header_management.edit_logo', id=logo.id) }}" class="me-1">
+                            <img src="/images/edit_icon.png" alt="Edit" style="width: 32px; height: 32px; cursor: pointer;">
+                        </a>
+                        <!-- Delete Button with Modal Trigger -->
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ logo.id }}">
+                            <img src="/images/remove_icon.png" alt="Delete"
+                                 style="width: 32px; height: 32px; cursor: pointer;">
+                        </a>
+                        <!-- Delete Confirmation Modal -->
+                        <div class="modal fade" id="deleteModal-{{ logo.id }}" tabindex="-1"
+                             aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title"
+                                            id="deleteModalLabel">{{ _('Please Confirm Action') }}</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ _('Are you sure you want to delete this logo?') }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default"
+                                                data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                                        <form method="POST"
+                                              action="{{ h.url_for('header_management.delete_logo', id=logo.id) }}"
+                                              class="d-inline">
+                                            {{ h.csrf_input() }}
+                                            <button class="btn btn-primary" type="submit"
+                                                    name="confirm">{{ _('Confirm') }}</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Toggle Visibility -->
+                        <form method="POST"
+                              action="{{ h.url_for('header_management.toggle_logo_visibility', id=logo.id) }}"
+                              class="d-inline">
+                            {{ h.csrf_input() }}
+                            <button type="submit" class="btn-link p-0 me-1"
+                                    style="border: none; background: none; padding: 0;">
+                                <img src="{{ '/images/EYE3.png' if logo.is_visible else '/images/hide_icon.png' }}"
+                                     alt="{{ _('View') if logo.is_visible else _('Hide') }}"
+                                     style="width: 32px; height: 32px; cursor: pointer;"
+                                >
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3" class="text-center">
+                    {{ _('No logo uploaded yet') }}
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>

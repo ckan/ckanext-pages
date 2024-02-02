@@ -1,8 +1,10 @@
-{% extends "page.html" %}
+{% extends "ckanext_pages/header_management/base.html" %}
 
 {% block primary_content %}
-  <div class="header-logo-edit">
-    <h1>{{ _('Edit Header Logo') }}</h1>
-    {% snippet 'ckanext_pages/header_management/snippets/logo_form.html', data=data, errors=errors %}
-  </div>
+    <div class="header-logo-edit m-4">
+        <div class="edit-header-logo">
+            <h3 class="my-4">{{ _('Edit Header Logo') }}</h3>
+            {% snippet 'ckanext_pages/header_management/snippets/logo_form.html', data=data, errors=errors %}
+        </div>
+    </div>
 {% endblock %}

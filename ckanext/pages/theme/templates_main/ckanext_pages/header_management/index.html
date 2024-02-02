@@ -1,25 +1,30 @@
-{% extends "page.html" %}
+{% extends "base_cms.html" %}
+{% set lang = h.lang() %}
+{% block title %}{{ _('Header Management') }}{% endblock %}
 
-{% block primary_content %}
-  <div class="header-management">
-    <h1>{{ _('Header Management') }}</h1>
-    
-    <!-- Header Logo Section -->
-    <div class="header-logo">
-      <h2>{{ _('Header Logo') }}</h2>
-      <a href="{{ h.url_for('header_management.logo') }}" class="btn btn-primary">{{ _('Edit Logo') }}</a>
-    </div>
+{% block breadcrumb_content %}
+    <li class="breadcrumb-item">
+        <a href="{{ h.url_for('header_management.index') }}" aria-label="{{ _('Header Management') }}">
+            <span>{{ _('Header Management') }}</span>
+        </a>
+    </li>
+{% endblock %}
 
-    <!-- Main Menu Section -->
-    <div class="main-menu">
-      <h2>{{ _('Main Menu') }}</h2>
-      <a href="{{ h.url_for('header_management.main_menu') }}" class="btn btn-primary">{{ _('Edit Main Menu') }}</a>
-    </div>
+{% block page_primary_action %}
+    <section>
+        <!-- Header Management Heading -->
+        <h1 class="page-heading" style="font-size: 24px; font-weight: bold; margin-bottom: 1px;">
+            {{ _('Header Management') }}
+        </h1>
+    </section>
+{% endblock %}
 
-    <!-- Secondary Menu Section -->
-    <div class="secondary-menu">
-      <h2>{{ _('Secondary Menu') }}</h2>
-      <a href="{{ h.url_for('header_management.secondary_menu') }}" class="btn btn-primary">{{ _('Edit Secondary Menu') }}</a>
+{% block primary_content_inner %}
+    <div class="tab-pane fade show active">
+        {% snippet 'ckanext_pages/header_management/snippets/logo_list.html', logo=logo %}
+
+        {% snippet 'ckanext_pages/header_management/snippets/main_menu_list.html', main_menu=main_menu %}
+
+        {% snippet 'ckanext_pages/header_management/snippets/secondary_menu_list.html', secondary_menu=secondary_menu %}
     </div>
-  </div>
 {% endblock %}
