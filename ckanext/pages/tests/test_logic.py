@@ -159,7 +159,7 @@ class TestPages():
             extra_environ=env,
         )
 
-        assert u'<p>&#199;&#246;&#241;t&#233;&#241;t</p>' in response.get_data(as_text=True)
+        assert u'<p>Çöñtéñt</p>' in response.get_data(as_text=True)
         assert u'<title>Tïtlé - CKAN</title>' in response.get_data(as_text=True)
         assert u'<a href="/pages/page_unicode">Tïtlé</a>' in response.get_data(as_text=True)
         assert u'<h1 class="page-heading">Tïtlé</h1>' in response.get_data(as_text=True)
