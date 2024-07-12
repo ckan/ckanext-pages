@@ -12,7 +12,6 @@ from ckan.lib.helpers import build_nav_main as core_build_nav_main
 from ckanext.pages import actions
 from ckanext.pages import auth
 from ckanext.pages import blueprint
-from ckanext.pages import cli
 
 from ckan.lib.plugins import DefaultTranslation
 

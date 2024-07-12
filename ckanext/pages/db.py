@@ -21,7 +21,7 @@ from ckan.model.domain_object import DomainObject
 try:
     from ckan.plugins.toolkit import BaseModel
 except ImportError:
-# CKAN <= 2.9
+    # CKAN <= 2.9
     from ckan.model.meta import metadata
     from sqlalchemy.ext.declarative import declarative_base
 
