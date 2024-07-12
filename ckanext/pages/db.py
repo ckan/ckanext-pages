@@ -34,14 +34,6 @@ def make_uuid():
     return text_type(uuid.uuid4())
 
 
-def init_db():
-    if pages_table is None:
-        define_tables()
-
-    if not pages_table.exists():
-        pages_table.create()
-
-
 class Page(DomainObject, BaseModel):
 
     __tablename__ = "ckanext_pages"

@@ -97,13 +97,9 @@ class PagesPlugin(PagesPluginBase):
     p.implements(p.IAuthFunctions, inherit=True)
     p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IBlueprint)
-    p.implements(p.IClick)
 
     def get_blueprint(self):
         return [blueprint.pages]
-
-    def get_commands(self):
-        return cli.get_commands()
 
     def update_config(self, config):
         self.organization_pages = tk.asbool(config.get('ckanext.pages.organization', False))
