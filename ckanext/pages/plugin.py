@@ -9,10 +9,9 @@ from ckan.plugins import toolkit as tk
 import ckan.plugins as p
 from ckan.lib.helpers import build_nav_main as core_build_nav_main
 
-from ckanext.pages import actions, db
+from ckanext.pages import actions
 from ckanext.pages import auth
 from ckanext.pages import blueprint
-from ckanext.pages import cli
 
 from ckan.lib.plugins import DefaultTranslation
 
@@ -97,13 +96,9 @@ class PagesPlugin(PagesPluginBase):
     p.implements(p.IAuthFunctions, inherit=True)
     p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IBlueprint)
-    p.implements(p.IClick)
 
     def get_blueprint(self):
         return [blueprint.pages]
-
-    def get_commands(self):
-        return cli.get_commands()
 
     def update_config(self, config):
         self.organization_pages = tk.asbool(config.get('ckanext.pages.organization', False))
@@ -171,9 +166,6 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_group_pages_delete': auth.group_pages_delete,
             'ckanext_group_pages_list': auth.group_pages_list,
         }
-
-    def configure(self, config):
-        db.init_db()
 
 
 class TextBoxView(p.SingletonPlugin):

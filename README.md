@@ -33,7 +33,7 @@ You need to initialize database from command line with the following commands:
 
 ON CKAN >= 2.9:
 ```
-(pyenv) $ ckan --config=/etc/ckan/default/ckan.ini pages initdb
+(pyenv) $ ckan --config=/etc/ckan/default/ckan.ini db upgrade -p pages
 ```
 
 

@@ -3,7 +3,8 @@ import pytest
 from ckan.tests import factories, helpers
 
 
-@pytest.mark.usefixtures("clean_db", "pages_setup")
+@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.ckan_config("ckan.plugins", "pages")
 class TestPagesActions:
     def test_pages_create_action(self, app):
         user = factories.User()
