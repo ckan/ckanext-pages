@@ -23,7 +23,7 @@ class HTMLFirstImage(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         if tag == 'img' and not self.first_image:
-            self.first_image = dict(attrs)['src']
+            self.first_image = dict(attrs).get('src')
 
 
 def _pages_show(context, data_dict):
