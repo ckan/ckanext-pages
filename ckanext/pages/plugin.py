@@ -128,6 +128,7 @@ class PagesPlugin(PagesPluginBase):
         actions_dict = {
             'ckanext_pages_show': actions.pages_show,
             'ckanext_pages_update': actions.pages_update,
+            'ckanext_pages_revision_restore': actions.pages_revision_restore,
             'ckanext_pages_delete': actions.pages_delete,
             'ckanext_pages_list': actions.pages_list,
             'ckanext_pages_upload': actions.pages_upload,

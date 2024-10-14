@@ -9,6 +9,7 @@
       {% if h.check_access('ckanext_pages_update') %}
           {% asset 'pages/main-css' %}
           {% link_for _('Edit'), named_route='pages.edit', page=c.page.name, class_='btn btn-primary pull-right', icon='edit' %}
+          {% link_for _('Revisions'), named_route='pages.pages_revisions', page=c.page.name, class_='btn btn-primary pull-right me-2', icon='eye' %}
       {% endif %}
     {% endblock %}
     <h1 class="page-heading">{{ c.page.title }}</h1>

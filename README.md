@@ -82,6 +82,12 @@ ckanext.pages.editor = ckeditor
 ```
 This enables either the [medium](https://jakiestfu.github.io/Medium.js/docs/) or [ckeditor](http://ckeditor.com/)
 
+```
+ckanext.pages.revisions_limit = 3
+```
+
+By default the value is set to `3` revisions to be stored. While adding this option with a higher number, the amount of stored revisions will be increased.
+
 ## Extending ckanext-pages schema
 
 This extension defines an `IPagesSchema` interface that allows other extensions to update the pages schema and add custom fields.

@@ -1,6 +1,7 @@
 import datetime
 import json
 
+from ckan.model.types import make_uuid
 from ckan import model
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
@@ -103,6 +104,7 @@ def _pages_update(context, data_dict):
     context['page'] = page
     context['group_id'] = org_id
     schema = update_pages_schema()
+    revisions_limit = int(tk.config.get('ckanext.pages.revisions_limit', '3'))
 
     data, errors = df.validate(data_dict, schema, context)
 
@@ -132,10 +134,51 @@ def _pages_update(context, data_dict):
     out.modified = datetime.datetime.utcnow()
     user = model.User.get(context['user'])
     out.user_id = user.id
+
+    revisions = out.revisions
+
+    new_revision = {
+        make_uuid() : {
+            "content": out.content,
+            "user_id": user.id,
+            "created": datetime.datetime.utcnow().isoformat()
+        }
+    }
+    if not revisions:
+        out.revisions = new_revision
+    else:
+        if (len(revisions) >= revisions_limit):
+            revisions = out.get_ordered_revisions()
+            revisions.popitem()
+            out.revisions = new_revision | revisions
+
+        out.revisions = new_revision | revisions
+
     out.save()
     session = context['session']
     session.add(out)
     session.commit()
+
+
+def _pages_revision_restore(context, data_dict):
+    name = data_dict.get('page')
+    rev = data_dict.get('revision')
+    page = db.Page.get(name=name)
+
+    if page and page.revisions:
+        try:
+            revision = page.revisions.get(rev)
+
+            page.content = revision['content']
+            page.save()
+            session = context['session']
+            session.add(page)
+            session.commit()
+            tk.h.flash_success(f"Content from Revision '{rev}' is being set.")
+        except (TypeError, ValueError):
+            tk.h.flash_error(
+                """Bad values, please make sure that provided values exist:
+                    Page name - '{name}', Revision version - '{rev}'""".format(name=name, rev=rev))
 
 
 def pages_upload(context, data_dict):
@@ -192,6 +235,14 @@ def pages_update(context, data_dict):
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_update(context, data_dict)
+
+
+def pages_revision_restore(context, data_dict):
+    try:
+        p.toolkit.check_access('ckanext_pages_update', context, data_dict)
+    except p.toolkit.NotAuthorized:
+        p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
+    return _pages_revision_restore(context, data_dict)
 
 
 def pages_delete(context, data_dict):

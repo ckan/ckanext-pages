@@ -4,26 +4,31 @@
 
 {% block primary_content %}
   <section class="module-content">
-    {% if h.check_access('ckanext_pages_update') %}
-      {% asset 'pages/main-css' %}
-      {% link_for _('Edit'), named_route='pages.blog_edit', page=c.page.name, class_='btn btn-primary pull-right', icon='plus-square' %}
-    {% endif %}
+    {% block ckanext_pages_actions %}
+      {% if h.check_access('ckanext_pages_update') %}
+        {% asset 'pages/main-css' %}
+        {% link_for _('Edit'), named_route='pages.blog_edit', page=c.page.name, class_='btn btn-primary pull-right', icon='plus-square' %}
+        {% link_for _('Revisions'), named_route='pages.blog_revisions', page=c.page.name, class_='btn btn-primary pull-right me-2', icon='eye' %}
+      {% endif %}
+    {% endblock %}
     <h1 class="page-heading">{{ c.page.title }}</h1>
       {% if c.page.publish_date %}
          <span class="muted date"> {{ h.render_datetime(c.page.publish_date) }} </span>
       {% endif %}
-    {% if c.page.content %}
-      {% set editor = h.pages_get_wysiwyg_editor() %}
-      {% if editor %}
-        <div>
-            {{c.page.content|safe}}
-        </div>
+    {% block ckanext_pages_content %}
+      {% if c.page.content %}
+        {% set editor = h.pages_get_wysiwyg_editor() %}
+        {% if editor %}
+          <div>
+              {{c.page.content|safe}}
+          </div>
+        {% else %}
+          {{ h.render_content(c.page.content) }}
+        {% endif %}
       {% else %}
-        {{ h.render_content(c.page.content) }}
+        <p class="empty">{{ _('This page currently has no content') }}</p>
       {% endif %}
-    {% else %}
-      <p class="empty">{{ _('This page currently has no content') }}</p>
-    {% endif %}
+    {% endblock %}
   </section>
 {% endblock %}
 
