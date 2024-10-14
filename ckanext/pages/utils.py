@@ -188,6 +188,7 @@ def pages_show(page=None, page_type='page'):
 
     return tk.render('ckanext_pages/%s.html' % page_type)
 
+
 def pages_revisions(page, page_type='page'):
     try:
         tk.check_access('ckanext_pages_update', {'user': tk.g.user})
