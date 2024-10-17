@@ -19,7 +19,7 @@ depends_on = None
 
 def upgrade():
     op.add_column(
-        u'ckanext_pages',
+        'ckanext_pages',
         sa.Column(
             u'revisions',
             postgresql.JSONB(astext_type=sa.Text()),

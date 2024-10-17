@@ -80,9 +80,12 @@ class Page(DomainObject, BaseModel):
         return query.all()
 
     def get_ordered_revisions(self):
+        # Compare timestamps to avoid different datetime formats error
         return OrderedDict(reversed(sorted(
                 self.revisions.items(),
-                key=lambda x: datetime.datetime.fromisoformat(x[1]['created'])
+                key=lambda x: datetime.datetime.timestamp(
+                    datetime.datetime.fromisoformat(x[1]['created'])
+                    )
         )))
 
 

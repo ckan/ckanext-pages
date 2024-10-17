@@ -33,7 +33,11 @@
                         )|safe }}
 
                         {% link_for _('Preview'), named_route='pages.pages_revisions_preview', page=c.page.name, revision=key, class_='' %}
-                        {% link_for _('Restore'), named_route='pages.pages_revision_restore', page=c.page.name, revision=key, class_='' %}                   
+                        {% if not revision.current %}
+                          {% link_for _('Restore'), named_route='pages.pages_revision_restore', page=c.page.name, revision=key, class_='' %}
+                        {% else %}
+                          <span>{{ _('Active Revision') }}</span>
+                        {% endif %}
                         <br />
                         <span class="date" title="{{ h.render_datetime(revision.created, with_hours=True) }}">
                             {{ h.time_ago_from_timestamp(revision.created) }}
