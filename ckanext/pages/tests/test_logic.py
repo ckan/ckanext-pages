@@ -5,6 +5,8 @@ try:
 except ImportError:
     import mock
 import pytest
+from collections import OrderedDict
+import datetime
 
 from ckan.plugins import toolkit
 from ckan.tests import factories, helpers
@@ -214,3 +216,282 @@ class TestPages():
 
         assert '<div class="flash-messages">' in response.body
         assert 'Page name already exists' in response.body
+
+    def test_revisions_page(self, app):
+        user = factories.Sysadmin()
+        env = {'REMOTE_USER': user['name'].encode('ascii')}
+
+        helpers.call_action(
+            "ckanext_pages_update",
+            {"user": user["name"]},
+            name="page_name",
+            title="New Page",
+            content="This is a test content",
+        )
+
+        response = app.get(
+            toolkit.url_for('pages.pages_revisions', page="page_name"),
+            status=200, extra_environ=env)
+
+        assert '<span class="badge badge-inverse">Active Revision</span>' in response.body
+
+        response = app.get(
+            toolkit.url_for('pages.pages_revisions', page="page_name1"),
+            status=404, extra_environ=env)
+
+        assert '404 Not Found' in response.body
+
+        response = app.get(
+            toolkit.url_for('pages.pages_revisions', page="page_name"),
+            status=401)
+
+        assert '<h1>401 Unauthorized</h1>' in response.body
+
+    def test_revision_preview_page(self, app):
+        user = factories.Sysadmin()
+        env = {'REMOTE_USER': user['name'].encode('ascii')}
+
+        helpers.call_action(
+            "ckanext_pages_update",
+            {"user": user["name"]},
+            name="page_name",
+            title="New Page",
+            content="This is a test content",
+        )
+
+        page = helpers.call_action("ckanext_pages_show", {}, page="page_name")
+
+        revision_id = [i for i in page['revisions']][0]
+
+        response = app.get(
+            toolkit.url_for(
+                'pages.pages_revisions_preview',
+                page="page_name",
+                revision=revision_id),
+            status=200, extra_environ=env)
+
+        assert '<p>This is a test content</p>' in response.body
+
+        response = app.get(
+            toolkit.url_for(
+                'pages.pages_revisions_preview',
+                page="page_name",
+                revision=revision_id + '1'),
+            status=404, extra_environ=env)
+
+        assert '404 Not Found' in response.body
+
+        response = app.get(
+            toolkit.url_for(
+                'pages.pages_revisions_preview',
+                page="page_name",
+                revision=revision_id),
+            status=401)
+
+        assert '<h1>401 Unauthorized</h1>' in response.body
+
+    def test_revision_restore_page(self, app):
+        user = factories.Sysadmin()
+        env = {'REMOTE_USER': user['name'].encode('ascii')}
+
+        helpers.call_action(
+            "ckanext_pages_update",
+            {"user": user["name"]},
+            name="page_name",
+            title="New Page",
+            content="This is a test content",
+        )
+
+        helpers.call_action(
+            "ckanext_pages_update",
+            {"user": user["name"]},
+            name="page_name",
+            title="New Page Updated",
+            content="This is a test content updated",
+            page="page_name",
+        )
+
+        page = helpers.call_action("ckanext_pages_show", {}, page="page_name")
+
+        assert page['content'] == 'This is a test content updated'
+
+        revisions = page['revisions']
+
+        sorted_revisions = OrderedDict(reversed(sorted(
+                revisions.items(),
+                key=lambda x: datetime.datetime.timestamp(
+                    datetime.datetime.fromisoformat(x[1]['created'])
+                    )
+        )))
+
+        last_revision = sorted_revisions.popitem()
+        response = app.get(
+            toolkit.url_for(
+                'pages.pages_revision_restore',
+                page="page_name",
+                revision=last_revision[0]),
+            status=200, extra_environ=env)
+
+        assert 'Content from revision created on' in response.body
+
+        response = app.get(
+            toolkit.url_for(
+                'pages.pages_revision_restore',
+                page="page_name",
+                revision=last_revision[0] + '1'),
+            status=200, extra_environ=env)
+
+        assert 'Bad values, please make sure that provided values exist' in response.body
+
+        response = app.get(
+            toolkit.url_for(
+                'pages.pages_revision_restore',
+                page="page_name",
+                revision=last_revision[0]),
+            status=401)
+
+        assert '<h1>401 Unauthorized</h1>' in response.body
+
+    def test_revisions_blog(self, app):
+        user = factories.Sysadmin()
+        env = {'REMOTE_USER': user['name'].encode('ascii')}
+
+        helpers.call_action(
+            "ckanext_pages_update",
+            {"user": user["name"]},
+            name="blog_name",
+            title="New Blog",
+            content="This is a test content",
+            page_type="blog",
+            publish_date="2024-10-15"
+        )
+
+        response = app.get(
+            toolkit.url_for('pages.blog_revisions', page="blog_name"),
+            status=200, extra_environ=env)
+
+        assert '<span class="badge badge-inverse">Active Revision</span>' in response.body
+
+        response = app.get(
+            toolkit.url_for('pages.blog_revisions', page="blog_name1"),
+            status=404, extra_environ=env)
+
+        assert '404 Not Found' in response.body
+
+        response = app.get(
+            toolkit.url_for('pages.blog_revisions', page="blog_name"),
+            status=401)
+
+        assert '<h1>401 Unauthorized</h1>' in response.body
+
+    def test_revision_preview_blog(self, app):
+        user = factories.Sysadmin()
+        env = {'REMOTE_USER': user['name'].encode('ascii')}
+
+        helpers.call_action(
+            "ckanext_pages_update",
+            {"user": user["name"]},
+            name="blog_name",
+            title="New Blog",
+            content="This is a test content",
+            page_type="blog",
+            publish_date="2024-10-15"
+        )
+
+        page = helpers.call_action("ckanext_pages_show", {}, page="blog_name")
+
+        revision_id = [i for i in page['revisions']][0]
+
+        response = app.get(
+            toolkit.url_for(
+                'pages.blog_revisions_preview',
+                page="blog_name",
+                revision=revision_id),
+            status=200, extra_environ=env)
+
+        assert '<p>This is a test content</p>' in response.body
+
+        response = app.get(
+            toolkit.url_for(
+                'pages.blog_revisions_preview',
+                page="blog_name",
+                revision=revision_id + '1'),
+            status=404, extra_environ=env)
+
+        assert '404 Not Found' in response.body
+
+        response = app.get(
+            toolkit.url_for(
+                'pages.blog_revisions_preview',
+                page="blog_name",
+                revision=revision_id),
+            status=401)
+
+        assert '<h1>401 Unauthorized</h1>' in response.body
+
+    def test_revision_restore_blog(self, app):
+        user = factories.Sysadmin()
+        env = {'REMOTE_USER': user['name'].encode('ascii')}
+
+        helpers.call_action(
+            "ckanext_pages_update",
+            {"user": user["name"]},
+            name="blog_name",
+            title="New Blog",
+            content="This is a test content",
+            page_type="blog",
+            publish_date="2024-10-15"
+        )
+
+        helpers.call_action(
+            "ckanext_pages_update",
+            {"user": user["name"]},
+            name="blog_name",
+            title="New Blog Updated",
+            content="This is a test content updated",
+            page="blog_name",
+            page_type="blog",
+            publish_date="2024-10-15"
+        )
+
+        page = helpers.call_action("ckanext_pages_show", {}, page="blog_name")
+
+        assert page['content'] == 'This is a test content updated'
+
+        revisions = page['revisions']
+
+        sorted_revisions = OrderedDict(reversed(sorted(
+                revisions.items(),
+                key=lambda x: datetime.datetime.timestamp(
+                    datetime.datetime.fromisoformat(x[1]['created'])
+                    )
+        )))
+
+        last_revision = sorted_revisions.popitem()
+
+        response = app.get(
+            toolkit.url_for(
+                'pages.blog_revision_restore',
+                page="blog_name",
+                revision=last_revision[0]),
+            status=200, extra_environ=env)
+
+        assert 'Content from revision created on' in response.body
+
+        response = app.get(
+            toolkit.url_for(
+                'pages.blog_revision_restore',
+                page="blog_name",
+                revision=last_revision[0] + '1'),
+            status=200, extra_environ=env)
+
+        assert 'Bad values, please make sure that provided values exist' in response.body
+
+        response = app.get(
+            toolkit.url_for(
+                'pages.blog_revision_restore',
+                page="blog_name",
+                revision=last_revision[0]),
+            status=401)
+
+        assert '<h1>401 Unauthorized</h1>' in response.body

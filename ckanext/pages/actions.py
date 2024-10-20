@@ -141,7 +141,7 @@ def _pages_update(context, data_dict):
     revisions = out.revisions
 
     new_revision = {
-        make_uuid() : {
+        make_uuid(): {
             "content": out.content,
             "user_id": user.id,
             "created": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -172,28 +172,10 @@ def _pages_update(context, data_dict):
     session.commit()
 
 
-def _pages_revision_restore(context, data_dict):
-    name = data_dict.get('page')
-    rev = data_dict.get('revision')
-    page = db.Page.get(name=name)
-
-    if page and page.revisions:
-        page.revisions = _remove_keys_revision_from_dict(page.revisions)
-        revision = page.revisions.get(rev)
-
-        try:
-            revision['current'] = True
-            page.content = revision['content']
-            page.save()
-            return revision
-        except TypeError:
-            raise TypeError("Unexpected value.")
-
-
 def _remove_keys_revision_from_dict(data_dict, keys=['current']):
     return {
-        id:{
-            key:data_dict[id][key] for key in data_dict[id] if key not in keys
+        id: {
+            key: data_dict[id][key] for key in data_dict[id] if key not in keys
             } for id in data_dict
     }
 
@@ -256,7 +238,21 @@ def pages_update(context, data_dict):
 
 def pages_revision_restore(context, data_dict):
     p.toolkit.check_access('ckanext_pages_update', context, data_dict)
-    return _pages_revision_restore(context, data_dict)
+    name = data_dict.get('page')
+    rev = data_dict.get('revision')
+    page = db.Page.get(name=name)
+
+    if page and page.revisions:
+        page.revisions = _remove_keys_revision_from_dict(page.revisions)
+        revision = page.revisions.get(rev)
+
+        try:
+            revision['current'] = True
+            page.content = revision['content']
+            page.save()
+            return revision
+        except TypeError:
+            raise TypeError("Unexpected value.")
 
 
 def pages_delete(context, data_dict):

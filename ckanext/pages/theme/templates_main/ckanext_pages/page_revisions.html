@@ -32,11 +32,11 @@
                         actor=actor(revision), date=h.render_datetime(revision.created, with_hours=True)
                         )|safe }}
 
-                        {% link_for _('Preview'), named_route='pages.pages_revisions_preview', page=c.page.name, revision=key, class_='' %}
+                        {% link_for _('Preview'), named_route='pages.pages_revisions_preview', page=c.page.name, revision=key, class_='btn btn-default' %}
                         {% if not revision.current %}
-                          {% link_for _('Restore'), named_route='pages.pages_revision_restore', page=c.page.name, revision=key, class_='' %}
+                          {% link_for _('Restore'), named_route='pages.pages_revision_restore', page=c.page.name, revision=key, class_='btn btn-primary' %}
                         {% else %}
-                          <span>{{ _('Active Revision') }}</span>
+                          <span class="badge badge-inverse">{{ _('Active Revision') }}</span>
                         {% endif %}
                         <br />
                         <span class="date" title="{{ h.render_datetime(revision.created, with_hours=True) }}">

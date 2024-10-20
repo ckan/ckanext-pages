@@ -218,7 +218,7 @@ def pages_revisions_preview(page, revision, page_type='page'):
             "revision": _page.revisions[revision]
         })
     except KeyError:
-        return tk.abort(404, _('Page Not Found'))
+        return tk.abort(404, _('Revision not found'))
 
 
 def pages_revision_restore(page, revision, page_type='page'):
@@ -231,7 +231,9 @@ def pages_revision_restore(page, revision, page_type='page'):
         tk.get_action('ckanext_pages_revision_restore')(
             context={}, data_dict={"page": page, "revision": revision}
         )
-        tk.h.flash_success(f"Content from Revision '{revision}' is being set.")
+        _page = Page.get(name=page)
+        timestamp = helpers.render_datetime(_page.revisions[revision]["created"], with_hours=True)
+        tk.h.flash_success(f"Content from revision created on {timestamp} set.")
     except TypeError:
         tk.h.flash_error(
             """Bad values, please make sure that provided values exist:
