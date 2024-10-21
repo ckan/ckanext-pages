@@ -53,6 +53,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install requirements (2.9)
+      run: |
+        pip install -U pytest-rerunfailures
+      if: ${{ matrix.ckan-version == '2.9' }}
     - name: Install requirements
       run: |
         pip install -r requirements.txt
