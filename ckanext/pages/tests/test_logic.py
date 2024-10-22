@@ -241,11 +241,17 @@ class TestPages():
 
         assert '404 Not Found' in response.body
 
-        response = app.get(
-            toolkit.url_for('pages.pages_revisions', page="page_name"),
-            status=401)
+        if toolkit.check_ckan_version(min_version="2.10.0"):
+            response = app.get(
+                toolkit.url_for('pages.pages_revisions', page="page_name"),
+                status=401)
 
-        assert '<h1>401 Unauthorized</h1>' in response.body
+            assert '<h1>401 Unauthorized</h1>' in response.body
+        else:
+            response = app.get(
+                toolkit.url_for('pages.pages_revisions', page="page_name")
+            )
+            assert '<h1 class="page-heading">Login</h1>' in response.body
 
     def test_revision_preview_page(self, app):
         user = factories.Sysadmin()
@@ -281,14 +287,23 @@ class TestPages():
 
         assert '404 Not Found' in response.body
 
-        response = app.get(
-            toolkit.url_for(
-                'pages.pages_revisions_preview',
-                page="page_name",
-                revision=revision_id),
-            status=401)
+        if toolkit.check_ckan_version(min_version="2.10.0"):
+            response = app.get(
+                toolkit.url_for(
+                    'pages.pages_revisions_preview',
+                    page="page_name",
+                    revision=revision_id),
+                status=401)
 
-        assert '<h1>401 Unauthorized</h1>' in response.body
+            assert '<h1>401 Unauthorized</h1>' in response.body
+        else:
+            response = app.get(
+                toolkit.url_for(
+                    'pages.pages_revisions_preview',
+                    page="page_name",
+                    revision=revision_id),
+            )
+            assert '<h1 class="page-heading">Login</h1>' in response.body
 
     def test_revision_restore_page(self, app):
         user = factories.Sysadmin()
@@ -343,14 +358,24 @@ class TestPages():
 
         assert 'Bad values, please make sure that provided values exist' in response.body
 
-        response = app.get(
-            toolkit.url_for(
-                'pages.pages_revision_restore',
-                page="page_name",
-                revision=last_revision[0]),
-            status=401)
+        if toolkit.check_ckan_version(min_version="2.10.0"):
+            response = app.get(
+                toolkit.url_for(
+                    'pages.pages_revision_restore',
+                    page="page_name",
+                    revision=last_revision[0]),
+                status=401)
 
-        assert '<h1>401 Unauthorized</h1>' in response.body
+            assert '<h1>401 Unauthorized</h1>' in response.body
+        else:
+            response = app.get(
+                toolkit.url_for(
+                    'pages.pages_revision_restore',
+                    page="page_name",
+                    revision=last_revision[0]),
+            )
+
+            assert '<h1 class="page-heading">Login</h1>' in response.body
 
     def test_revisions_blog(self, app):
         user = factories.Sysadmin()
@@ -378,11 +403,18 @@ class TestPages():
 
         assert '404 Not Found' in response.body
 
-        response = app.get(
-            toolkit.url_for('pages.blog_revisions', page="blog_name"),
-            status=401)
+        if toolkit.check_ckan_version(min_version="2.10.0"):
+            response = app.get(
+                toolkit.url_for('pages.blog_revisions', page="blog_name"),
+                status=401)
 
-        assert '<h1>401 Unauthorized</h1>' in response.body
+            assert '<h1>401 Unauthorized</h1>' in response.body
+        else:
+            response = app.get(
+                toolkit.url_for('pages.blog_revisions', page="blog_name"),
+            )
+
+            assert '<h1 class="page-heading">Login</h1>' in response.body
 
     def test_revision_preview_blog(self, app):
         user = factories.Sysadmin()
@@ -420,14 +452,23 @@ class TestPages():
 
         assert '404 Not Found' in response.body
 
-        response = app.get(
-            toolkit.url_for(
-                'pages.blog_revisions_preview',
-                page="blog_name",
-                revision=revision_id),
-            status=401)
+        if toolkit.check_ckan_version(min_version="2.10.0"):
+            response = app.get(
+                toolkit.url_for(
+                    'pages.blog_revisions_preview',
+                    page="blog_name",
+                    revision=revision_id),
+                status=401)
 
-        assert '<h1>401 Unauthorized</h1>' in response.body
+            assert '<h1>401 Unauthorized</h1>' in response.body
+        else:
+            response = app.get(
+                toolkit.url_for(
+                    'pages.blog_revisions_preview',
+                    page="blog_name",
+                    revision=revision_id),
+            )
+            assert '<h1 class="page-heading">Login</h1>' in response.body
 
     def test_revision_restore_blog(self, app):
         user = factories.Sysadmin()
@@ -487,11 +528,21 @@ class TestPages():
 
         assert 'Bad values, please make sure that provided values exist' in response.body
 
-        response = app.get(
-            toolkit.url_for(
-                'pages.blog_revision_restore',
-                page="blog_name",
-                revision=last_revision[0]),
-            status=401)
+        if toolkit.check_ckan_version(min_version="2.10.0"):
+            response = app.get(
+                toolkit.url_for(
+                    'pages.blog_revision_restore',
+                    page="blog_name",
+                    revision=last_revision[0]),
+                status=401)
 
-        assert '<h1>401 Unauthorized</h1>' in response.body
+            assert '<h1>401 Unauthorized</h1>' in response.body
+        else:
+            response = app.get(
+                toolkit.url_for(
+                    'pages.blog_revision_restore',
+                    page="blog_name",
+                    revision=last_revision[0]),
+            )
+
+            assert '<h1 class="page-heading">Login</h1>' in response.body
