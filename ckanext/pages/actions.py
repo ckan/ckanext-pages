@@ -1,6 +1,7 @@
 import datetime
 import json
 
+from ckan.model.types import make_uuid
 from ckan import model
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
@@ -104,6 +105,10 @@ def _pages_update(context, data_dict):
     context['group_id'] = org_id
     schema = update_pages_schema()
 
+    # +1 is the Current state by default while ckanext.pages.revisions_limit is the amounf of previous states
+    revisions_limit = tk.asint(tk.config.get('ckanext.pages.revisions_limit', '3')) + 1
+    force_revisions_limit = tk.asbool(tk.config.get('ckanext.pages.revisions_force_limit', False))
+
     data, errors = df.validate(data_dict, schema, context)
 
     if errors:
@@ -129,13 +134,50 @@ def _pages_update(context, data_dict):
             extras[key] = data.get(key)
     out.extras = json.dumps(extras)
 
-    out.modified = datetime.datetime.utcnow()
+    out.modified = datetime.datetime.now(datetime.timezone.utc)
     user = model.User.get(context['user'])
     out.user_id = user.id
+
+    revisions = out.revisions
+
+    new_revision = {
+        make_uuid(): {
+            "content": out.content,
+            "user_id": user.id,
+            "created": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "current": True
+        }
+    }
+    if not revisions:
+        out.revisions = new_revision
+    else:
+        if (len(revisions) >= revisions_limit):
+            revisions = out.get_ordered_revisions()
+
+            if not force_revisions_limit:
+                revisions.popitem()
+            else:
+                # Remove all previous revisions if there any to match revisions_limit
+                # Need to add +1 to the length to include the Active state as done for revisions_limit
+                for i in range((len(revisions) + 1) - revisions_limit):
+                    revisions.popitem()
+
+        # Remove the current key from all past revisions before merging
+        revisions = _remove_keys_revision_from_dict(revisions)
+        out.revisions = {**new_revision, **revisions}
+
     out.save()
     session = context['session']
     session.add(out)
     session.commit()
+
+
+def _remove_keys_revision_from_dict(data_dict, keys=['current']):
+    return {
+        id: {
+            key: data_dict[id][key] for key in data_dict[id] if key not in keys
+            } for id in data_dict
+    }
 
 
 def pages_upload(context, data_dict):
@@ -192,6 +234,25 @@ def pages_update(context, data_dict):
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_update(context, data_dict)
+
+
+def pages_revision_restore(context, data_dict):
+    p.toolkit.check_access('ckanext_pages_update', context, data_dict)
+    name = data_dict.get('page')
+    rev = data_dict.get('revision')
+    page = db.Page.get(name=name)
+
+    if page and page.revisions:
+        page.revisions = _remove_keys_revision_from_dict(page.revisions)
+        revision = page.revisions.get(rev)
+
+        try:
+            revision['current'] = True
+            page.content = revision['content']
+            page.save()
+            return revision
+        except TypeError:
+            raise TypeError("Unexpected value.")
 
 
 def pages_delete(context, data_dict):

@@ -2,10 +2,13 @@ import datetime
 import uuid
 import json
 
+from collections import OrderedDict
 from six import text_type
 import sqlalchemy as sa
 from sqlalchemy import Column, types
 from sqlalchemy.orm import class_mapper
+from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.dialects.postgresql import JSONB
 
 try:
     from sqlalchemy.engine import Row
@@ -52,6 +55,7 @@ class Page(DomainObject, BaseModel):
     created = Column(types.DateTime, default=datetime.datetime.utcnow)
     modified = Column(types.DateTime, default=datetime.datetime.utcnow)
     extras = Column(types.UnicodeText, default=u'{}')
+    revisions = Column(MutableDict.as_mutable(JSONB), default=u'{}')
 
     @classmethod
     def get(cls, **kw):
@@ -74,6 +78,15 @@ class Page(DomainObject, BaseModel):
         else:
             query = query.order_by(cls.created.desc())
         return query.all()
+
+    def get_ordered_revisions(self):
+        # Compare timestamps to avoid different datetime formats error
+        return OrderedDict(reversed(sorted(
+                self.revisions.items(),
+                key=lambda x: datetime.datetime.timestamp(
+                    datetime.datetime.fromisoformat(x[1]['created'])
+                    )
+        )))
 
 
 def table_dictize(obj, context, **kw):

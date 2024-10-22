@@ -1,0 +1,25 @@
+{% extends 'ckanext_pages/blog.html' %}
+
+{% block ckanext_pages_actions %}
+    {% if h.check_access('ckanext_pages_update') %}
+        {% asset 'pages/main-css' %}
+        {% link_for _('Revisions'), named_route='pages.blog_revisions', page=c.page.name, class_='btn btn-primary pull-right', icon='eye' %}
+    {% endif %}
+{% endblock %}
+{% block ckanext_pages_content %}
+    {% if revision.content %}
+        <div class="ckanext-pages-content">
+            {% set editor = h.pages_get_wysiwyg_editor() %}
+            <!-- editor set to "{{ editor }}"-->
+            {% if editor %}
+              <div>
+                  {{revision.content|safe}}
+              </div>
+            {% else %}
+              {{ h.render_content(revision.content) }}
+            {% endif %}
+        </div>
+    {% else %}
+        <p class="empty">{{ _('This page currently has no content') }}</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'page.html' %}
+
+{% macro actor(revision) %}
+  <span>
+    {{ h.linked_user(revision.user_id, 0, 30) }}
+  </span>
+{% endmacro %}
+
+{% block subtitle %}{{ c.page.title }}{% endblock %}
+
+{% block primary %}
+  <section class="module-content">
+
+    {% block ckanext_pages_actions %}
+      {% if h.check_access('ckanext_pages_update') %}
+          {% asset 'pages/main-css' %}
+          {% link_for _('View Page'), named_route='pages.show', page=c.page.name, class_='btn btn-primary pull-right', icon='eye' %}
+      {% endif %}
+    {% endblock %}
+    <h1 class="page-heading">{{ c.page.title }}</h1>
+      {% block ckanext_pages_content %}
+        {% if c.page.revisions %}
+          <div class="ckanext-pages-content">
+            <ul class="activity">
+                {% for key, revision in c.page.get_ordered_revisions().items() %}
+                    <li class="item">
+                        <span class="fa-stack fa-lg">
+                        <i class="fa fa-circle fa-stack-2x icon"></i>
+                        <i class="fa fa-users fa-stack-1x fa-inverse"></i>
+                        </span>
+                        {{ _('{actor} updated page at {date}').format(
+                        actor=actor(revision), date=h.render_datetime(revision.created, with_hours=True)
+                        )|safe }}
+
+                        {% link_for _('Preview'), named_route='pages.pages_revisions_preview', page=c.page.name, revision=key, class_='btn btn-default' %}
+                        {% if not revision.current %}
+                          {% link_for _('Restore'), named_route='pages.pages_revision_restore', page=c.page.name, revision=key, class_='btn btn-primary' %}
+                        {% else %}
+                          <span class="badge badge-inverse">{{ _('Active Revision') }}</span>
+                        {% endif %}
+                        <br />
+                        <span class="date" title="{{ h.render_datetime(revision.created, with_hours=True) }}">
+                            {{ h.time_ago_from_timestamp(revision.created) }}
+                          </span>
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+          </div>
+        {% else %}
+          <p class="empty">{{ _('This page currently has no revisions') }}</p>
+        {% endif %}
+
+      {% endblock %}
+  </section>
+{% endblock %}
+
+{% block secondary %}{% endblock %}

@@ -6,6 +6,8 @@ import ckan.plugins.toolkit as tk
 import ckan.logic as logic
 import ckan.lib.helpers as helpers
 
+from ckanext.pages.db import Page
+
 config = tk.config
 _ = tk._
 
@@ -185,6 +187,60 @@ def pages_show(page=None, page_type='page'):
     _inject_views_into_page(_page)
 
     return tk.render('ckanext_pages/%s.html' % page_type)
+
+
+def pages_revisions(page, page_type='page'):
+    try:
+        tk.check_access('ckanext_pages_update', {'user': tk.g.user})
+    except tk.NotAuthorized:
+        return tk.abort(401, _('Unauthorized to view this page'))
+
+    _page = Page.get(name=page)
+
+    if not _page:
+        return tk.abort(404, _('Page Not Found'))
+    tk.c.page_type = page_type
+    tk.c.page = _page
+    return tk.render('ckanext_pages/%s_revisions.html' % page_type)
+
+
+def pages_revisions_preview(page, revision, page_type='page'):
+    try:
+        tk.check_access('ckanext_pages_update', {'user': tk.g.user})
+    except tk.NotAuthorized:
+        return tk.abort(401, _('Unauthorized to view this page'))
+
+    _page = Page.get(name=page)
+    tk.c.page_type = page_type
+    tk.c.page = _page
+    try:
+        return tk.render('ckanext_pages/%s_revisions_preview.html' % page_type, extra_vars={
+            "revision": _page.revisions[revision]
+        })
+    except KeyError:
+        return tk.abort(404, _('Revision not found'))
+
+
+def pages_revision_restore(page, revision, page_type='page'):
+    try:
+        tk.check_access('ckanext_pages_update', {'user': tk.g.user})
+    except tk.NotAuthorized:
+        return tk.abort(401, _('Unauthorized to view this page'))
+
+    try:
+        tk.get_action('ckanext_pages_revision_restore')(
+            context={}, data_dict={"page": page, "revision": revision}
+        )
+        _page = Page.get(name=page)
+        timestamp = helpers.render_datetime(_page.revisions[revision]["created"], with_hours=True)
+        tk.h.flash_success(f"Content from revision created on {timestamp} set.")
+    except TypeError:
+        tk.h.flash_error(
+            """Bad values, please make sure that provided values exist:
+                Page name - '{name}', Revision version - '{rev}'""".format(name=page, rev=revision))
+
+    endpoint = 'show' if page_type in ('pages', 'page') else '%s_show' % page_type
+    return tk.redirect_to('pages.%s' % endpoint, page=page)
 
 
 def pages_delete(page, page_type='pages'):
