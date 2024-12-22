@@ -5,7 +5,19 @@
   {% asset 'pages/index-css' %}
 {% endblock %}
 
-{% block page_header %}{% endblock %}
+{% block page_header %}
+<header class="module-content page-header">
+      <ul class="nav nav-tabs">
+        {% block content_primary_nav %}
+        <li class="active">
+              <a href="{{h.url_for('pages.pages_index')}}">
+                  {{ _('Pages') }}
+              </a>
+          </li>
+        {% endblock %}
+      </ul>
+    </header>
+{% endblock %}
 
 {% block secondary_content %}
 

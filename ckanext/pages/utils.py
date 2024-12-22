@@ -5,6 +5,8 @@ import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 import ckan.logic as logic
 import ckan.lib.helpers as helpers
+import ckan.model as model
+
 
 config = tk.config
 _ = tk._
@@ -372,3 +374,19 @@ def group_delete(id, group_type, page):
         'ckanext_pages/confirm_delete.html',
         {'page': page, 'group_type': group_type, 'group_dict': group_dict}
     )
+
+
+def _has_user_role_for_some_org(user: model.User, role):
+    q = model.Session.query(model.Member)\
+        .filter(model.Member.table_id == user.id)\
+        .filter(model.Member.state == 'active')\
+        .filter(model.Member.capacity.in_(['admin'] + [role]))
+
+    return bool(q.count())
+
+def is_data_coordinator(context):
+    user = context.get('user')
+    model = context['model']
+    user_obj = model.User.get(user)
+
+    return _has_user_role_for_some_org(user_obj, 'member')

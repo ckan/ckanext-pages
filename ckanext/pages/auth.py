@@ -2,9 +2,10 @@ import ckan.plugins as p
 
 import ckan.authz as authz
 
-from ckanext.pages import db
+from ckanext.pages import db, utils
+from ckan.plugins import toolkit as tk
 
-
+_ = tk._
 def sysadmin(context, data_dict):
     return {'success':  False}
 
@@ -25,6 +26,12 @@ def org_admin(context, data_dict):
         'success': p.toolkit.check_access('group_update', context, data_dict)
     }
 
+@tk.auth_sysadmins_check
+def page_data_coordinator(context, data_dict):
+    if authz.auth_not_logged_in(context):
+        return {'success': False, 'msg': _('User not found')}
+
+    return {'success': utils.is_data_coordinator(context)}
 
 def page_group_admin(context, data_dict):
     group_id = data_dict.get('org_id')
@@ -62,10 +69,10 @@ def page_privacy(context, data_dict):
 
 
 pages_show = page_privacy
-pages_update = sysadmin
-pages_delete = sysadmin
+pages_update = page_data_coordinator
+pages_delete = page_data_coordinator
 pages_list = anyone
-pages_upload = sysadmin
+pages_upload = page_data_coordinator
 org_pages_show = page_privacy
 org_pages_update = page_group_admin
 org_pages_delete = page_group_admin
