@@ -1,6 +1,5 @@
 import datetime
 import json
-
 from ckan import model
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
@@ -14,7 +13,8 @@ from ckanext.pages.logic.schema import update_pages_schema
 import ckan.authz as authz
 
 from ckanext.pages import db
-
+from ckanext.pages.db import MainPage
+from ckanext.pages.logic.schema import main_page_schema
 
 class HTMLFirstImage(HTMLParser):
     def __init__(self):
@@ -281,3 +281,127 @@ def group_pages_list(context, data_dict):
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_list(context, data_dict)
+
+def validate_main_page(section_id, data):
+    # Get the schema for validation
+    schema = main_page_schema()
+
+    # Remove 'id' field if not required by schema
+    data.pop('id', None)  # Prevent schema errors for 'id'
+
+    # Validate the rest of the data
+    errors = p.toolkit.navl_validate(data, schema)
+
+    # Return validation result
+    if errors:
+        return False, errors
+    return True, None
+
+
+
+def get_main_page(section_id):
+    return MainPage.get(id=section_id)
+
+def update_main_page(section_id, data):
+    section = MainPage.get(id=section_id)
+    if section:
+        section.main_title_1_ar = data.get('main_title_1_ar')
+        section.main_title_1_en = data.get('main_title_1_en')
+        section.main_title_2_ar = data.get('main_title_2_ar', '')
+        section.main_title_2_en = data.get('main_title_2_en', '')
+        section.main_brief_en = data.get('main_brief_en')
+        section.main_brief_ar = data.get('main_brief_ar')
+        model.Session.commit()
+        return {"success": True}
+    return {"success": False, "error": "Section not found"}
+
+
+def main_page_edit(section_id):
+    section_titles = {
+        1: "Main Title & Brief",
+        2: "Open Data Sector",
+        3: "Indicators",
+        4: "Open Data In Numbers",
+        5: "Also Explore"
+    }
+
+    has_two_titles = True if int(section_id) == 1 else False
+
+    section = MainPage.get(id=section_id)
+
+    if not section:
+        tk.h.flash_error('Section not found!')
+        return tk.redirect_to('main_page')
+
+    if tk.request.method == 'POST':
+        action = tk.request.form.get('save') or tk.request.form.get('delete')
+
+        if action == 'save':
+            data = {
+                "main_title_1_ar": tk.request.form['main_title_1_ar'],
+                "main_title_1_en": tk.request.form['main_title_1_en'],
+                "main_title_2_ar": tk.request.form.get('main_title_2_ar') if has_two_titles else None,
+                "main_title_2_en": tk.request.form.get('main_title_2_en') if has_two_titles else None,
+                "main_brief_en": tk.request.form['main_brief_en'],
+                "main_brief_ar": tk.request.form['main_brief_ar'],
+            }
+
+            valid, errors = validate_main_page(section_id, data)
+            if not valid:
+                tk.h.flash_error(errors)
+                return tk.redirect_to('pages.main_page_edit', section_id=section_id)
+
+            update_main_page(section_id, data)
+            tk.h.flash_success('Section updated successfully!')
+
+        elif action == 'delete':
+            tk.h.flash_error('Section deleted successfully!')
+            return tk.redirect_to('main_page')
+
+        return tk.redirect_to('main_page')
+
+    return tk.render(
+        'main_page/main_page_edit.html',
+        section=section,
+        has_two_titles=has_two_titles,
+        section_title=section_titles.get(int(section_id), "Unknown Section")
+    )
+
+def main_page():
+    sections = MainPage.all()
+
+    section_titles = {
+        1: "Title & Brief",
+        2: "Open Data Sector",
+        3: "Indicators",
+        4: "Open Data In Numbers",
+        5: "Also Explore"
+    }
+    data = []
+    for section in sections:
+        data.append({
+            'id': section.id,
+            'name': f"Section {section.id}: {section_titles.get(section.id)}",
+            'last_update': "25/09/2024"
+        })
+
+    return tk.render('main_page/main_page.html', sections=data)
+
+def _main_page_show(context, data_dict):
+    section_id = data_dict.get('section_id')
+
+    out = db.MainPage.get(id=section_id)
+    if out:
+        out = db.table_dictize(out, context)
+    return out
+
+
+@tk.side_effect_free
+def main_page_show(context, data_dict):
+    try:
+        tk.check_access('ckanext_pages_update', {'user': tk.g.user})
+
+    except p.toolkit.NotAuthorized:
+        p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
+    return _main_page_show(context, data_dict)
+

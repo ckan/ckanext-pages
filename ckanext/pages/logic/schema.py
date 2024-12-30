@@ -1,7 +1,7 @@
 import ckan.plugins as p
 from ckanext.pages.validators import page_name_validator, not_empty_if_blog
 from ckanext.pages.interfaces import IPagesSchema
-
+from ckan.plugins.toolkit import get_validator
 
 def default_pages_schema():
     ignore_empty = p.toolkit.get_validator('ignore_empty')
@@ -28,8 +28,28 @@ def default_pages_schema():
             not_empty_if_blog, ignore_missing, isodate],
     }
 
+ignore_missing = get_validator('ignore_missing')
+not_empty = get_validator('not_empty')
+unicode_safe = get_validator('unicode_safe')
 
-def update_pages_schema():
+def main_page_schema(id=None):
+    schema = {
+        'id': [not_empty],  # Mandatory ID
+        'main_title_1_ar': [not_empty, unicode_safe],
+        'main_title_1_en': [not_empty, unicode_safe],
+        'main_brief_en': [not_empty, unicode_safe],
+        'main_brief_ar': [not_empty, unicode_safe],
+    }
+    if id == 1:  # Conditional for section 1
+        schema['main_title_2_ar'] = [ignore_missing, unicode_safe]
+        schema['main_title_2_en'] = [ignore_missing, unicode_safe]
+    else:
+        schema['main_title_2_ar'] = [ignore_missing]
+        schema['main_title_2_en'] = [ignore_missing]
+    return schema
+
+
+def update_pages_schema(schema = default_pages_schema, **kwargs):
     '''
     Returns the schema for the pages fields that can be added by other
     extensions.
@@ -44,8 +64,10 @@ def update_pages_schema():
     converter functions to be applied to those fields
     :rtype: dictionary
     '''
-
-    schema = default_pages_schema()
+    if kwargs:
+        schema = schema(**kwargs)
+    else:
+        schema = schema()
     for plugin in p.PluginImplementations(IPagesSchema):
         if hasattr(plugin, 'update_pages_schema'):
             schema = plugin.update_pages_schema(schema)

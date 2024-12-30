@@ -1,30 +1,24 @@
-
 import logging
 from html import escape as html_escape
-
 from six.moves.urllib.parse import quote
-
 from ckan.plugins import toolkit as tk
-
 import ckan.plugins as p
 from ckan.lib.helpers import build_nav_main as core_build_nav_main
-
 from ckanext.pages import actions
 from ckanext.pages import auth
 from ckanext.pages import blueprint
-
 from ckan.lib.plugins import DefaultTranslation
-
-
+from ckan.plugins import SingletonPlugin, implements, IConfigurer
+from ckanext.pages import cli
 log = logging.getLogger(__name__)
 
 
-def build_pages_nav_main(*args):
 
+
+def build_pages_nav_main(*args):
     about_menu = tk.asbool(tk.config.get('ckanext.pages.about_menu', True))
     group_menu = tk.asbool(tk.config.get('ckanext.pages.group_menu', True))
     org_menu = tk.asbool(tk.config.get('ckanext.pages.organization_menu', True))
-
     new_args = []
     for arg in args:
         if arg[0] in 'home.about' and not about_menu:
@@ -34,18 +28,14 @@ def build_pages_nav_main(*args):
         if arg[0] in 'home.organizations_index' and not group_menu:
             continue
         new_args.append(arg)
-
     output = core_build_nav_main(*new_args)
 
     # do not display any private pages in menu even for sysadmins
     pages_list = tk.get_action('ckanext_pages_list')(None, {'order': True, 'private': False})
-
     page_name = ''
     is_current_page = tk.get_endpoint() in (('pages', 'show'), ('pages', 'blog_show'))
-
     if is_current_page:
         page_name = tk.request.path.split('/')[-1]
-
     for page in pages_list:
         type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
         name = quote(page['name'])
@@ -56,18 +46,14 @@ def build_pages_nav_main(*args):
         else:
             li = tk.literal('<li>') + link + tk.literal('</li>')
         output = output + li
-
     return output
-
 
 def render_content(content):
     allow_html = tk.asbool(tk.config.get('ckanext.pages.allow_html', False))
     return tk.h.render_markdown(content, allow_html=allow_html)
 
-
 def get_wysiwyg_editor():
     return tk.config.get('ckanext.pages.editor', '')
-
 
 def get_recent_blog_posts(number=5, exclude=None):
     blog_list = tk.get_action('ckanext_pages_list')(
@@ -81,13 +67,10 @@ def get_recent_blog_posts(number=5, exclude=None):
         new_list.append(blog)
         if len(new_list) == number:
             break
-
     return new_list
-
 
 class PagesPluginBase(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.ITranslation, inherit=True)
-
 
 class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurer, inherit=True)
@@ -96,6 +79,12 @@ class PagesPlugin(PagesPluginBase):
     p.implements(p.IAuthFunctions, inherit=True)
     p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IBlueprint)
+    p.implements(p.IClick)
+
+    def get_commands(self):
+        return cli.get_commands()
+
+
 
     def get_blueprint(self):
         return [blueprint.pages]
@@ -103,15 +92,12 @@ class PagesPlugin(PagesPluginBase):
     def update_config(self, config):
         self.organization_pages = tk.asbool(config.get('ckanext.pages.organization', False))
         self.group_pages = tk.asbool(config.get('ckanext.pages.group', False))
-
         tk.add_template_directory(config, 'theme/templates_main')
         if self.group_pages:
             tk.add_template_directory(config, 'theme/templates_group')
         if self.organization_pages:
             tk.add_template_directory(config, 'theme/templates_organization')
-
         tk.add_resource('assets', 'pages')
-
         tk.add_public_directory(config, 'assets/')
         tk.add_public_directory(config, 'assets/vendor/ckeditor/')
         tk.add_public_directory(config, 'assets/vendor/ckeditor/skins/moono-lisa')
@@ -122,6 +108,7 @@ class PagesPlugin(PagesPluginBase):
             'render_content': render_content,
             'pages_get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
+
         }
 
     def get_actions(self):
@@ -131,6 +118,7 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_pages_delete': actions.pages_delete,
             'ckanext_pages_list': actions.pages_list,
             'ckanext_pages_upload': actions.pages_upload,
+            'ckanext_main_page_show' :actions.main_page_show,
         }
         if self.organization_pages:
             org_actions = {
@@ -167,9 +155,7 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_group_pages_list': auth.group_pages_list,
         }
 
-
 class TextBoxView(p.SingletonPlugin):
-
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.IResourceView, inherit=True)
 
@@ -182,7 +168,6 @@ class TextBoxView(p.SingletonPlugin):
         schema = {
             'content': [ignore_missing],
         }
-
         return {'name': 'wysiwyg',
                 'title': 'Free Text',
                 'icon': 'pencil',
@@ -201,3 +186,13 @@ class TextBoxView(p.SingletonPlugin):
 
     def setup_template_variables(self, context, data_dict):
         return
+
+
+
+
+class ExamplePlugin(SingletonPlugin):
+    implements(IConfigurer)
+
+    def update_config(self, config):
+        # Add template directory
+        config['extra_template_paths'] = 'theme/main_page'

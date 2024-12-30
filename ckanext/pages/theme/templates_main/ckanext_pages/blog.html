@@ -9,7 +9,6 @@
       {% link_for _('Edit'), named_route='pages.blog_edit', page=c.page.name, class_='btn btn-primary pull-right', icon='plus-square' %}
     {% endif %}
     <h1 class="page-heading">{{ c.page.title }}</h1>
-      {% if c.page.publish_date %}
          <span class="muted date"> {{ h.render_datetime(c.page.publish_date) }} </span>
       {% endif %}
     {% if c.page.content %}

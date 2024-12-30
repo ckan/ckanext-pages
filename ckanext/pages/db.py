@@ -29,7 +29,6 @@ except ImportError:
 
 pages_table = None
 
-
 def make_uuid():
     return text_type(uuid.uuid4())
 
@@ -75,6 +74,27 @@ class Page(DomainObject, BaseModel):
             query = query.order_by(cls.created.desc())
         return query.all()
 
+class MainPage(DomainObject, BaseModel):
+    __tablename__ = "main_page"
+
+    id = Column(types.Integer, primary_key=True)
+    main_title_1_ar = Column(types.UnicodeText, nullable=True)
+    main_title_1_en = Column(types.UnicodeText, nullable=True)
+    main_title_2_ar = Column(types.UnicodeText, nullable=True)
+    main_title_2_en = Column(types.UnicodeText, nullable=True)
+    main_brief_en = Column(types.UnicodeText, nullable=True)
+    main_brief_ar = Column(types.UnicodeText, nullable=True)
+
+    @classmethod
+    def get(cls, **kw):
+        query = model.Session.query(cls).autoflush(False)
+        return query.filter_by(**kw).first()
+
+    @classmethod
+    def all(cls):
+        query = model.Session.query(cls).order_by(cls.id).autoflush(False)
+        return query.all()
+
 
 def table_dictize(obj, context, **kw):
     '''Get any model object and represent it as a dict'''
@@ -110,8 +130,6 @@ def table_dictize(obj, context, **kw):
             result_dict[name] = text_type(value)
 
     result_dict.update(kw)
-
-    # HACK For optimisation to get metadata_modified created faster.
 
     context['metadata_modified'] = max(result_dict.get('revision_timestamp', ''),
                                        context.get('metadata_modified', ''))

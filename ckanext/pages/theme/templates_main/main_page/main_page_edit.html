@@ -1,0 +1,48 @@
+{% extends "page.html" %}
+{% import 'macros/form.html' as form %}
+{% import 'macros/wysiwyg.html' as wysiwyg %}
+
+{% block subtitle %}{{ section_title}}{% endblock %}
+{% set data = data or {} %}
+{% set errors = errors or {} %}
+
+{% block primary %}
+<section class="module-content">
+    <!-- Dynamic Page Heading -->
+    <h1 class="page-heading" style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">
+        {{ section_title }}
+    </h1>
+
+    <!-- Form -->
+    <!-- FIXED ACTION URL -->
+    <form method="post" action="{{ h.url_for('pages.main_page_edit', section_id=data.id) }}" class="form-horizontal">
+        {{ h.csrf_input() }}
+
+        <!-- Hidden ID Field to Ensure It Is Always Sent -->
+        <input type="hidden" name="id" value="{{ data.id }}">
+
+        <!-- Main Title 1 -->
+        {{ form.input('main_title_1_ar', id='field-title-1-ar', label=_('Main Title 1 AR'), placeholder='', value=data.main_title_1_ar, error=errors.main_title_1_ar, classes=['control-full', 'control-large'], attrs={'class': 'form-control'}) }}
+        {{ form.input('main_title_1_en', id='field-title-1-en', label=_('Main Title 1 EN'), placeholder='', value=data.main_title_1_en, error=errors.main_title_1_en, classes=['control-full', 'control-large'], attrs={'class': 'form-control'}) }}
+
+        <!-- Conditional Titles for Section 1 -->
+        {% if has_two_titles %}
+            {{ form.input('main_title_2_ar', id='field-title-2-ar', label=_('Main Title 2 AR'), placeholder='', value=data.main_title_2_ar, error=errors.main_title_2_ar, classes=['control-full', 'control-large'], attrs={'class': 'form-control'}) }}
+            {{ form.input('main_title_2_en', id='field-title-2-en', label=_('Main Title 2 EN'), placeholder='', value=data.main_title_2_en, error=errors.main_title_2_en, classes=['control-full', 'control-large'], attrs={'class': 'form-control'}) }}
+        {% endif %}
+
+        <!-- Brief Fields -->
+        {{ form.input('main_brief_en', id='field-brief-en', label=_('Main Brief EN'), placeholder='', value=data.main_brief_en, error=errors.main_brief_en, classes=['control-full', 'control-large'], attrs={'class': 'form-control'}) }}
+        {{ form.input('main_brief_ar', id='field-brief-ar', label=_('Main Brief AR'), placeholder='', value=data.main_brief_ar, error=errors.main_brief_ar, classes=['control-full', 'control-large'], attrs={'class': 'form-control'}) }}
+
+        <!-- Buttons -->
+        <div class="form-actions text-right mt-3">
+            <button type="submit" name="delete" value="delete" class="btn btn-primary">{{ _('Delete') }}</button>
+            <button type="submit" name="save" value="save" class="btn btn-danger">{{ _('Save Edit') }}</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block secondary %}
+{% endblock %}

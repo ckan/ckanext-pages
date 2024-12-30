@@ -6,7 +6,9 @@ import ckan.plugins.toolkit as tk
 import ckan.logic as logic
 import ckan.lib.helpers as helpers
 import ckan.model as model
-
+from ckanext.pages.db import MainPage
+from ckanext.pages.logic.schema import main_page_schema, update_pages_schema
+import ckan.lib.navl.dictization_functions as df
 
 config = tk.config
 _ = tk._
@@ -390,3 +392,113 @@ def is_data_coordinator(context):
     user_obj = model.User.get(user)
 
     return _has_user_role_for_some_org(user_obj, 'member')
+
+
+def get_main_page(section_id):
+    return MainPage.get(id=section_id)
+
+def validate_main_page(section_id, data):
+    schema = update_pages_schema(schema = main_page_schema, id= section_id)
+    print("#########################################################################################",schema)
+
+
+    errors = p.toolkit.navl_validate(data, schema)
+    if errors:
+        return False, errors
+    return True, None
+
+def update_main_page(section_id, data):
+    section = get_main_page(section_id)
+    if section:
+        section.main_title_1_ar = data.get('main_title_1_ar')
+        section.main_title_1_en = data.get('main_title_1_en')
+        section.main_title_2_ar = data.get('main_title_2_ar')
+        section.main_title_2_en = data.get('main_title_2_en')
+        section.main_brief_en = data.get('main_brief_en')
+        section.main_brief_ar = data.get('main_brief_ar')
+        model.Session.commit()
+        return {"success": True}
+    return {"success": False, "error": "Section not found"}
+
+
+def main_page_edit(section_id, data=None, errors=None, error_summary=None):
+    section_titles = {
+        1: "Main Title & Brief",
+        2: "Open Data Sector",
+        3: "Indicators",
+        4: "Open Data In Numbers",
+        5: "Also Explore"
+    }
+    section = get_main_page(section_id)
+
+    has_two_titles = True if int(section_id) == 1 else False
+    main_page_dict = tk.get_action('ckanext_main_page_show')(
+        context={}, data_dict={'section_id': section_id}
+    )
+    if main_page_dict is None:
+        main_page_dict = {}
+
+    # Handle POST (save or delete)
+    if tk.request.method == 'POST':
+        action = tk.request.form.get('save') or tk.request.form.get('delete')
+
+        data = _parse_form_data(tk.request)
+        data['id'] = section_id  # Explicitly set ID
+
+        if action == 'save':
+            schema = main_page_schema(id=int(section_id))
+            validated_data, errors = df.validate(data, schema, context={})
+
+            if errors:
+                tk.h.flash_error(errors)
+                return tk.redirect_to('pages.main_page_edit', section_id=section_id)
+
+            # Update section
+
+            section.main_title_1_ar = validated_data.get('main_title_1_ar')
+            section.main_title_1_en = validated_data.get('main_title_1_en')
+            section.main_title_2_ar = validated_data.get('main_title_2_ar', None)
+            section.main_title_2_en = validated_data.get('main_title_2_en', None)
+            section.main_brief_en = validated_data.get('main_brief_en')
+            section.main_brief_ar = validated_data.get('main_brief_ar')
+            section.save()
+            model.Session.commit()
+
+            tk.h.flash_success('Section updated successfully!')
+
+        return tk.redirect_to('pages.main_page')
+
+    # Prepare variables for rendering the form
+    vars = {
+        'has_two_titles': has_two_titles,
+        'section_title': section_titles.get(int(section_id), "Unknown Section"),
+        'data': main_page_dict or {},
+        'errors': errors or {},
+        'error_summary': error_summary or {}
+    }
+
+    return tk.render('main_page/main_page_edit.html', extra_vars=vars)
+
+
+
+    
+
+def main_page():
+    sections = MainPage.all()
+
+    section_titles = {
+        1: "Title & Brief",
+        2: "Open Data Sector",
+        3: "Indicators",
+        4: "Open Data In Numbers",
+        5: "Also Explore"
+    }
+    data = []
+    for section in sections:
+        data.append({
+            'id': section.id,
+            'name': f"Section {section.id}: {section_titles.get(section.id)}",
+            'last_update': "25/09/2024"
+        })
+
+    return tk.render('main_page/main_page.html', extra_vars={'sections': data})
