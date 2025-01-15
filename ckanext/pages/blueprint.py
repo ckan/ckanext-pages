@@ -2,27 +2,39 @@ from flask import Blueprint
 from ckan import model
 import ckanext.pages.utils as utils
 from ckanext.pages.utils import validate_main_page, update_main_page
-from ckanext.pages.db import MainPage
+from ckanext.pages.db import MainPage, Page
+from flask import request
+from slugify import slugify
+import os
+import ckan.plugins.toolkit as tk 
+from ckanext.pages.db import Page
+from werkzeug.utils import secure_filename
+import os
+
+
 
 pages = Blueprint('pages', __name__)
 
-# General Pages
-def index():
-    return utils.pages_list_pages('page')
+def index(page_type='page'):
+    return utils.pages_list_pages(page_type)
 
-def show(page):
-    return utils.pages_show(page, page_type='page')
 
-def pages_edit(page=None, data=None, errors=None, error_summary=None):
-    return utils.pages_edit(page, data, errors, error_summary, 'page')
+def show(page, page_type='page'):
+    return utils.pages_show(page, page_type)
+
+
+
+
+def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type='page'):
+    return utils.pages_edit(page, data, errors, error_summary, page_type)
+
 
 def pages_delete(page):
-    return utils.pages_delete(page, page_type='pages')
+    return utils.pages_delete(page, page_type='page')
 
 def upload():
     return utils.pages_upload()
 
-# Blog Pages
 def blog_index():
     return utils.pages_list_pages('blog')
 
@@ -35,7 +47,6 @@ def blog_edit(page=None, data=None, errors=None, error_summary=None):
 def blog_delete(page):
     return utils.pages_delete(page, page_type='blog')
 
-# Organization Pages
 def org_show(id, page=None):
     return utils.group_show(id, 'organization', page)
 
@@ -45,7 +56,6 @@ def org_edit(id, page=None, data=None, errors=None, error_summary=None):
 def org_delete(id, page):
     return utils.group_delete(id, 'organization', page)
 
-# Group Pages
 def group_show(id, page=None):
     return utils.group_show(id, 'group', page)
 
@@ -63,6 +73,44 @@ def main_page_edit(section_id, data=None, errors=None, error_summary=None):
 
 def get_main_page(section_id):
     return MainPage.get(id=section_id)
+
+def events():
+    return utils.events_list()
+
+def events_edit(page=None):
+    return utils.pages_show(page, 'event')
+
+def news():
+    return utils.news_list()
+
+def news_edit(page=None):
+    return utils.pages_show(page, 'news')
+
+
+# Event Editing
+pages.add_url_rule('/events_edit', view_func=events_edit, endpoint='events_new', methods=['GET', 'POST'])
+pages.add_url_rule('/events_edit/', view_func=events_edit, endpoint='events_new', methods=['GET', 'POST'])
+pages.add_url_rule('/events_edit/<event_id>', view_func=events_edit, endpoint='events_edit', methods=['GET', 'POST'])
+
+# News Editing
+pages.add_url_rule('/news_edit', view_func=news_edit, endpoint='news_new', methods=['GET', 'POST'])
+pages.add_url_rule('/news_edit/', view_func=news_edit, endpoint='news_new', methods=['GET', 'POST'])
+pages.add_url_rule('/news_edit/<news_id>', view_func=news_edit, endpoint='news_edit', methods=['GET', 'POST'])
+
+
+
+pages.add_url_rule('/events', view_func=events, methods=['GET'])
+pages.add_url_rule('/news', view_func=news, methods=['GET'])
+
+
+# News
+pages.add_url_rule("/news", view_func=index, endpoint="news_index")
+pages.add_url_rule("/news/<page>", view_func=show, endpoint="news_show")
+
+# News Deletion
+pages.add_url_rule("/news_delete/<page>", view_func=pages_delete, endpoint='news_delete', methods=['GET', 'POST'])
+
+
 
 pages.add_url_rule("/main_page/edit/<section_id>", view_func=main_page_edit, endpoint="main_page_edit", methods=['GET', 'POST'])
 

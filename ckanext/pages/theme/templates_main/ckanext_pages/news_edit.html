@@ -1,0 +1,38 @@
+{% extends 'ckanext_pages/edit_base.html' %}
+{% import 'macros/form.html' as form %}
+{% block subtitle %}{{ _('Edit News') }}{% endblock %}
+
+{% block primary_content_inner %}
+<div class="container">
+  <h1>Edit News</h1>
+  <form method="post" action="{{ h.url_for('news.edit', page=page.name if page and page.name else '') }}" data-module="basic-form" enctype="multipart/form-data">
+    {{ h.csrf_input() }}
+    {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
+
+    <!-- Title En -->
+    {{ form.input('title_en', id='field-title_en', label=_('Title En'), placeholder='Enter news title in English', value=data.title_en, error=errors.title_en, is_required=true) }}
+
+    <!-- Title Ar -->
+    {{ form.input('title_ar', id='field-title_ar', label=_('Title Ar'), placeholder='Enter news title in Arabic', value=data.title_ar, error=errors.title_ar, is_required=true) }}
+
+    <!-- New Date -->
+    <div class="mb-3">
+        <label for="news_date" class="form-label">news Date</label>
+        <input type="date" class="form-control form-control-lg" id="news_date" name="news_date" value="{{ data.news_date }}">
+      </div>
+
+    <!-- Image Upload -->
+    {{ form.image_upload(data, errors, is_upload_enabled=h.uploads_enabled(), is_url=data.image_url and data.image_url.startswith('http'), is_upload=data.image_url and not data.image_url.startswith('http')) }}
+
+    <!-- Content Editors -->
+    {{ form.textarea('content_en', id='field-content-en', label=_('Content (En)'), value=data.content_en, error=errors.content_en, is_required=true) }}
+    {{ form.textarea('content_ar', id='field-content-ar', label=_('Content (Ar)'), value=data.content_ar, error=errors.content_ar, is_required=true) }}
+
+    <!-- Submit Button -->
+    <div class="d-flex justify-content-end mt-4">
+      <button type="cancel" class="btn btn-primary btn-lg me-2">Cancel</button>
+      <button type="submit" class="btn btn-secondary btn-lg">Save</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

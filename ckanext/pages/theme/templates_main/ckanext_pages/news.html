@@ -1,0 +1,101 @@
+{% extends 'ckanext_pages/edit_base.html' %}
+
+{% block page_primary_action %}
+  {% if h.check_access('ckanext_pages_update', {}) %}
+    <a href="/news_edit" class="btn btn-primary">
+      <i class="fa fa-plus-square"></i> {{ _('Add News') }}
+    </a>
+  {% endif %}
+{% endblock %}
+
+{% block primary_content_inner %}
+
+{% set sorting = sorting if sorting else [
+    (_('Title Ascending'), 'Title_en asc'), 
+    (_('Title Descending'), 'Title_en desc'), 
+    (_('Creation Date Ascending'), 'created asc'), 
+    (_('Creation Date Descending'), 'created desc'), 
+    (_('News Date Ascending'), 'news_date asc'), 
+    (_('Publish Date Descending'), 'news_date desc')
+  ] %}
+  
+
+<div class="filters mb-3">
+  <style>
+    .small-select {
+        width: 175px;
+        font-size: 12px;
+        padding: 7px;
+        height: 30px;
+        line-height: 1.2;
+    }
+  </style>
+  <form method="get" class="form-inline sorting-section" data-module="select-switch">
+    <div class="form-group control-order-by">
+      <label for="field-order-by">{{ _('Order by') }}</label>
+      <select id="field-order-by" name="sort" class="form-control form-select small-select" onchange="this.form.submit()">
+        <option value="title_en asc" {% if request.args.get('sort', 'title_en asc') == 'title_en asc' %} selected {% endif %}>Title Ascending</option>
+        <option value="title_en desc" {% if request.args.get('sort') == 'title_en desc' %} selected {% endif %}>Title Descending</option>
+        <option value="created asc" {% if request.args.get('sort') == 'created asc' %} selected {% endif %}>Creation Date Ascending</option>
+        <option value="created desc" {% if request.args.get('sort') == 'created desc' %} selected {% endif %}>Creation Date Descending</option>
+        <option value="news_date asc" {% if request.args.get('sort') == 'news_date asc' %} selected {% endif %}>Publish Date Ascending</option>
+        <option value="mews_date desc" {% if request.args.get('sort') == 'news_date desc' %} selected {% endif %}>Publish Date Descending</option>
+      </select>
+    </div>
+  </form>
+</div>
+
+<table class="table table-striped">
+  <thead>
+      <tr>
+          <th>News Title</th>
+          <th>Date Of Creation</th>
+        <th>Publish Date</th>
+          <th>Page Url</th>
+          <th>Status</th>
+          <th>Actions</th>
+      </tr>
+  </thead>
+  <tbody>
+      {% if pages %}
+          {% for item in pages %}
+              <tr>
+                  <td>{{ item.title_en }}</td>
+                  <td>{{ h.render_datetime(item.created, date_format='%d/%m/%Y') }}</td>
+                  <td>{{ h.render_datetime(item.news_date, date_format='%d/%m/%Y') }}</td>
+                  <td>{{ item.name }}</td>
+                  <td>{{item.status}}</td>
+                  <td>
+                      <a href="/news/{{ item.name }}" style="border: none; background: none; padding: 0;">
+                        <img src="/images/EYE3.png"
+                             alt="{{ _('View') }}"
+                             style="width: 32px; height: 32px; cursor: pointer;"></a>
+                      <a title="Delete News" href="/news_delete/{{ item.name }}" 
+                         data-module="confirm-action" 
+                         data-module-content="Are you sure you want to delete this news?" 
+                         style="border: none; background: none; padding: 0;">
+                          <img src="/images/remove_icon.png" 
+                               alt="{{ _('Delete') }}">
+                      </a>
+                      <a href="/news_edit/{{ item.name }}" style="border: none; background: none; padding: 0;">
+                        <img src="/images/edit_icon.png"
+                             alt="{{ _('Edit') }}"
+                             style="width: 32px; height: 32px; cursor: pointer;"></a>
+                  </td>
+              </tr>
+          {% endfor %}
+      {% else %}
+          <tr>
+              <td colspan="6">No news found.</td>
+          </tr>
+      {% endif %}
+  </tbody>
+</table>
+
+{% endblock %}
+
+{% block main_content %}
+   <div class="wrapper no-nav">
+     {{ self.primary_content() }}
+   </div>
+{% endblock %}

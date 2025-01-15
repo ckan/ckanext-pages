@@ -10,11 +10,27 @@ from ckanext.pages import blueprint
 from ckan.lib.plugins import DefaultTranslation
 from ckan.plugins import SingletonPlugin, implements, IConfigurer
 from ckanext.pages import cli
+from ckanext.pages.db import MainPage
+
+
 log = logging.getLogger(__name__)
 
+# Helper function to fetch sections dynamically
+def get_main_page_sections(lang='en'):
+    sections = MainPage.all()
+    section_data = []
+    for section in sections:
+        section_data.append({
+            'id': section.id,
+            'title_1': section.main_title_1_ar if lang == 'ar' else section.main_title_1_en,
+            'title_2': section.main_title_2_ar if lang == 'ar' else section.main_title_2_en,
+            'brief': section.main_brief_ar if lang == 'ar' else section.main_brief_en
+        })
+    return section_data
 
 
 
+# Navigation customization
 def build_pages_nav_main(*args):
     about_menu = tk.asbool(tk.config.get('ckanext.pages.about_menu', True))
     group_menu = tk.asbool(tk.config.get('ckanext.pages.group_menu', True))
@@ -30,7 +46,6 @@ def build_pages_nav_main(*args):
         new_args.append(arg)
     output = core_build_nav_main(*new_args)
 
-    # do not display any private pages in menu even for sysadmins
     pages_list = tk.get_action('ckanext_pages_list')(None, {'order': True, 'private': False})
     page_name = ''
     is_current_page = tk.get_endpoint() in (('pages', 'show'), ('pages', 'blog_show'))
@@ -48,13 +63,16 @@ def build_pages_nav_main(*args):
         output = output + li
     return output
 
+# Render HTML content
 def render_content(content):
     allow_html = tk.asbool(tk.config.get('ckanext.pages.allow_html', False))
     return tk.h.render_markdown(content, allow_html=allow_html)
 
+# WYSIWYG editor helper
 def get_wysiwyg_editor():
     return tk.config.get('ckanext.pages.editor', '')
 
+# Get recent blog posts
 def get_recent_blog_posts(number=5, exclude=None):
     blog_list = tk.get_action('ckanext_pages_list')(
         None, {'order_publish_date': True, 'private': False,
@@ -69,6 +87,7 @@ def get_recent_blog_posts(number=5, exclude=None):
             break
     return new_list
 
+# CKAN Plugin configuration
 class PagesPluginBase(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.ITranslation, inherit=True)
 
@@ -83,8 +102,6 @@ class PagesPlugin(PagesPluginBase):
 
     def get_commands(self):
         return cli.get_commands()
-
-
 
     def get_blueprint(self):
         return [blueprint.pages]
@@ -108,34 +125,21 @@ class PagesPlugin(PagesPluginBase):
             'render_content': render_content,
             'pages_get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
-
+            'get_main_page_sections': get_main_page_sections
         }
 
     def get_actions(self):
         actions_dict = {
+            'ckanext_pages_edit': actions.pages_edit_action,
             'ckanext_pages_show': actions.pages_show,
             'ckanext_pages_update': actions.pages_update,
             'ckanext_pages_delete': actions.pages_delete,
             'ckanext_pages_list': actions.pages_list,
+            'ckanext_news_list': actions.news_list,
+            'ckanext_events_list': actions.events_list,
             'ckanext_pages_upload': actions.pages_upload,
-            'ckanext_main_page_show' :actions.main_page_show,
+            'ckanext_main_page_show': actions.main_page_show,
         }
-        if self.organization_pages:
-            org_actions = {
-                'ckanext_org_pages_show': actions.org_pages_show,
-                'ckanext_org_pages_update': actions.org_pages_update,
-                'ckanext_org_pages_delete': actions.org_pages_delete,
-                'ckanext_org_pages_list': actions.org_pages_list,
-            }
-            actions_dict.update(org_actions)
-        if self.group_pages:
-            group_actions = {
-                'ckanext_group_pages_show': actions.group_pages_show,
-                'ckanext_group_pages_update': actions.group_pages_update,
-                'ckanext_group_pages_delete': actions.group_pages_delete,
-                'ckanext_group_pages_list': actions.group_pages_list,
-            }
-            actions_dict.update(group_actions)
         return actions_dict
 
     def get_auth_functions(self):
@@ -144,55 +148,5 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_pages_update': auth.pages_update,
             'ckanext_pages_delete': auth.pages_delete,
             'ckanext_pages_list': auth.pages_list,
-            'ckanext_pages_upload': auth.pages_upload,
-            'ckanext_org_pages_show': auth.org_pages_show,
-            'ckanext_org_pages_update': auth.org_pages_update,
-            'ckanext_org_pages_delete': auth.org_pages_delete,
-            'ckanext_org_pages_list': auth.org_pages_list,
-            'ckanext_group_pages_show': auth.group_pages_show,
-            'ckanext_group_pages_update': auth.group_pages_update,
-            'ckanext_group_pages_delete': auth.group_pages_delete,
-            'ckanext_group_pages_list': auth.group_pages_list,
+            'ckanext_pages_upload': auth.pages_upload
         }
-
-class TextBoxView(p.SingletonPlugin):
-    p.implements(p.IConfigurer, inherit=True)
-    p.implements(p.IResourceView, inherit=True)
-
-    def update_config(self, config):
-        tk.add_resource('textbox/theme', 'textbox')
-        tk.add_template_directory(config, 'textbox/templates')
-
-    def info(self):
-        ignore_missing = tk.get_validator('ignore_missing')
-        schema = {
-            'content': [ignore_missing],
-        }
-        return {'name': 'wysiwyg',
-                'title': 'Free Text',
-                'icon': 'pencil',
-                'iframed': False,
-                'schema': schema,
-                }
-
-    def can_view(self, data_dict):
-        return True
-
-    def view_template(self, context, data_dict):
-        return 'textbox_view.html'
-
-    def form_template(self, context, data_dict):
-        return 'textbox_form.html'
-
-    def setup_template_variables(self, context, data_dict):
-        return
-
-
-
-
-class ExamplePlugin(SingletonPlugin):
-    implements(IConfigurer)
-
-    def update_config(self, config):
-        # Add template directory
-        config['extra_template_paths'] = 'theme/main_page'

@@ -26,7 +26,7 @@ def org_admin(context, data_dict):
         'success': p.toolkit.check_access('group_update', context, data_dict)
     }
 
-@tk.auth_sysadmins_check
+# @tk.auth_sysadmins_check
 def page_data_coordinator(context, data_dict):
     if authz.auth_not_logged_in(context):
         return {'success': False, 'msg': _('User not found')}

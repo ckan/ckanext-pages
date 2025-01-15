@@ -1,0 +1,96 @@
+{% extends 'ckanext_pages/edit_base.html' %}
+
+{% block page_primary_action %}
+  {% if h.check_access('ckanext_pages_update', {}) %}
+  <a href="/events_edit" class="btn btn-primary">
+    <i class="fa fa-plus-square"></i> {{ _('Add Events') }}
+  </a>  
+  {% endif %}
+{% endblock %}
+
+{% block primary_content_inner %}
+
+{% set sorting = sorting if sorting else [
+    (_('Title Ascending'), 'Title_en asc'), 
+    (_('Title Descending'), 'Title_en desc'), 
+    (_('Creation Date Ascending'), 'created asc'), 
+    (_('Creation Date Descending'), 'created desc'), 
+    (_('Start Date Ascending'), 'start_date asc'), 
+    (_('Start Date Descending'), 'Start_date desc'),
+    (_('End Date Ascending'), 'end_date asc'), 
+    (_('End Date Descending'), 'end_date desc')
+  ] %}
+  
+
+<div class="filters mb-3">
+    <style>
+        .small-select {
+            width: 175px;
+            font-size: 12px;
+            padding: 7px;
+            height: 30px;
+            line-height: 1.2;
+        }
+      </style>    
+  <form method="get" class="form-inline sorting-section" data-module="select-switch">
+    <div class="form-group control-order-by">
+      <label for="field-order-by">{{ _('Order by') }}</label>
+      <select id="field-order-by" name="sort" class="form-control form-select small-select" onchange="this.form.submit()">
+        <option value="title_en asc" {% if request.args.get('sort', 'title_en asc') == 'title_en asc' %} selected {% endif %}>{{ _('Title Ascending') }}</option>
+        <option value="title_en desc" {% if request.args.get('sort') == 'title_en desc' %} selected {% endif %}>{{ _('Title Descending') }}</option>
+        <option value="created asc" {% if request.args.get('sort') == 'created asc' %} selected {% endif %}>{{ _('Creation Date Ascending') }}</option>
+        <option value="created desc" {% if request.args.get('sort') == 'created desc' %} selected {% endif %}>{{ _('Creation Date Descending') }}</option>
+        <option value="start_date asc" {% if request.args.get('sort') == 'start_date asc' %} selected {% endif %}>{{ _('Start Date Ascending') }}</option>
+        <option value="start_date desc" {% if request.args.get('sort') == 'start_date desc' %} selected {% endif %}>{{ _('Start Date Descending') }}</option>
+        <option value="end_date asc" {% if request.args.get('sort') == 'end_date asc' %} selected {% endif %}>{{ _('End Date Ascending') }}</option>
+        <option value="end_date desc" {% if request.args.get('sort') == 'end_date desc' %} selected {% endif %}>{{ _('End Date Descending') }}</option>
+      </select>
+    </div>
+  </form>
+</div>
+
+<table class="table table-striped">
+  <thead>
+      <tr>
+          <th>Title En</th>
+          <th>Date Of Creation</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+            <th>Url</th>
+            <th>Status</th>
+          <th>Actions</th>
+      </tr>
+  </thead>
+  <tbody>
+      {% if pages %}
+          {% for event in pages %}
+              <tr>
+                  <td>{{ event.title_en }}</td>
+                  <td>{{ h.render_datetime(event.created, date_format='%d/%m/%Y') }}</td>
+                  <td>{{ h.render_datetime(event.start_date, date_format='%d/%m/%Y') }}</td>                  
+                  <td>{{ h.render_datetime(event.end_date, date_format='%d/%m/%Y') }}</td>
+                  <td>{{ event.name }}</td>
+                  <td>{{ event.status }}</td>
+                  <td>
+                      <a href="/events/{{ event.name }}">
+                        <img src="/images/EYE3.png" alt="View" style="width: 32px; height: 32px; cursor: pointer;">
+                      </a>
+                      <a href="/events_edit/{{ event.name }}">
+                        <img src="/images/edit_icon.png" alt="Edit" style="width: 32px; height: 32px; cursor: pointer;">
+                      </a>
+                  </td>
+              </tr>
+          {% endfor %}
+      {% else %}
+          <tr>
+              <td colspan="7">No events found.</td>
+          </tr>
+      {% endif %}
+  </tbody>
+</table>
+{% endblock %}
+{% block main_content %}
+   <div class="wrapper no-nav">
+     {{ self.primary_content() }}
+   </div>
+{% endblock %}

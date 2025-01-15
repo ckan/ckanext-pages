@@ -1,14 +1,16 @@
 import six
-
+from datetime import datetime
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 import ckan.logic as logic
 import ckan.lib.helpers as helpers
 import ckan.model as model
-from ckanext.pages.db import MainPage
+from ckanext.pages.db import MainPage,Page
 from ckanext.pages.logic.schema import main_page_schema, update_pages_schema
 import ckan.lib.navl.dictization_functions as df
+from flask import request
+from ckanext.pages.db import MainPage, Page
 
 config = tk.config
 _ = tk._
@@ -31,72 +33,166 @@ def pages_list_pages(page_type):
     tk.g.pages_dict = tk.get_action('ckanext_pages_list')(
         context={}, data_dict=data_dict
     )
+
     tk.g.page = helpers.Page(
-        collection=tk.c.pages_dict,
+        collection=tk.g.pages_dict,
+        page=tk.request.args.get('page', 1),
+        url=helpers.pager_url,
+        items_per_page=21
+    )
+    
+    print("DEBUG: Pages dict passed to template:", tk.g.pages_dict)  # Debug
+
+    return tk.render('ckanext_pages/pages_list.html', extra_vars={"pages": tk.g.pages_dict})
+
+def news_list():
+
+    data_dict = {
+        'org_id': None,
+        'sort': request.args.get('sort', 'title_en asc')  # Default to 'title_en asc'
+    }
+
+    # Call the action to fetch pages
+    news_list = tk.get_action('ckanext_news_list')(
+        context={}, data_dict=data_dict
+    )
+
+    tk.g.page = helpers.Page(
+        collection=news_list,
         page=tk.request.args.get('page', 1),
         url=helpers.pager_url,
         items_per_page=21
     )
 
-    if page_type == 'blog':
-        return tk.render('ckanext_pages/blog_list.html')
-    return tk.render('ckanext_pages/pages_list.html')
+    return tk.render('ckanext_pages/news.html', extra_vars={"pages": news_list})
 
+def events_list():
+
+    data_dict = {
+        'org_id': None,
+        'sort': request.args.get('sort', 'title_en asc')  # Default to 'title_en asc'
+    }
+
+    # Call the action to fetch pages
+    events_list = tk.get_action('ckanext_events_list')(
+        context={}, data_dict=data_dict
+    )
+
+    tk.g.page = helpers.Page(
+        collection=events_list,
+        page=tk.request.args.get('page', 1),
+        url=helpers.pager_url,
+        items_per_page=21
+    )
+
+    return tk.render('ckanext_pages/events.html', extra_vars={"pages": events_list})
+
+class Form:
+    # Input field method
+    def input(self, name, **kwargs):
+        value = kwargs.get('value', '')
+        label = kwargs.get('label', '')
+        error = kwargs.get('error', '')
+        css_class = ' '.join(kwargs.get('classes', []))
+        return f'''
+            <div class="mb-3">
+                <label for="{name}" class="form-label">{label}</label>
+                <input type="text" id="{name}" name="{name}" value="{value}" class="{css_class}">
+                <div class="text-danger">{error}</div>
+            </div>
+        '''
+
+    # Checkbox method
+    def checkbox(self, name, **kwargs):
+        checked = 'checked' if kwargs.get('checked') else ''
+        label = kwargs.get('label', '')
+        error = kwargs.get('error', '')
+        return f'''
+            <div class="mb-3 form-check">
+                <input type="checkbox" id="{name}" name="{name}" {checked} class="form-check-input">
+                <label for="{name}" class="form-check-label">{label}</label>
+                <div class="text-danger">{error}</div>
+            </div>
+        '''
+
+    # Textarea method
+    def textarea(self, name, **kwargs):
+        value = kwargs.get('value', '')
+        label = kwargs.get('label', '')
+        error = kwargs.get('error', '')
+        css_class = ' '.join(kwargs.get('classes', []))
+        return f'''
+            <div class="mb-3">
+                <label for="{name}" class="form-label">{label}</label>
+                <textarea id="{name}" name="{name}" class="{css_class}">{value}</textarea>
+                <div class="text-danger">{error}</div>
+            </div>
+        '''
+
+def parse_page_form_data(request):
+    
+    publish_date = request.form.get("publish_date", None)
+    if publish_date:
+        try:
+            publish_date = datetime.strptime(publish_date, "%Y-%m-%d")  # Adjust format if necessary
+        except ValueError:
+            publish_date = None  # Invalid date will be treated as None
+    print("DEBUG: Publish date:", type(publish_date))  # Debug   
+    return {
+        "id": request.form.get("id", None),
+        "name": request.form.get("name", ""),
+        "title_en": request.form.get("title_en", ""),
+        "title_ar": request.form.get("title_ar", ""),
+        "content_en": request.form.get("content_en", ""),
+        "content_ar": request.form.get("content_ar", ""),
+        "created": request.form.get("created", ""),
+        "publish_date": publish_date,
+        "image_url": request.form.get("image_url", "")
+    }
+
+def validate_page_data(data):
+    """
+    Validates page data using the schema.
+    """
+    schema = update_pages_schema()
+    return df.validate(data, schema)
 
 def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type='pages'):
-
-    page_dict = None
-    if page:
-        if page.startswith('/'):
-            page = page[1:]
-        page_dict = tk.get_action('ckanext_pages_show')(
-            context={}, data_dict={'org_id': None, 'page': page}
-        )
-    if page_dict is None:
-        page_dict = {}
-
-    try:
-        tk.check_access('ckanext_pages_update', {'user': tk.g.user})
-    except tk.NotAuthorized:
-        return tk.abort(401, _('Unauthorized to create or edit a page'))
-
-    if tk.request.method == 'POST' and not data:
-        data = _parse_form_data(tk.request)
-
-        page_dict.update(data)
-
-        page_dict['org_id'] = None
-        page_dict['page'] = page
-        page_dict['page_type'] = 'page' if page_type == 'pages' else page_type
-
+    if request.method == 'POST':
+        form_data = parse_page_form_data(request)
         try:
-            tk.get_action('ckanext_pages_update')(
-                context={}, data_dict=page_dict
-            )
+            result = tk.get_action("ckanext_pages_edit")({}, form_data)
+            page_id = result.get("id")
+            if not page_id:
+                raise ValueError("Page ID is missing for redirect")
+            return tk.redirect_to("pages.edit", page=page_id)
+
         except tk.ValidationError as e:
-            errors = e.error_dict
-            error_summary = e.error_summary
-            tk.h.flash_error(error_summary)
-            return pages_edit(
-                page, data, errors, error_summary, page_type=page_type)
+            return tk.render(
+                "ckanext_pages/page_edit.html",
+                extra_vars={
+                    "data": form_data,
+                    "errors": e.error_dict,
+                    "error_summary": {"summary": "Validation failed"},
+                },
+            )
+    else:
+        page_data = model.Session.query(Page).get(page) if page else Page()
+        
+        if page_data.content_en is None:
+            page_data.content_en = ""
+        if page_data.content_ar is None:
+            page_data.content_ar = ""
+            
+        return tk.render(
+            "ckanext_pages/page_edit.html",
+            extra_vars={
+                "data": page_data,
+                "errors": errors or {},
+                "error_summary": error_summary or {},
+            },
+        )
 
-        endpoint = 'show' if page_type in ('pages', 'page') else '%s_show' % page_type
-        return tk.redirect_to('pages.%s' % endpoint, page=page_dict['name'])
-
-    if not data:
-        data = page_dict
-
-    errors = errors or {}
-    error_summary = error_summary or {}
-
-    form_snippet = config.get('ckanext.pages.form', 'ckanext_pages/base_form.html')
-
-    vars = {'data': data, 'errors': errors,
-            'error_summary': error_summary, 'page': page or '',
-            'form_snippet': form_snippet}
-
-    return tk.render(
-        'ckanext_pages/%s_edit.html' % page_type, extra_vars=vars)
 
 
 def _inject_views_into_page(_page):
@@ -398,14 +494,17 @@ def get_main_page(section_id):
     return MainPage.get(id=section_id)
 
 def validate_main_page(section_id, data):
-    schema = update_pages_schema(schema = main_page_schema, id= section_id)
-    print("#########################################################################################",schema)
+    schema = main_page_schema(id=section_id)
+    try:
+        errors = p.toolkit.navl_validate(data, schema)
+        if errors:
+            print("Validation Errors:", errors)  # Debugging
+            return False, errors
+        return True, None
+    except Exception as e:
+        print("Validation Exception:", str(e))  # Debugging
+        return False, {'error': str(e)}
 
-
-    errors = p.toolkit.navl_validate(data, schema)
-    if errors:
-        return False, errors
-    return True, None
 
 def update_main_page(section_id, data):
     section = get_main_page(section_id)

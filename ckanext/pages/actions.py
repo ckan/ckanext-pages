@@ -7,13 +7,12 @@ import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
 from ckan.plugins import toolkit as tk
 from html.parser import HTMLParser
-
 from ckanext.pages.logic.schema import update_pages_schema
 
 import ckan.authz as authz
 
 from ckanext.pages import db
-from ckanext.pages.db import MainPage
+from ckanext.pages.db import MainPage,Page , Event, News
 from ckanext.pages.logic.schema import main_page_schema
 
 class HTMLFirstImage(HTMLParser):
@@ -36,54 +35,161 @@ def _pages_show(context, data_dict):
 
 
 def _pages_list(context, data_dict):
-    search = {}
-    org_id = data_dict.get('org_id')
-    ordered = data_dict.get('order')
-    order_publish_date = data_dict.get('order_publish_date')
-    page_type = data_dict.get('page_type')
-    private = data_dict.get('private', True)
-    if ordered:
-        search['order'] = True
-    if page_type:
-        search['page_type'] = page_type
-    if order_publish_date:
-        search['order_publish_date'] = True
-    if not org_id:
-        search['group_id'] = None
-        try:
-            p.toolkit.check_access('ckanext_pages_update', context, data_dict)
-            if not private:
-                search['private'] = False
-        except p.toolkit.NotAuthorized:
-            search['private'] = False
-    else:
-        group = context['model'].Group.get(org_id)
-        user = context['user']
-        member = authz.has_user_permission_for_group_or_org(
-            group.id, user, 'read')
-        search['group_id'] = org_id
-        if not member:
-            search['private'] = False
-    out = db.Page.pages(**search)
+    print("DEBUG: Data dict received by _pages_list:", data_dict)
+
+    query = model.Session.query(Page)
+
+    sort = data_dict.get('sort', 'title_en asc')  # Default sorting
+    if sort == 'created asc':
+        query = query.order_by(Page.created.asc())
+    elif sort == 'created desc':
+        query = query.order_by(Page.created.desc())
+    elif sort == 'title_en asc':
+        query = query.order_by(Page.title_en.asc())
+    elif sort == 'title_en desc':
+        query = query.order_by(Page.title_en.desc())
+    elif sort == 'publish_date asc':
+        query = query.order_by(Page.publish_date.asc())
+    elif sort == 'publish_date desc':
+        query = query.order_by(Page.publish_date.desc())
+
+    pages = query.all()
+
+    # Log for debugging
+    print("DEBUG: Pages fetched from database:", pages)
+
     out_list = []
-    for pg in out:
-        parser = HTMLFirstImage()
-        parser.feed(pg.content)
-        img = parser.first_image
-        pg_row = {'title': pg.title,
-                  'content': pg.content,
-                  'name': pg.name,
-                  'publish_date': pg.publish_date.isoformat() if pg.publish_date else None,
-                  'group_id': pg.group_id,
-                  'page_type': pg.page_type,
-                  }
-        if img:
-            pg_row['image'] = img
-        extras = pg.extras
-        if extras:
-            pg_row.update(json.loads(pg.extras))
-        out_list.append(pg_row)
+    for pg in pages:
+        out_list.append({
+            'title_en': pg.title_en,
+            'created': pg.created.isoformat(),
+            'publish_date': pg.publish_date.isoformat() if pg.publish_date else None,
+            'name': pg.name,
+            'group_id': pg.group_id,
+            'private': pg.private,
+        })
+
+    print("DEBUG: Final list of pages to return:", out_list)
     return out_list
+
+def _news_list(context, data_dict):
+
+    query = model.Session.query(News)
+
+    sort = data_dict.get('sort', 'title_en asc')  # Default sorting
+    if sort == 'created asc':
+        query = query.order_by(News.created.asc())
+    elif sort == 'created desc':
+        query = query.order_by(News.created.desc())
+    elif sort == 'title_en asc':
+        query = query.order_by(News.title_en.asc())
+    elif sort == 'title_en desc':
+        query = query.order_by(News.title_en.desc())
+    elif sort == 'publish_date asc':
+        query = query.order_by(News.news_date.asc())
+    elif sort == 'publish_date desc':
+        query = query.order_by(News.news_date.desc())
+
+    news = query.all()
+
+    # Log for debugging
+
+    out_list = []
+    today = datetime.datetime.now()
+    
+    for pg in news:
+        status = "Disabled"
+        if not pg.private:
+            status = "Upcoming" if pg.news_date > today else "Posted"
+        news_dict = {
+            'title_en': pg.title_en,
+            'created': pg.created.isoformat(),
+            'news_date': pg.news_date.isoformat() if pg.news_date else None,
+            'name': pg.name,
+            'status': status,
+            'group_id': pg.group_id,
+            'private': pg.private,
+            
+        }
+        
+        out_list.append(news_dict)
+
+    print("DEBUG: Final list of pages to return:", out_list)
+    return out_list
+
+def _events_list(context, data_dict):
+
+    query = model.Session.query(Event)
+
+    sort = data_dict.get('sort', 'title_en asc')  # Default sorting
+    if sort == 'created asc':
+        query = query.order_by(Event.created.asc())
+    elif sort == 'created desc':
+        query = query.order_by(Event.created.desc())
+    elif sort == 'title_en asc':
+        query = query.order_by(Event.title_en.asc())
+    elif sort == 'title_en desc':
+        query = query.order_by(Event.title_en.desc())
+    elif sort == 'start_date asc':
+        query = query.order_by(Event.start_date.asc())
+    elif sort == 'start_date desc':
+        query = query.order_by(Event.start_date.desc())
+    elif sort == 'end_date asc':
+        query = query.order_by(Event.end_date.asc())
+    elif sort == 'end_date desc':
+        query = query.order_by(Event.end_date.desc())    
+    
+
+    events = query.all()
+
+    # Log for debugging
+
+    out_list = []
+    today = datetime.datetime.now()
+    
+    for pg in events:
+        status = "Disabled"
+        if not pg.private:
+            status = "Upcoming" if pg.start_date > today else "Posted"
+        events_dict = ({
+            'title_en': pg.title_en,
+            'created': pg.created.isoformat(),
+            'start_date': pg.news_date.isoformat() if pg.start_date else None,
+            'end_date': pg.news_date.isoformat() if pg.end_date else None,
+            'name': pg.name,
+            'status': status,
+            'group_id': pg.group_id,
+            'private': pg.private,
+        })
+        out_list.append(events_dict)
+
+    return out_list
+
+
+def pages_edit_action(context, data_dict):
+    schema = update_pages_schema()
+    data, errors = df.validate(data_dict, schema, context)
+    if errors:
+        raise p.toolkit.ValidationError(errors)
+
+    # Fetch or create Page object
+    page_id = data_dict.get('id')
+    page = model.Session.query(Page).get(page_id) if page_id else Page()
+
+    # Update attributes
+    for key, value in data_dict.items():
+        if hasattr(page, key):
+            setattr(page, key, value)
+
+    # Save and commit
+    if not page_id:
+        page.created = datetime.datetime.utcnow()
+    model.Session.add(page)
+    model.Session.commit()
+
+    # Return success with ID
+    return {"success": True, "id": page.id}
+
 
 
 def _pages_delete(context, data_dict):
@@ -105,7 +211,6 @@ def _pages_update(context, data_dict):
     schema = update_pages_schema()
 
     data, errors = df.validate(data_dict, schema, context)
-
     if errors:
         raise p.toolkit.ValidationError(errors)
 
@@ -114,7 +219,7 @@ def _pages_update(context, data_dict):
         out = db.Page()
         out.group_id = org_id
         out.name = page
-    items = ['title', 'content', 'name', 'private',
+    items = ['title_en', 'title_at', 'name', 'content_en', 'content_ar','image_url', 'lang',
              'order', 'page_type', 'publish_date']
 
     # backward compatible with older version where page_type does not exist
@@ -155,7 +260,7 @@ def pages_upload(context, data_dict):
     upload = uploader.get_uploader('page_images')
 
     upload.update_data_dict(data_dict, 'image_url',
-                            'upload', 'clear_upload')
+                            'image_upload', 'clear_upload')
 
     max_image_size = uploader.get_max_image_size()
 
@@ -171,7 +276,7 @@ def pages_upload(context, data_dict):
     image_url = data_dict.get('image_url')
     if image_url and image_url[0:6] not in {'http:/', 'https:'}:
         image_url = h.url_for_static(
-            'uploads/page_images/%s' % image_url,
+            'uploads/page_images/{}'.format(image_url),
             qualified=True
         )
     return {'url': image_url, 'fileName': upload.filename, 'uploaded': 1}
@@ -208,7 +313,35 @@ def pages_list(context, data_dict):
         p.toolkit.check_access('ckanext_pages_list', context, data_dict)
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
-    return _pages_list(context, data_dict)
+    
+    # Log for debugging purposes
+    print("DEBUG: Data dict received in pages_list:", data_dict)
+    
+    pages = _pages_list(context, data_dict)
+    
+    # Log the returned pages for debugging
+    print("DEBUG: Pages returned by _pages_list:", pages)
+    
+    return pages
+@tk.side_effect_free
+def news_list(context, data_dict):
+    try:
+        p.toolkit.check_access('ckanext_pages_list', context, data_dict)
+    except p.toolkit.NotAuthorized:
+        p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
+    news = _news_list(context, data_dict)
+    
+    return news
+
+@tk.side_effect_free
+def events_list(context, data_dict):
+    try:
+        p.toolkit.check_access('ckanext_pages_list', context, data_dict)
+    except p.toolkit.NotAuthorized:
+        p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
+    events = _events_list(context, data_dict)
+    
+    return events
 
 
 @tk.side_effect_free
@@ -405,3 +538,83 @@ def main_page_show(context, data_dict):
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _main_page_show(context, data_dict)
 
+def events_list(context, data_dict):
+    query = model.Session.query(Event)
+    sort = data_dict.get('sort', 'start_date asc')
+    if sort == 'start_date asc':
+        query = query.order_by(Event.start_date.asc())
+    elif sort == 'start_date desc':
+        query = query.order_by(Event.start_date.desc())
+    return [event.as_dict() for event in query.all()]
+
+def news_list(context, data_dict):
+    query = model.Session.query(News)
+    sort = data_dict.get('sort', 'news_date asc')
+    if sort == 'news_date asc':
+        query = query.order_by(News.news_date.asc())
+    elif sort == 'news_date desc':
+        query = query.order_by(News.news_date.desc())
+    return [news.as_dict() for news in query.all()]
+
+def events_edit(context, data_dict):
+    """
+    Edit or create an event.
+    If an event ID is provided, edit the existing event; otherwise, create a new one.
+    """
+    event_id = data_dict.get('id')
+    if event_id:
+        # Fetch the event from the database
+        event = model.Session.query(Event).filter(Event.id == event_id).first()
+        if not event:
+            raise p.toolkit.ObjectNotFound(f"Event with ID {event_id} not found.")
+    else:
+        # Creating a new event
+        event = Event()
+
+    # Update the fields
+    event.title_en = data_dict.get('title_en', event.title_en)
+    event.title_ar = data_dict.get('title_ar', event.title_ar)
+    event.start_date = data_dict.get('start_date', event.start_date)
+    event.end_date = data_dict.get('end_date', event.end_date)
+    event.brief_en = data_dict.get('brief_en', event.brief_en)
+    event.brief_ar = data_dict.get('brief_ar', event.brief_ar)
+    event.content_en = data_dict.get('content_en', event.content_en)
+    event.content_ar = data_dict.get('content_ar', event.content_ar)
+    event.image_url = data_dict.get('image_url', event.image_url)
+    event.lang = data_dict.get('lang', event.lang)
+
+    # Save the changes to the database
+    model.Session.add(event)
+    model.Session.commit()
+    return event.as_dict()
+
+
+def news_edit(context, data_dict):
+    """
+    Edit or create a news entry.
+    If a news ID is provided, edit the existing news entry; otherwise, create a new one.
+    """
+    news_id = data_dict.get('id')
+    if news_id:
+        # Fetch the news entry from the database
+        news = model.Session.query(News).filter(News.id == news_id).first()
+        if not news:
+            raise p.toolkit.ObjectNotFound(f"News with ID {news_id} not found.")
+    else:
+        # Creating a new news entry
+        news = News()
+
+    # Update the fields
+    news.title_en = data_dict.get('title_en', news.title_en)
+    news.title_ar = data_dict.get('title_ar', news.title_ar)
+    news.news_date = data_dict.get('news_date', news.news_date)
+    news.brief_en = data_dict.get('brief_en', news.brief_en)
+    news.brief_ar = data_dict.get('brief_ar', news.brief_ar)
+    news.content_en = data_dict.get('content_en', news.content_en)
+    news.content_ar = data_dict.get('content_ar', news.content_ar)
+    news.image_url = data_dict.get('image_url', news.image_url)
+    news.lang = data_dict.get('lang', news.lang)
+    # Save the changes to the database
+    model.Session.add(news)
+    model.Session.commit()
+    return news.as_dict()

@@ -10,6 +10,7 @@ this.ckan.module('ckedit', function (jQuery, _) {
     },
 
     _onReady: function() {
+      var editorId = this.el.attr('id'); // Dynamically get ID
       var config = {};
       config.toolbarGroups = [
         { name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
@@ -26,19 +27,14 @@ this.ckan.module('ckedit', function (jQuery, _) {
         { name: 'styles' },
       ];
 
-      // Remove some buttons, provided by the standard plugins, which we don't
-      // need to have in the Standard(s) toolbar.
       config.removeButtons = 'Underline,Subscript,Superscript';
-
-      // Set the most common block elements.
       config.format_tags = 'p;h1;h2;h3;pre';
-
-      // Make dialogs simpler.
       config.removeDialogTabs = 'image:advanced;link:advanced';
       config.extraPlugins = 'divarea,ckanview,templates,font';
       config.height = '400px';
       config.customConfig = false;
       config.allowedContent = true;
+
       var csrf_field = $('meta[name=csrf_field_name]').attr('content');
       var csrf_token = $('meta[name='+ csrf_field +']').attr('content');
       config.fileTools_requestHeaders = {
@@ -47,12 +43,12 @@ this.ckan.module('ckedit', function (jQuery, _) {
       };
       config.filebrowserUploadUrl = this.options.site_url + 'pages_upload';
 
-      // Override default config options with ones provided by plugins
       if (window.ckan.pages && window.ckan.pages.override_config) {
         $.extend(config, window.ckan.pages.override_config);
       }
 
-      var editor = $(this.el).ckeditor(config);
+      // Initialize CKEditor instance for each unique editor
+      CKEDITOR.replace(editorId, config);
     },
   }
 });
