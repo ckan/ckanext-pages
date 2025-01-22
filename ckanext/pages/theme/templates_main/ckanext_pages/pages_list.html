@@ -63,8 +63,8 @@
                   <td>{{ h.render_datetime(page.publish_date, date_format='%d/%m/%Y') }}</td>
                   <td>{{ page.name }}</td>
                   <td>
-                    <a href="/pages/{{ page.name }}" style="border: none; background: none; padding: 0;">
-                      <img src="/images/EYE3.png" alt="{{ _('View') }}" style="width: 32px; height: 32px; cursor: pointer;">
+                    <a href="#" style="border: none; background: none; padding: 0;" data-id="{{ page.id }}" id="page-visibility-toggler">
+                      <img src="{{ '/images/EYE3.png' if page.hidden else '/images/hide_icon.png' }}" alt="{{ _('View') if page.hidden else _('Hide') }}" style="width: 32px; height: 32px; cursor: pointer;">
                     </a>
 
                     <a href="/pages_edit/{{ page.id }}">
@@ -110,4 +110,10 @@
    <div class="wrapper no-nav">
      {{ self.primary_content() }}
    </div>
+{% endblock %}
+
+
+{% block scripts %}
+  {{ super() }}
+   <script src="/js/pages-list.js"></script>
 {% endblock %}
