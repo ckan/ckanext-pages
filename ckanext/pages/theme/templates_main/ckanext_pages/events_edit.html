@@ -5,8 +5,12 @@
 {% block primary_content_inner %}
 <div class="container">
   <h1>Edit Event</h1>
-  <form method="post" action="{{ h.url_for('pages.events_edit', page=page.name if page and page.name else '') }}" data-module="basic-form" enctype="multipart/form-data">
+<form method="post" action="{{ h.url_for('pages.events_edit', page=data.id if data and data.id else '') }}" data-module="basic-form" enctype="multipart/form-data">
     {{ h.csrf_input() }}
+    {% if data and data.id %}
+        <input type="hidden" name="id" value="{{ data.id }}">
+    {% endif %}
+
     {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
 
     <!-- Title En -->

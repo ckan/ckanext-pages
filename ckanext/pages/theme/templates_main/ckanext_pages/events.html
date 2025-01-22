@@ -65,7 +65,6 @@
   <tbody>
       {% if pages %}
           {% for event in pages %}
-          {{event.name}}
               <tr>
                   <td>{{ event.title_en }}</td>
                   <td>{{ h.render_datetime(event.created, date_format='%d/%m/%Y') }}</td>

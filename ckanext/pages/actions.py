@@ -9,7 +9,6 @@ from ckan.plugins import toolkit as tk
 from html.parser import HTMLParser
 from ckanext.pages.logic.schema import update_events_schema, update_pages_schema ,update_news_schema
 
-import ckan.authz as authz
 
 from ckanext.pages import db
 from ckanext.pages.db import MainPage,Page , Event, News
