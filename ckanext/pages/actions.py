@@ -7,7 +7,7 @@ import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
 from ckan.plugins import toolkit as tk
 from html.parser import HTMLParser
-from ckanext.pages.logic.schema import update_pages_schema
+from ckanext.pages.logic.schema import update_events_schema, update_pages_schema ,update_news_schema
 
 import ckan.authz as authz
 
@@ -25,6 +25,35 @@ class HTMLFirstImage(HTMLParser):
             self.first_image = dict(attrs)['src']
 
 
+def patch_page(context, data_dict, updated_dict):
+    page = (
+        context["session"]
+        .query(Page)
+        .filter(Page.id == data_dict["id"])
+        .one_or_none()
+    )
+    if page is None:
+        raise tk.ObjectNotFound(_("Page not found"))
+
+    page.patch_page(**updated_dict)
+
+    context["session"].commit()
+
+    data_dict = get_dictizer(type(page))(page, context)
+
+    return data_dict
+
+
+_ = tk._
+_actions = {}
+
+def action(func):
+    func.__name__ = f"pages_{func.__name__}"
+    _actions[func.__name__] = func
+    return func
+def get_actions():
+    return _actions.copy()
+
 def _pages_show(context, data_dict):
     org_id = data_dict.get('org_id')
     page = data_dict.get('page')
@@ -32,6 +61,18 @@ def _pages_show(context, data_dict):
     if out:
         out = db.table_dictize(out, context)
     return out
+
+@action
+def page_hide(context, data_dict):
+    tk.check_access("pages_page_approve", context, data_dict)
+    return patch_page(context, data_dict, {'hidden': True})
+
+
+@action
+def page_unhide(context, data_dict):
+    tk.check_access("pages_page_approve", context, data_dict)
+    return patch_page(context, data_dict, {'hidden': False})
+
 
 
 def _pages_list(context, data_dict):
@@ -61,12 +102,14 @@ def _pages_list(context, data_dict):
     out_list = []
     for pg in pages:
         out_list.append({
+            'id':pg.id,
             'title_en': pg.title_en,
             'created': pg.created.isoformat(),
             'publish_date': pg.publish_date.isoformat() if pg.publish_date else None,
             'name': pg.name,
             'group_id': pg.group_id,
             'private': pg.private,
+            'hidden': pg.hidden,
         })
 
     print("DEBUG: Final list of pages to return:", out_list)
@@ -160,13 +203,82 @@ def _events_list(context, data_dict):
             'status': status,
             'group_id': pg.group_id,
             'private': pg.private,
+            'hidden': pg.hidden
         })
         out_list.append(events_dict)
 
     return out_list
 
+def _event_edit(context ,data_dict):
+    schema = update_events_schema()
+    data, errors = df.validate(data_dict, schema, context)
+    if errors:
+        raise p.toolkit.ValidationError(errors)
+
+    # Fetch or create Page object
+    page_id = data_dict.get('id')
+    page = model.Session.query(Event).get(page_id) if page_id else Event()
+
+    # Update attributes
+    for key, value in data_dict.items():
+        if hasattr(page, key):
+            setattr(page, key, value)
+
+    # Save and commit
+    if not page_id:
+        page.created = datetime.datetime.utcnow()
+    model.Session.add(page)
+    model.Session.commit()
+
+    # Return success with ID
+    return {"success": True, "id": page.id}
+
+def _new_edit(context ,data_dict):
+    schema = update_news_schema()
+    data, errors = df.validate(data_dict, schema, context)
+    if errors:
+        raise p.toolkit.ValidationError(errors)
+
+    # Fetch or create Page object
+    page_id = data_dict.get('id')
+    page = model.Session.query(News).get(page_id) if page_id else News()
+
+    # Update attributes
+    for key, value in data_dict.items():
+        if hasattr(page, key):
+            setattr(page, key, value)
+
+    # Save and commit
+    if not page_id:
+        page.created = datetime.datetime.utcnow()
+    model.Session.add(page)
+    model.Session.commit()
+
+    # Return success with ID
+    return {"success": True, "id": page.id}
+
+
+
+
+def event_edit(context , data_dict):
+    try:
+        p.toolkit.check_access('ckanext_pages_update', context, data_dict)
+    except p.toolkit.NotAuthorized:
+        p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
+    return _event_edit(context,data_dict)
+
+def news_edit(context , data_dict):
+    try:
+        p.toolkit.check_access('ckanext_pages_update', context, data_dict)
+    except p.toolkit.NotAuthorized:
+        p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
+    return _new_edit(context,data_dict)
+
+
+
 
 def pages_edit_action(context, data_dict):
+
     schema = update_pages_schema()
     data, errors = df.validate(data_dict, schema, context)
     if errors:
@@ -220,7 +332,7 @@ def _pages_update(context, data_dict):
         out.group_id = org_id
         out.name = page
     items = ['title_en', 'title_at', 'name', 'content_en', 'content_ar','image_url', 'lang',
-             'order', 'page_type', 'publish_date']
+             'order', 'page_type', 'publish_date', 'hidden']
 
     # backward compatible with older version where page_type does not exist
     for item in items:
@@ -265,7 +377,7 @@ def pages_upload(context, data_dict):
     max_image_size = uploader.get_max_image_size()
 
     try:
-        upload.upload(max_image_size)
+        upload.upload(max_imddxage_size)
     except p.toolkit.ValidationError:
         message = (
             "Can't upload the file, size is too large. "
@@ -299,12 +411,7 @@ def pages_update(context, data_dict):
     return _pages_update(context, data_dict)
 
 
-def pages_delete(context, data_dict):
-    try:
-        p.toolkit.check_access('ckanext_pages_delete', context, data_dict)
-    except p.toolkit.NotAuthorized:
-        p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
-    return _pages_delete(context, data_dict)
+
 
 
 @tk.side_effect_free
@@ -342,6 +449,38 @@ def events_list(context, data_dict):
     events = _events_list(context, data_dict)
     
     return events
+
+@action
+def events_delete(context, data_dict):
+
+    tk.check_access("ckanext_pages_delete", context, data_dict)
+    event = context["session"].query(Event).filter(Event.name == data_dict["page"]).first()
+    if not event:
+        raise tk.ObjectNotFound(_("Event not found"))
+    context["session"].delete(event)
+    context["session"].commit()
+    return {"success": True}
+
+@action
+def news_delete(context, data_dict):
+    tk.check_access("ckanext_pages_delete", context, data_dict)
+    new = context["session"].query(News).filter(News.name == data_dict["page"]).first()
+    if not new:
+        raise tk.ObjectNotFound(_("Event not found"))
+    context["session"].delete(new)
+    context["session"].commit()
+    return {"success": True}
+
+@action
+def pages_delete(context, data_dict):
+    tk.check_access("ckanext_pages_delete", context, data_dict)
+    page = context["session"].query(Page).filter(Page.name == data_dict["page"]).first()
+    if not page:
+        raise tk.ObjectNotFound(_("Event not found"))
+    context["session"].delete(page)
+    context["session"].commit()
+    return {"success": True}
+
 
 
 @tk.side_effect_free
@@ -557,10 +696,6 @@ def news_list(context, data_dict):
     return [news.as_dict() for news in query.all()]
 
 def events_edit(context, data_dict):
-    """
-    Edit or create an event.
-    If an event ID is provided, edit the existing event; otherwise, create a new one.
-    """
     event_id = data_dict.get('id')
     if event_id:
         # Fetch the event from the database
@@ -590,10 +725,6 @@ def events_edit(context, data_dict):
 
 
 def news_edit(context, data_dict):
-    """
-    Edit or create a news entry.
-    If a news ID is provided, edit the existing news entry; otherwise, create a new one.
-    """
     news_id = data_dict.get('id')
     if news_id:
         # Fetch the news entry from the database

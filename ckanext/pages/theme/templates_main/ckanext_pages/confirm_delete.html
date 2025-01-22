@@ -2,21 +2,29 @@
 
 {% block subtitle %}{{ _("Confirm Delete") }}{% endblock %}
 
-{% block maintag %}<div class="row" role="main">{% endblock %}
+{% block maintag %}
+    <div class="row" role="main">
+{% endblock %}
 
 {% block main_content %}
-  <section class="module span6 offset3">
-    <div class="module-content">
-      {% block form %}
-      <p>{{ _('Are you sure you want to delete page - {name}?').format(name=c.page_dict.name) }}</p>
-      <p class="form-actions">
-      {% set action = form_action or h.url_for('organization_pages_delete', id=c.group_dict.name, page='/' + page) %}
-      <form action="{{ action }}" method="post">
-        <button class="btn" type="submit" name="cancel" >{{ _('Cancel') }}</button>
-        <button class="btn btn-primary" type="submit" name="delete" >{{ _('Confirm Delete') }}</button>
-      </form>
-      </p>
-      {% endblock %}
-    </div>
-  </section>
+    <section class="module span6 offset3">
+        <div class="module-content">
+            {% block form %}
+                <p>{{ _('Are you sure you want to delete the event: ') }} <strong>{{ page.title_en }}</strong>?</p>
+                <p class="form-actions">
+                    <form action="{{ h.url_for('pages.events_delete', id=page.id) }}" method="post">
+                        {{ h.csrf_input() }}
+                        <button class="btn btn-secondary" type="button" onclick="window.location='{{ h.url_for('pages.events') }}';">
+                            {{ _('Cancel') }}
+                        </button>
+                        <button class="btn btn-danger" type="submit" name="confirm" value="yes">
+                            {{ _('Confirm Delete') }}
+                        </button>
+                    </form>
+                </p>
+            {% endblock %}
+        </div>
+    </section>
 {% endblock %}
+
+

@@ -69,7 +69,11 @@ def page_privacy(context, data_dict):
 
 
 pages_show = page_privacy
-pages_update = page_data_coordinator
+
+def pages_update(context, data_dict):
+    return authz.is_authorized('is_content_editor', context, data_dict)
+
+# pages_update = page_data_coordinator
 pages_delete = page_data_coordinator
 pages_list = anyone
 pages_upload = page_data_coordinator

@@ -27,3 +27,11 @@ class IPagesSchema(Interface):
         :rtype: dictionary
         '''
         return schema
+
+
+    def update_news_schema(self, schema):
+        return schema
+      
+      
+    def update_events_schema(self, schema):
+        return schema  

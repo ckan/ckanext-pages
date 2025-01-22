@@ -5,29 +5,61 @@
 {% block primary_content_inner %}
 <div class="container">
   <h1>Edit Event</h1>
-  <form method="post" action="{{ h.url_for('events.edit', page=page.name if page and page.name else '') }}" data-module="basic-form" enctype="multipart/form-data">
+  <form method="post" action="{{ h.url_for('pages.events_edit', page=page.name if page and page.name else '') }}" data-module="basic-form" enctype="multipart/form-data">
     {{ h.csrf_input() }}
     {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
 
     <!-- Title En -->
-    {{ form.input('title_en', id='field-title_en', label=_('Title En'), placeholder='Enter event title in English', value=data.title_en, error=errors.title_en, is_required=true) }}
+    {{ form.input('title_en', id='field-title_en', label=_('Title En'), placeholder='Enter event title in English', value=data.title_en, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}, is_required=true) }}
+
+    {% set prefix = h.url_for('pages.show', page='') %}
+    {% set domain = h.url_for('pages.show', page='', qualified=true) %}
+    {% set domain = domain|replace("http://", "")|replace("https://", "") %}
+    {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain, 'data-module-placeholder': '<pages>'} %}
+
+    {{ form.prepend('name', id='field-name', label=_('URL'), prepend=prefix, placeholder=_('eg. my-event'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
 
     <!-- Title Ar -->
     {{ form.input('title_ar', id='field-title_ar', label=_('Title Ar'), placeholder='Enter event title in Arabic', value=data.title_ar, error=errors.title_ar, is_required=true) }}
 
-    <!-- Event Date -->
+    <!-- Image Upload -->
+    {{ form.image_upload(data, errors, is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
+
+    <!-- Start Date -->
     <div class="mb-3">
-      <label for="event_date" class="form-label">Event Date</label>
-      <input type="date" class="form-control form-control-lg" id="event_date" name="event_date" value="{{ data.event_date }}">
+      <label for="start_date" class="form-label">Start Date</label>
+      <input type="date" class="form-control form-control-lg" id="start_date" name="start_date" value="{{ data.start_date }}">
     </div>
 
-    <!-- Image Upload -->
-    {{ form.image_upload(data, errors, is_upload_enabled=h.uploads_enabled(), is_url=data.image_url and data.image_url.startswith('http'), is_upload=data.image_url and not data.image_url.startswith('http')) }}
+    <!-- End Date -->
+    <div class="mb-3">
+      <label for="end_date" class="form-label">End Date</label>
+      <input type="date" class="form-control form-control-lg" id="end_date" name="end_date" value="{{ data.end_date }}">
+    </div>
+
+    {{ form.input('brief_en', id='field-brief_en', label=_('Brief En'), placeholder='Enter Brief in English', value=data.Brief_en, error=errors.brief_en)}}
+    {{ form.input('brief_ar', id='field-brief_ar', label=_('Brief Ar'), placeholder='Enter Brief in Arabic', value=data.brief_ar, error=errors.brief_ar) }}
 
     <!-- Content Editors -->
-    {{ form.textarea('content_en', id='field-content-en', label=_('Event Description (En)'), value=data.content_en, error=errors.content_en, is_required=true) }}
-    {{ form.textarea('content_ar', id='field-content-ar', label=_('Event Description (Ar)'), value=data.content_ar, error=errors.content_ar, is_required=true) }}
+    {% set editor = h.pages_get_wysiwyg_editor() %}
+    {% if editor == 'ckeditor' %}
+      {% asset 'pages/main-js' %}
+      {% asset 'pages/main-css' %}
 
+      <!-- Content in English -->
+      <div class="control-group">
+        <label for="field-content-ck-en" class="control-label">{{ _('Content En') }}</label>
+      </div>
+      <textarea id="field-content-ck-en" name="content_en" placeholder="{{_('Content En')}}" data-module="ckedit" style="height:400px">{{ data.content_en }}</textarea>
+
+      <!-- Content in Arabic -->
+      <div class="control-group">
+        <label for="field-content-ck-ar" class="control-label">{{ _('Content Ar') }}</label>
+      </div>
+      <textarea id="field-content-ck-ar" name="content_ar" placeholder="{{_('Content Ar')}}" data-module="ckedit" style="height:400px">{{ data.content_ar }}</textarea>
+    {% else %}
+      {{ form.markdown('content', id='field-content', label=_('Content'), placeholder=_('Enter content here'), value=data.content, error=errors.content) }}
+    {% endif %}
     <!-- Submit Button -->
     <div class="d-flex justify-content-end mt-4">
       <button type="cancel" class="btn btn-primary btn-lg me-2">Cancel</button>
@@ -35,4 +67,17 @@
     </div>
   </form>
 </div>
+{% endblock %}
+
+{% block main_content %}
+   {{ self.flash() }}
+   {{ self.toolbar() }}
+   <div class="wrapper no-nav">
+     {{ self.primary_content() }}
+   </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="/vendor/ckeditor/ckeditor.js"></script>
 {% endblock %}

@@ -1,65 +1,57 @@
 {% extends 'ckanext_pages/edit_base.html' %}
-{% set lang = h.lang() %}
 
 {% block page_primary_action %}
   {% if h.check_access('ckanext_pages_update', {}) %}
-    {% if h.ckan_version().split('.')[1] | int >= 9 %}
-      {% link_for _('Add page'), named_route='pages.new', page='', class_='btn btn-primary', icon='plus-square' %}
-    {% else %}
-      {% link_for _('Add page'), controller='ckanext.pages.controller:PagesController', action='pages_edit', page='', class_='btn btn-primary', icon='plus-square' %}
-    {% endif %}
+  <a href="/pages_edit" class="btn btn-primary">
+    <i class="fa fa-plus-square"></i> {{ _('Add Page') }}
+  </a>  
   {% endif %}
 {% endblock %}
 
 {% block primary_content_inner %}
 
-
-
-
 {% set sorting = sorting if sorting else [
-  (_('Title Ascending'), 'Title_en asc'), 
-  (_('Title Descending'), 'Title_en desc'), 
-  (_('Creation Date Ascending'), 'created asc'), 
-  (_('Creation Date Descending'), 'created desc'), 
-  (_('Publish Date Ascending'), 'publish_date asc'), 
-  (_('Publish Date Descending'), 'publish_date desc')
-] %}
-
-
+    (_('Title Ascending'), 'title_en asc'), 
+    (_('Title Descending'), 'title_en desc'), 
+    (_('Creation Date Ascending'), 'created asc'), 
+    (_('Creation Date Descending'), 'created desc'), 
+    (_('Publish Date Ascending'), 'publish_date asc'), 
+    (_('Publish Date Descending'), 'publish_date desc')
+  ] %}
 
 <div class="filters mb-3">
-  <style>
-    .small-select {
-        width: 175px; 
-        font-size: 12px;
-        padding: 7px; 
-        height: 30px; 
-        line-height: 1.2;
-    }
-</style>
+    <style>
+        .small-select {
+            width: 175px;
+            font-size: 12px;
+            padding: 7px;
+            height: 30px;
+            line-height: 1.2;
+        }
+      </style>
   <form method="get" class="form-inline sorting-section" data-module="select-switch">
     <div class="form-group control-order-by">
       <label for="field-order-by">{{ _('Order by') }}</label>
-      <select id="field-order-by" name="sort" class="form-control form-select small-select">
-        <option value="title_en asc" {% if request.args.get('sort', 'title_en asc') == 'title_en asc' %} selected {% endif %}>Title Ascending</option>
-        <option value="title_en desc" {% if request.args.get('sort') == 'title_en desc' %} selected {% endif %}>Title Descending</option>
-        <option value="created asc" {% if request.args.get('sort') == 'created asc' %} selected {% endif %}>Creation Date Ascending</option>
-        <option value="created desc" {% if request.args.get('sort') == 'created desc' %} selected {% endif %}>Creation Date Descending</option>
-        <option value="publish_date asc" {% if request.args.get('sort') == 'publish_date asc' %} selected {% endif %}>Publish Date Ascending</option>
-        <option value="publish_date desc" {% if request.args.get('sort') == 'publish_date desc' %} selected {% endif %}>Publish Date Descending</option>
-    </select>
-  </div>
+      <select id="field-order-by" name="sort" class="form-control form-select small-select" onchange="this.form.submit()">
+        <option value="title_en asc" {% if request.args.get('sort', 'title_en asc') == 'title_en asc' %} selected {% endif %}>{{ _('Title Ascending') }}</option>
+        <option value="title_en desc" {% if request.args.get('sort') == 'title_en desc' %} selected {% endif %}>{{ _('Title Descending') }}</option>
+        <option value="created asc" {% if request.args.get('sort') == 'created asc' %} selected {% endif %}>{{ _('Creation Date Ascending') }}</option>
+        <option value="created desc" {% if request.args.get('sort') == 'created desc' %} selected {% endif %}>{{ _('Creation Date Descending') }}</option>
+        <option value="publish_date asc" {% if request.args.get('sort') == 'publish_date asc' %} selected {% endif %}>{{ _('Publish Date Ascending') }}</option>
+        <option value="publish_date desc" {% if request.args.get('sort') == 'publish_date desc' %} selected {% endif %}>{{ _('Publish Date Descending') }}</option>
+      </select>
+    </div>
   </form>
 </div>
 
 <table class="table table-striped">
   <thead>
       <tr>
-          <th>Title En</th>
-          <th>Date Of Creation</th>
-          <th>Publish Date</th>
-          <th>Page Url</th>
-          <th>Actions</th>
+          <th>{{ _('Title En') }}</th>
+          <th>{{ _('Date Of Creation') }}</th>
+          <th>{{ _('Publish Date') }}</th>
+          <th>{{ _('Page Url') }}</th>
+          <th>{{ _('Actions') }}</th>
       </tr>
   </thead>
   <tbody>
@@ -71,39 +63,51 @@
                   <td>{{ h.render_datetime(page.publish_date, date_format='%d/%m/%Y') }}</td>
                   <td>{{ page.name }}</td>
                   <td>
-                      <a href="/pages/{{ page.name }}" style="border: none; background: none; padding: 0;">
-                        <img src="/images/EYE3.png"
-                             alt="{{ _('Edit') }}"
-                             style="width: 32px; height: 32px; cursor: pointer;"></a>
-       
-                      <a title="Delete Page" href="/pages_delete/{{ page.name }}" 
-                             data-module="confirm-action" 
-                             data-module-content="Are you sure you want to delete this page?" 
-                             style="border: none; background: none; padding: 0;">
-                              <img src="/images/remove_icon.png" 
-                                   alt="{{ _('Delete') }}">
-                          </a>
-                      <a href="/pages_edit/{{ page.name }}" style="border: none; background: none; padding: 0;">
-                        <img src="/images/edit_icon.png"
-                             alt="{{ _('Edit') }}"
-                             style="width: 32px; height: 32px; cursor: pointer;"></a>
+                    <a href="/pages/{{ page.name }}" style="border: none; background: none; padding: 0;">
+                      <img src="/images/EYE3.png" alt="{{ _('View') }}" style="width: 32px; height: 32px; cursor: pointer;">
+                    </a>
+
+                    <a href="/pages_edit/{{ page.id }}">
+                      <img src="/images/edit_icon.png" alt="Edit" style="width: 32px; height: 32px; cursor: pointer;">
+                    </a>
+
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ page.id }}">
+                        <img src="/images/remove_icon.png" alt="Delete">
+                    </a>
+                      <div class="modal fade" id="deleteModal-{{ page.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title" id="deleteModalLabel">{{ _('Please Confirm Action') }}</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ _('Are you sure you want to delete this page?') }}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                                    <form action="{{ h.url_for('pages.pages_delete', id=page.id) }}" method="post">
+                                        {{ h.csrf_input() }}
+                                        <button class="btn btn-primary" type="submit" name="confirm">{{ _('Confirm') }}</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                   </td>
               </tr>
           {% endfor %}
       {% else %}
           <tr>
-              <td colspan="5">No pages found.</td>
+              <td colspan="5">{{ _('No pages found.') }}</td>
           </tr>
       {% endif %}
   </tbody>
 </table>
 
 {% endblock %}
-
 {% block main_content %}
    <div class="wrapper no-nav">
      {{ self.primary_content() }}
    </div>
 {% endblock %}
-
-

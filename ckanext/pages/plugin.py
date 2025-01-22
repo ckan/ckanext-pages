@@ -119,6 +119,8 @@ class PagesPlugin(PagesPluginBase):
         tk.add_public_directory(config, 'assets/vendor/ckeditor/')
         tk.add_public_directory(config, 'assets/vendor/ckeditor/skins/moono-lisa')
 
+
+
     def get_helpers(self):
         return {
             'build_nav_main': build_pages_nav_main,
@@ -139,6 +141,8 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_events_list': actions.events_list,
             'ckanext_pages_upload': actions.pages_upload,
             'ckanext_main_page_show': actions.main_page_show,
+            'ckanext_event_edit':actions.event_edit,
+            'ckanext_news_edit':actions.news_edit,
         }
         return actions_dict
 

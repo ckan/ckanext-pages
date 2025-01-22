@@ -40,7 +40,7 @@ class Page(DomainObject, BaseModel):
     id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
     title_en = Column(types.UnicodeText, default=u'')
     title_ar = Column(types.UnicodeText, default=u'')
-    name = Column(types.UnicodeText, default=u'')
+    name = Column(types.UnicodeText, default=u'', nullable=False)
     content_en = Column(types.UnicodeText, default=u'')
     content_ar = Column(types.UnicodeText, default=u'')
     image_url = Column(types.UnicodeText, default=u'')
@@ -54,6 +54,8 @@ class Page(DomainObject, BaseModel):
     created = Column(types.DateTime, default=datetime.datetime.utcnow)
     modified = Column(types.DateTime, default=datetime.datetime.utcnow)
     extras = Column(types.UnicodeText, default=u'{}')
+    hidden = Column(types.Boolean, default=False)
+
 
     @classmethod
     def get(cls, id=None):
@@ -114,7 +116,7 @@ class Event(DomainObject, BaseModel):
     id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
     title_en = Column(types.UnicodeText, default=u'')
     title_ar = Column(types.UnicodeText, default=u'')
-    name = Column(types.UnicodeText, default=u'')
+    name = Column(types.UnicodeText, default=u'', nullable=False)
     start_date = Column(types.DateTime, nullable=True)
     end_date = Column(types.DateTime, nullable=True)
     created = Column(types.DateTime, default=datetime.datetime.utcnow)
@@ -124,6 +126,7 @@ class Event(DomainObject, BaseModel):
     content_en = Column(types.UnicodeText, default=u'')
     image_url = Column(types.UnicodeText, default=u'')
     lang = Column(types.UnicodeText, default=u'')
+
     
     @classmethod
     def get(cls, id=None):
@@ -133,16 +136,15 @@ class Event(DomainObject, BaseModel):
 
     @classmethod
     def events(cls, **kw):
-        '''Finds a single entity in the register.'''
         order = kw.pop('order', False)
-        order_publish_date = kw.pop('order_publish_date', False)
+        order_start_date = kw.pop('order_start_date', False)
 
         query = model.Session.query(cls).autoflush(False)
         query = query.filter_by(**kw)
         if order:
             query = query.order_by(sa.cast(cls.order, sa.Integer)).filter(cls.order != '')
-        elif order_publish_date:
-            query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)  # noqa: E711
+        elif order_start_date:
+            query = query.order_by(cls.start_date.desc()).filter(cls.start_date != None)  # noqa: E711
         else:
             query = query.order_by(cls.created.desc())
         return query.all()
@@ -164,7 +166,7 @@ class News(DomainObject, BaseModel):
     id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
     title_en = Column(types.UnicodeText, default=u'')
     title_ar = Column(types.UnicodeText, default=u'')
-    name = Column(types.UnicodeText, default=u'')
+    name = Column(types.UnicodeText, default=u'', nullable=False)
     news_date = Column(types.DateTime)
     brief_ar = Column(types.UnicodeText, nullable=True)
     brief_en = Column(types.UnicodeText, nullable=True)
@@ -173,6 +175,7 @@ class News(DomainObject, BaseModel):
     image_url = Column(types.UnicodeText, default=u'')
     lang = Column(types.UnicodeText, default=u'') 
     created = Column(types.DateTime, default=datetime.datetime.utcnow)
+    hidden = Column(types.Boolean, default=False)
 
     
 
@@ -185,14 +188,14 @@ class News(DomainObject, BaseModel):
     @classmethod
     def news(cls, **kw):
         order = kw.pop('order', False)
-        order_publish_date = kw.pop('order_publish_date', False)
+        order_news_date = kw.pop('order_news_date', False)
 
         query = model.Session.query(cls).autoflush(False)
         query = query.filter_by(**kw)
         if order:
             query = query.order_by(sa.cast(cls.order, sa.Integer)).filter(cls.order != '')
-        elif order_publish_date:
-            query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)  # noqa: E711
+        elif order_news_date:
+            query = query.order_by(cls.news_date.desc()).filter(cls.news_date != None)  # noqa: E711
         else:
             query = query.order_by(cls.created.desc())
         return query.all()

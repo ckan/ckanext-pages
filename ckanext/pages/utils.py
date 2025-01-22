@@ -1,16 +1,14 @@
 import six
-from datetime import datetime
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 import ckan.logic as logic
 import ckan.lib.helpers as helpers
 import ckan.model as model
-from ckanext.pages.db import MainPage,Page
+from ckanext.pages.db import MainPage,Page , News, Event
 from ckanext.pages.logic.schema import main_page_schema, update_pages_schema
 import ckan.lib.navl.dictization_functions as df
-from flask import request
-from ckanext.pages.db import MainPage, Page
+from flask import request, flash
 
 config = tk.config
 _ = tk._
@@ -73,7 +71,6 @@ def events_list():
         'sort': request.args.get('sort', 'title_en asc')  # Default to 'title_en asc'
     }
 
-    # Call the action to fetch pages
     events_list = tk.get_action('ckanext_events_list')(
         context={}, data_dict=data_dict
     )
@@ -129,37 +126,90 @@ class Form:
             </div>
         '''
 
-def parse_page_form_data(request):
-    
-    publish_date = request.form.get("publish_date", None)
-    if publish_date:
-        try:
-            publish_date = datetime.strptime(publish_date, "%Y-%m-%d")  # Adjust format if necessary
-        except ValueError:
-            publish_date = None  # Invalid date will be treated as None
-    print("DEBUG: Publish date:", type(publish_date))  # Debug   
-    return {
-        "id": request.form.get("id", None),
-        "name": request.form.get("name", ""),
-        "title_en": request.form.get("title_en", ""),
-        "title_ar": request.form.get("title_ar", ""),
-        "content_en": request.form.get("content_en", ""),
-        "content_ar": request.form.get("content_ar", ""),
-        "created": request.form.get("created", ""),
-        "publish_date": publish_date,
-        "image_url": request.form.get("image_url", "")
-    }
+
+
 
 def validate_page_data(data):
-    """
-    Validates page data using the schema.
-    """
+
     schema = update_pages_schema()
     return df.validate(data, schema)
 
+def news_edit(page=None, data=None, errors=None, error_summary=None):
+    if request.method == 'POST':
+        form_data =_parse_form_data(request)
+        print(form_data)
+        try:
+            result = tk.get_action("ckanext_news_edit")({}, form_data)
+            page_id = result.get("id")
+            if not page_id:
+                raise ValueError("Page ID is missing for redirect")
+            return tk.redirect_to("pages.news_edit", page=page_id)
+
+        except tk.ValidationError as e:
+            return tk.render(
+                "ckanext_pages/page_edit.html",
+                extra_vars={
+                    "data": form_data,
+                    "errors": e.error_dict,
+                    "error_summary": {"summary": "Validation failed"},
+                },
+            )
+    else:
+        page_data = model.Session.query(News).get(page) if page else News()
+
+        if page_data.content_en is None:
+            page_data.content_en = ""
+        if page_data.content_ar is None:
+            page_data.content_ar = ""
+
+        return tk.render(
+            "ckanext_pages/news_edit.html",
+            extra_vars={
+                "data": page_data,
+                "errors": errors or {},
+                "error_summary": error_summary or {},
+            },
+        )
+
+def events_edit(page=None, data=None, errors=None, error_summary=None):
+    if request.method == 'POST':
+        form_data =_parse_form_data(request)
+        print(form_data)
+        try:
+            result = tk.get_action("ckanext_event_edit")({}, form_data)
+            page_id = result.get("id")
+            if not page_id:
+                raise ValueError("Page ID is missing for redirect")
+            return tk.redirect_to("pages.events_edit", page=page_id)
+
+        except tk.ValidationError as e:
+            return tk.render(
+                "ckanext_pages/page_edit.html",
+                extra_vars={
+                    "data": form_data,
+                    "errors": e.error_dict,
+                    "error_summary": {"summary": "Validation failed"},
+                },
+            )
+    else:
+        page_data = model.Session.query(Event).get(page) if page else Event()
+
+        if page_data.content_en is None:
+            page_data.content_en = ""
+        if page_data.content_ar is None:
+            page_data.content_ar = ""
+
+        return tk.render(
+            "ckanext_pages/events_edit.html",
+            extra_vars={
+                "data": page_data,
+                "errors": errors or {},
+                "error_summary": error_summary or {},
+            },
+        )
 def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type='pages'):
     if request.method == 'POST':
-        form_data = parse_page_form_data(request)
+        form_data = _parse_form_data(request)
         try:
             result = tk.get_action("ckanext_pages_edit")({}, form_data)
             page_id = result.get("id")
@@ -193,10 +243,62 @@ def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type=
             },
         )
 
+def events_delete(id):
+
+    if request.method == 'POST':
+        if 'cancel' in request.form:
+            return tk.redirect_to('pages.events')
+
+        if 'confirm' in request.form:
+            try:
+                event = model.Session.query(Event).filter(Event.id == id).first()
+                if not event:
+                    raise tk.ObjectNotFound(_("Event not found"))
+
+                model.Session.delete(event)
+                model.Session.commit()
+
+                flash(_('Event deleted successfully!'), 'success')
+                return tk.redirect_to('pages.events')
+            except tk.NotAuthorized:
+                return tk.abort(401, _('Unauthorized to delete event'))
+            except tk.ObjectNotFound:
+                return tk.abort(404, _('Event not found'))
+
+    event = model.Session.query(Event).filter(Event.id == id).first()
+    if not event:
+        return tk.abort(404, _('Event not found'))
+    return tk.render('ckanext_pages/confirm_delete.html', {'page': event})
+
+def news_delete(id):
+
+    if request.method == 'POST':
+        if 'cancel' in request.form:
+            return tk.redirect_to('pages.news')
+
+        if 'confirm' in request.form:
+            try:
+                new = model.Session.query(News).filter(News.id == id).first()
+                if not new:
+                    raise tk.ObjectNotFound(_("New not found"))
+
+                model.Session.delete(new)
+                model.Session.commit()
+
+                flash(_('New deleted successfully!'), 'success')
+                return tk.redirect_to('pages.news')
+            except tk.NotAuthorized:
+                return tk.abort(401, _('Unauthorized to delete new'))
+            except tk.ObjectNotFound:
+                return tk.abort(404, _('Event not found'))
+
+    new = model.Session.query(News).filter(News.id == id).first()
+    if not new:
+        return tk.abort(404, _('Event not found'))
+    return tk.render('ckanext_pages/confirm_delete.html', {'page': new})
 
 
 def _inject_views_into_page(_page):
-    # this is a good proxy to a version of CKAN with views enabled.
     if not p.plugin_loaded('image_view'):
         return
     try:
@@ -207,7 +309,6 @@ def _inject_views_into_page(_page):
 
     try:
         root = lxml.html.fromstring(_page['content'])
-    # Return if any errors are found while parsing the content
     except (lxml.etree.XMLSyntaxError,
             lxml.etree.ParserError):
         return
@@ -258,12 +359,10 @@ def _inject_views_into_page(_page):
 
     new_content = six.ensure_text(lxml.html.tostring(root))
     if new_content.startswith('<div>') and new_content.endswith('</div>'):
-        # lxml will add a <div> tag to text that starts with an HTML tag,
-        # which will cause the rendering to fail
+
         new_content = new_content[5:-6]
     elif new_content.startswith('<p>') and new_content.endswith('</p>'):
-        # lxml will add a <p> tag to plain text snippet, which will cause the
-        # rendering to fail
+
         new_content = new_content[3:-4]
     _page['content'] = new_content
 
@@ -286,24 +385,45 @@ def pages_show(page=None, page_type='page'):
 
     return tk.render('ckanext_pages/%s.html' % page_type)
 
+def blog_delete(page, page_type):
+    pass
 
-def pages_delete(page, page_type='pages'):
-    if page.startswith('/'):
-        page = page[1:]
-    if 'cancel' in tk.request.args:
-        return tk.redirect_to('pages.%s_edit' % page_type, page=page)
+def pages_delete(id):
 
-    try:
-        if tk.request.method == 'POST':
-            tk.get_action('ckanext_pages_delete')({}, {'page': page})
-            endpoint = page_type + '_index'
-            return tk.redirect_to('pages.%s' % endpoint)
-        else:
-            return tk.abort(404, _('Page Not Found'))
-    except tk.NotAuthorized:
-        return tk.abort(401, _('Unauthorized to delete page'))
-    except tk.ObjectNotFound:
-        return tk.abort(404, _('Group not found'))
+
+    if request.method == 'POST':
+        if 'cancel' in request.form:
+            # Redirect back to the pages index if the cancel button is clicked
+            return tk.redirect_to('pages.pages_index')
+
+        if 'confirm' in request.form:
+            try:
+                # Query for the page by ID
+                page = model.Session.query(Page).filter(Page.id == id).first()
+                if not page:
+                    raise tk.ObjectNotFound(_("Page not found"))
+
+                # Delete the page from the database
+                model.Session.delete(page)
+                model.Session.commit()
+
+                # Flash success message and redirect
+                flash(_('Page deleted successfully!'), 'success')
+                return tk.redirect_to('pages.pages_index')
+
+            except tk.NotAuthorized:
+                # Unauthorized access
+                return tk.abort(401, _('Unauthorized to delete page'))
+            except tk.ObjectNotFound:
+                # Page not found
+                return tk.abort(404, _('Page not found'))
+
+    # Render the confirmation template for GET requests
+    page = model.Session.query(Page).filter(Page.id == id).first()
+    if not page:
+        return tk.abort(404, _('Page not found'))
+
+    # Render the confirmation delete template with page details
     return tk.render('ckanext_pages/confirm_delete.html', {'page': page})
 
 

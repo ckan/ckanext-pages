@@ -3,6 +3,7 @@ from ckanext.pages.validators import page_name_validator, not_empty_if_blog
 from ckanext.pages.interfaces import IPagesSchema
 from ckan.plugins.toolkit import get_validator
 
+
 ignore_empty = p.toolkit.get_validator('ignore_empty')
 ignore_missing = p.toolkit.get_validator('ignore_missing')
 not_empty = p.toolkit.get_validator('not_empty')
@@ -10,13 +11,8 @@ isodate = p.toolkit.get_validator('isodate')
 name_validator = p.toolkit.get_validator('name_validator')
 unicode_safe = p.toolkit.get_validator('unicode_safe')
 
+
 def default_pages_schema():
-    ignore_empty = p.toolkit.get_validator('ignore_empty')
-    ignore_missing = p.toolkit.get_validator('ignore_missing')
-    not_empty = p.toolkit.get_validator('not_empty')
-    isodate = p.toolkit.get_validator('isodate')
-    name_validator = p.toolkit.get_validator('name_validator')
-    unicode_safe = p.toolkit.get_validator('unicode_safe')
 
     return {
         'id': [ignore_empty, unicode_safe],
@@ -36,12 +32,42 @@ def default_pages_schema():
         'created': [ignore_missing, isodate],
         'modified': [ignore_missing, isodate],
         'extras': [ignore_missing, unicode_safe],
+        'hidden':[ignore_missing, p.toolkit.get_validator('boolean_validator')],  
     }
 
+def default_events_schema():
+    return {
+        'id': [ignore_empty, unicode_safe],
+        'title_en': [not_empty, unicode_safe],
+        'title_ar': [not_empty, unicode_safe],
+        'name': [not_empty, name_validator],
+        'start_date': [not_empty, isodate],
+        'end_date': [not_empty, isodate],
+        'brief_ar': [ignore_missing, unicode_safe],
+        'brief_en': [ignore_missing, unicode_safe],
+        'content_en': [ignore_missing, unicode_safe],
+        'content_ar': [ignore_missing, unicode_safe],
+        'image_url': [ignore_missing, unicode_safe],
+        'lang': [ignore_missing, unicode_safe],
 
-ignore_missing = get_validator('ignore_missing')
-not_empty = get_validator('not_empty')
-unicode_safe = get_validator('unicode_safe')
+    }
+
+def default_news_schema():
+    return {
+        'id': [ignore_empty, unicode_safe],
+        'title_en': [not_empty, unicode_safe],
+        'title_ar': [not_empty, unicode_safe],
+        'name': [not_empty, name_validator],
+        'news_date': [not_empty, isodate],
+        'brief_ar': [ignore_missing, unicode_safe],
+        'brief_en': [ignore_missing, unicode_safe],
+        'content_en': [ignore_missing, unicode_safe],
+        'content_ar': [ignore_missing, unicode_safe],
+        'image_url': [ignore_missing, unicode_safe],
+        'lang': [ignore_missing, unicode_safe],
+        'hidden':[ignore_missing, p.toolkit.get_validator('boolean_validator')],
+    }
+
 
 def main_page_schema(id=None):
     schema = {
@@ -61,20 +87,6 @@ def main_page_schema(id=None):
 
 
 def update_pages_schema(schema = default_pages_schema, **kwargs):
-    '''
-    Returns the schema for the pages fields that can be added by other
-    extensions.
-
-    By default these are the keys of the
-    :py:func:`ckanext.logic.schema.default_pages_schema`.
-    Extensions can add or remove keys from this schema using the
-    :py:meth:`ckanext.pages.interfaces.IPagesSchema.update_pages_schema`
-    method.
-
-    :returns: a dictionary mapping fields keys to lists of validator and
-    converter functions to be applied to those fields
-    :rtype: dictionary
-    '''
     if kwargs:
         schema = schema(**kwargs)
     else:
@@ -85,34 +97,26 @@ def update_pages_schema(schema = default_pages_schema, **kwargs):
             print("Schema Used for Validation:", schema)
     return schema
 
-def default_events_schema():
-    return {
-        'id': [ignore_empty, unicode_safe],
-        'title_en': [not_empty, unicode_safe],
-        'title_ar': [not_empty, unicode_safe],
-        'name': [not_empty, name_validator],
-        'start_date': [not_empty, isodate],
-        'end_date': [not_empty, isodate],
-        'brief_ar': [ignore_missing, unicode_safe],
-        'brief_en': [ignore_missing, unicode_safe],
-        'content_en': [ignore_missing, unicode_safe],
-        'content_ar': [ignore_missing, unicode_safe],
-        'image_url': [ignore_missing, unicode_safe],
-        'lang': [ignore_missing, unicode_safe],
-        
-    }
+def update_news_schema(schema = default_news_schema, **kwargs):
+    if kwargs:
+        schema = schema(**kwargs)
+    else:
+        schema = schema()
+    for plugin in p.PluginImplementations(IPagesSchema):
+        if hasattr(plugin, 'update_news_schema'):
+            schema = plugin.update_news_schema(schema)
+            print("Schema Used for Validation:", schema)
+    return schema
 
-def default_news_schema():
-    return {
-        'id': [ignore_empty, unicode_safe],
-        'title_en': [not_empty, unicode_safe],
-        'title_ar': [not_empty, unicode_safe],
-        'name': [not_empty, name_validator],
-        'news_date': [not_empty, isodate],
-        'brief_ar': [ignore_missing, unicode_safe],
-        'brief_en': [ignore_missing, unicode_safe],
-        'content_en': [ignore_missing, unicode_safe],
-        'content_ar': [ignore_missing, unicode_safe],
-        'image_url': [ignore_missing, unicode_safe],
-        'lang': [ignore_missing, unicode_safe],
-    }
+def update_events_schema(schema = default_events_schema, **kwargs):
+    if kwargs:
+        schema = schema(**kwargs)
+    else:
+        schema = schema()
+    for plugin in p.PluginImplementations(IPagesSchema):
+        if hasattr(plugin, 'update_events_schema'):
+            schema = plugin.update_events_schema(schema)
+            print("Schema Used for Validation:", schema)
+    return schema
+
+
