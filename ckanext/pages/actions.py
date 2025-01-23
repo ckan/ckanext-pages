@@ -115,10 +115,12 @@ def _pages_list(context, data_dict):
     return out_list
 
 def _news_list(context, data_dict):
-
     query = model.Session.query(News)
 
     sort = data_dict.get('sort', 'title_en asc')  # Default sorting
+    print(f"DEBUG: Received sort option: {sort}")  # Debugging the sort value
+
+    # Apply sorting logic
     if sort == 'created asc':
         query = query.order_by(News.created.asc())
     elif sort == 'created desc':
@@ -127,18 +129,22 @@ def _news_list(context, data_dict):
         query = query.order_by(News.title_en.asc())
     elif sort == 'title_en desc':
         query = query.order_by(News.title_en.desc())
-    elif sort == 'publish_date asc':
+    elif sort == 'news_date asc':
         query = query.order_by(News.news_date.asc())
-    elif sort == 'publish_date desc':
+    elif sort == 'news_date desc':
         query = query.order_by(News.news_date.desc())
+    else:
+        print(f"DEBUG: Invalid sort value provided: {sort}, defaulting to title_en asc")
+        query = query.order_by(News.title_en.asc())
 
+    print(f"DEBUG: Query before execution: {query}")  # Debugging the query
+
+    # Execute query
     news = query.all()
-
-    # Log for debugging
+    print(f"DEBUG: Query returned {len(news)} records")  # Debugging the number of results
 
     out_list = []
     today = datetime.datetime.now()
-    
     for pg in news:
         status = "Disabled"
         if not pg.private:
@@ -151,13 +157,12 @@ def _news_list(context, data_dict):
             'status': status,
             'group_id': pg.group_id,
             'private': pg.private,
-            
         }
-        
         out_list.append(news_dict)
 
-    print("DEBUG: Final list of pages to return:", out_list)
+    print(f"DEBUG: Final output list: {out_list}")  # Debugging the output list
     return out_list
+
 
 def _events_list(context, data_dict):
 
@@ -196,8 +201,8 @@ def _events_list(context, data_dict):
         events_dict = ({
             'title_en': pg.title_en,
             'created': pg.created.isoformat(),
-            'start_date': pg.news_date.isoformat() if pg.start_date else None,
-            'end_date': pg.news_date.isoformat() if pg.end_date else None,
+            'start_date': pg.start_date.isoformat() if pg.start_date else None,
+            'end_date': pg.end_date.isoformat() if pg.end_date else None,
             'name': pg.name,
             'status': status,
             'group_id': pg.group_id,
@@ -683,6 +688,18 @@ def events_list(context, data_dict):
         query = query.order_by(Event.start_date.asc())
     elif sort == 'start_date desc':
         query = query.order_by(Event.start_date.desc())
+    if sort == 'end_date asc':
+        query = query.order_by(Event.end_date.asc())
+    elif sort == 'end_date desc':
+        query = query.order_by(Event.end_date.desc())
+    elif sort == 'title_en asc':
+        query = query.order_by(Event.title_en.asc())
+    elif sort == 'title_en desc':
+        query = query.order_by(Event.title_en.desc())
+    elif sort == 'created asc':
+        query = query.order_by(Event.created.asc())
+    else:
+        query = query.order_by(News.created.desc())
     return [event.as_dict() for event in query.all()]
 
 def news_list(context, data_dict):
@@ -692,7 +709,37 @@ def news_list(context, data_dict):
         query = query.order_by(News.news_date.asc())
     elif sort == 'news_date desc':
         query = query.order_by(News.news_date.desc())
+    elif sort == 'title_en asc':
+        query = query.order_by(News.title_en.asc())
+    elif sort == 'title_en desc':
+        query = query.order_by(News.title_en.desc())
+    elif sort == 'created asc':
+        query = query.order_by(News.created.asc())
+    else:
+        query = query.order_by(News.created.desc())
+
     return [news.as_dict() for news in query.all()]
+
+
+def pages_list(context, data_dict):
+    query = model.Session.query(Page)
+    sort = data_dict.get('sort', 'publish_date asc')
+    if sort == 'publish_date asc':
+        query = query.order_by(Page.publish_date.asc())
+    elif sort == 'publish_date desc':
+        query = query.order_by(Page.publish_date.desc())
+    elif sort == 'title_en asc':
+        query = query.order_by(Page.title_en.asc())
+    elif sort == 'title_en desc':
+        query = query.order_by(Page.title_en.desc())
+    elif sort == 'created asc':
+        query = query.order_by(Page.created.asc())
+    else:
+        query = query.order_by(Page.created.desc())
+
+    return [page.as_dict() for page in query.all()]
+
+
 
 def events_edit(context, data_dict):
     event_id = data_dict.get('id')

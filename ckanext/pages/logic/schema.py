@@ -11,7 +11,6 @@ isodate = p.toolkit.get_validator('isodate')
 name_validator = p.toolkit.get_validator('name_validator')
 unicode_safe = p.toolkit.get_validator('unicode_safe')
 
-
 def default_pages_schema():
 
     return {

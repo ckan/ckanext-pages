@@ -15,7 +15,7 @@ _ = tk._
 
 
 def _parse_form_data(request):
-    return logic.clean_dict(
+    return logic.clean_dicrrt(
         dict_fns.unflatten(
             logic.tuplize_dict(
                 logic.parse_params(request.form)
@@ -25,7 +25,9 @@ def _parse_form_data(request):
 
 
 def pages_list_pages(page_type):
-    data_dict = {'org_id': None, 'page_type': page_type}
+    data_dict = {'org_id': None, 'page_type': page_type,
+                 'sort': request.args.get('sort', 'title_en asc')
+                 }
     if page_type == 'blog':
         data_dict['order_publish_date'] = True
     tk.g.pages_dict = tk.get_action('ckanext_pages_list')(
@@ -44,13 +46,12 @@ def pages_list_pages(page_type):
     return tk.render('ckanext_pages/pages_list.html', extra_vars={"pages": tk.g.pages_dict})
 
 def news_list():
-
     data_dict = {
         'org_id': None,
         'sort': request.args.get('sort', 'title_en asc')  # Default to 'title_en asc'
     }
 
-    # Call the action to fetch pages
+    # Call the action to fetch news items
     news_list = tk.get_action('ckanext_news_list')(
         context={}, data_dict=data_dict
     )
@@ -134,11 +135,14 @@ def validate_page_data(data):
     schema = update_pages_schema()
     return df.validate(data, schema)
 
-
 def news_edit(page=None, data=None, errors=None, error_summary=None):
     if request.method == 'POST':
         form_data = _parse_form_data(request)
         try:
+            # Generate a slug for the 'name' field if it's missing
+            if not form_data.get('name'):
+                form_data['name'] = form_data.get('title_en', '').strip().lower().replace(' ', '-')[:50]
+
             # Check if this is an update or a new entry
             news_id = form_data.get('id')  # Retrieve the id from the form data
             if news_id:
@@ -154,9 +158,10 @@ def news_edit(page=None, data=None, errors=None, error_summary=None):
                 new_news = News(**form_data)
                 model.Session.add(new_news)
                 model.Session.commit()
+                news_id = new_news.id  # Retrieve the newly created ID
 
             # Redirect back to the news edit page
-            return tk.redirect_to('pages.news_edit', page=form_data.get('id'))
+            return tk.redirect_to('pages.news_edit', page=news_id)
         except tk.ValidationError as e:
             model.Session.rollback()
             return tk.render(
@@ -168,8 +173,13 @@ def news_edit(page=None, data=None, errors=None, error_summary=None):
                 },
             )
     else:
-        # Fetch existing data for editing or create a new blank object
         news_data = model.Session.query(News).get(page) if page else News()
+
+        if news_data.content_en is None:
+            news_data.content_en = ""
+        if news_data.content_ar is None:
+            news_data.content_ar = ""
+
         return tk.render(
             'ckanext_pages/news_edit.html',
             extra_vars={
@@ -180,42 +190,22 @@ def news_edit(page=None, data=None, errors=None, error_summary=None):
         )
 
 
+
+
 def events_edit(page=None, data=None, errors=None, error_summary=None):
     if request.method == 'POST':
-        form_data = _parse_form_data(request)
+        form_data =_parse_form_data(request)
+        print(form_data)
         try:
-            # Check if editing an existing event or creating a new one
-            if form_data.get("id"):  # Existing event
-                event = model.Session.query(Event).filter(Event.id == form_data["id"]).first()
-                if not event:
-                    raise tk.ObjectNotFound(_("Event not found"))
-
-                # Update the event with form data
-                event.title_en = form_data.get("title_en", event.title_en)
-                event.title_ar = form_data.get("title_ar", event.title_ar)
-                event.name = form_data.get("name", event.name)
-                event.start_date = form_data.get("start_date", event.start_date)
-                event.end_date = form_data.get("end_date", event.end_date)
-                event.content_en = form_data.get("content_en", event.content_en)
-                event.content_ar = form_data.get("content_ar", event.content_ar)
-                event.save()
-            else:  # New event
-                event = Event(
-                    title_en=form_data.get("title_en"),
-                    title_ar=form_data.get("title_ar"),
-                    name=form_data.get("name"),
-                    start_date=form_data.get("start_date"),
-                    end_date=form_data.get("end_date"),
-                    content_en=form_data.get("content_en"),
-                    content_ar=form_data.get("content_ar"),
-                )
-                event.save()
-
-            return tk.redirect_to("pages.events_edit", page=event.id)
+            result = tk.get_action("ckanext_event_edit")({}, form_data)
+            page_id = result.get("id")
+            if not page_id:
+                raise ValueError("Page ID is missing for redirect")
+            return tk.redirect_to("pages.events_edit", page=page_id)
 
         except tk.ValidationError as e:
             return tk.render(
-                "ckanext_pages/events_edit.html",
+                "ckanext_pages/page_edit.html",
                 extra_vars={
                     "data": form_data,
                     "errors": e.error_dict,
@@ -225,7 +215,6 @@ def events_edit(page=None, data=None, errors=None, error_summary=None):
     else:
         page_data = model.Session.query(Event).get(page) if page else Event()
 
-        # Ensure optional fields are initialized
         if page_data.content_en is None:
             page_data.content_en = ""
         if page_data.content_ar is None:
@@ -239,41 +228,33 @@ def events_edit(page=None, data=None, errors=None, error_summary=None):
                 "error_summary": error_summary or {},
             },
         )
-
 def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type='pages'):
     if request.method == 'POST':
         form_data = _parse_form_data(request)
         try:
-            # Check if this is an update or a new page
-            page_id = form_data.get("id")
-            if page_id:
-                # Update the existing page
-                existing_page = model.Session.query(Page).get(page_id)
-                if not existing_page:
-                    raise tk.ObjectNotFound(_("Page not found"))
-                for key, value in form_data.items():
-                    setattr(existing_page, key, value)
-                model.Session.commit()
-            else:
-                # Create a new page
-                new_page = Page(**form_data)
-                model.Session.add(new_page)
-                model.Session.commit()
+            result = tk.get_action("ckanext_pages_edit")({}, form_data)
+            page_id = result.get("id")
+            if not page_id:
+                raise ValueError("Page ID is missing for redirect")
+            return tk.redirect_to("pages.edit", page=page_id)
 
-            return tk.redirect_to("pages.edit", page=page_id or new_page.id)
         except tk.ValidationError as e:
-            model.Session.rollback()
             return tk.render(
                 "ckanext_pages/page_edit.html",
                 extra_vars={
                     "data": form_data,
                     "errors": e.error_dict,
-                    "error_summary": e.error_summary,
+                    "error_summary": {"summary": "Validation failed"},
                 },
             )
     else:
-        # Fetch existing data for editing or create a new blank object
         page_data = model.Session.query(Page).get(page) if page else Page()
+
+        if page_data.content_en is None:
+            page_data.content_en = ""
+        if page_data.content_ar is None:
+            page_data.content_ar = ""
+
         return tk.render(
             "ckanext_pages/page_edit.html",
             extra_vars={
