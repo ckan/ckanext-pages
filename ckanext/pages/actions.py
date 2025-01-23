@@ -163,6 +163,18 @@ def _news_list(context, data_dict):
     print(f"DEBUG: Final output list: {out_list}")  # Debugging the output list
     return out_list
 
+def news_toggle_visibility(context, data_dict):
+    news_id = data_dict.get('news_id')
+    if news_id:
+        # Fetch the news entry from the database
+        news = model.Session.query(News).filter(News.id == news_id).first()
+        if not news:
+            raise p.toolkit.ObjectNotFound(f"News with ID {news_id} not found.")
+
+        news.hidden = not news.hidden
+        model.Session.commit()
+        return news.as_dict()
+    return {'success': False}
 
 def _events_list(context, data_dict):
 

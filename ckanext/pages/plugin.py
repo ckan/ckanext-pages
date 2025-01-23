@@ -138,6 +138,7 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_pages_delete': actions.pages_delete,
             'ckanext_pages_list': actions.pages_list,
             'ckanext_news_list': actions.news_list,
+            'ckanext_news_toggle_visibility': actions.news_toggle_visibility,
             'ckanext_events_list': actions.events_list,
             'ckanext_pages_upload': actions.pages_upload,
             'ckanext_main_page_show': actions.main_page_show,

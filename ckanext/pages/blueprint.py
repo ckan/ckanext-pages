@@ -103,6 +103,9 @@ def news_edit(page=None, data=None, errors=None, error_summary=None):
 def news_delete(id):
     return utils.news_delete(id)
 
+def news_toggle_visibility(news_id):
+    return utils.news_toggle_visibility(news_id)
+
 def pages_delete(id):
     return utils.pages_delete(id)
 
@@ -128,7 +131,7 @@ pages.add_url_rule('/news', view_func=news, methods=['GET'])
 # News
 pages.add_url_rule("/news", view_func=index, endpoint="news_index")
 pages.add_url_rule("/news/<page>", view_func=show, endpoint="news_show")
-
+pages.add_url_rule("/news_toggle_visibility/<news_id>",view_func=news_toggle_visibility,endpoint='news_toggle_visibility',methods=['POST'])
 
 
 

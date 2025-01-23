@@ -1,9 +1,9 @@
 $(document).ready(function(){
-    $("#page-visibility-toggler").click(function(e){
+    $("#news-visibility-toggler").click(function(e){
         e.preventDefault();
-        var page_id = $(this).data('id');
+        var newsId = $(this).data('id');
         $.ajax({
-            url: '/pages_toggle_visibility/' + page_id,
+            url: '/news_toggle_visibility/' + newsId,
             method: 'POST',
             success: function (data) {
              location.reload();
@@ -11,3 +11,4 @@ $(document).ready(function(){
         })
     });
 });
+
