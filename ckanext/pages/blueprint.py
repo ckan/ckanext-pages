@@ -3,6 +3,7 @@ from ckan import model
 import ckanext.pages.utils as utils
 from ckanext.pages.utils import validate_main_page, update_main_page
 from ckanext.pages.db import MainPage, Page
+from flask import jsonify
 
 import ckan.plugins.toolkit as tk 
 from ckanext.pages.db import Page
@@ -24,35 +25,23 @@ def show(page, page_type='page'):
 def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type='page'):
     return utils.pages_edit(page, data, errors, error_summary, page_type)
 
-
-
-
-
-
 def pages_toggle_visibility(page):
     try:
-        # Fetch the page from the database
-        page_data = model.Session.query(Page).filter_by(name=page).first()
+        page_data = model.Session.query(Page).filter_by(id=page).first()
         if not page_data:
-            tk.abort(404, _('The requested page does not exist'))
+            return jsonify({'error': 'The requested page does not exist'}), 404
 
-        # Toggle the visibility (hidden attribute)
         page_data.hidden = not page_data.hidden
         model.Session.commit()
 
-        # Redirect back to the pages list
-        return tk.redirect_to('pages.index')  # Adjust the endpoint to match your pages list view
+        return jsonify({'hidden': page_data.hidden}), 200
     except Exception as e:
-        # Log the error for debugging purposes
         import logging
         logging.error(f"Error toggling visibility for page {page}: {str(e)}")
 
-        # Rollback in case of error
         model.Session.rollback()
 
-        # Show a generic error to the user
-        tk.abort(500, _('An error occurred while processing your request. Please try again later.'))
-
+        return jsonify({'error': 'An error occurred while processing your request. Please try again later.'}), 500
 
 def upload():
     return utils.pages_upload()
