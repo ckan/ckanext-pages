@@ -58,11 +58,11 @@
       {% if pages %}
           {% for page in pages %}
               <tr>
-                  <td>{{ page.title_en }}</td>
-                  <td>{{ h.render_datetime(page.created, date_format='%d/%m/%Y') }}</td>
-                  <td>{{ h.render_datetime(page.publish_date, date_format='%d/%m/%Y') }}</td>
-                  <td>{{ page.name }}</td>
-                  <td>
+                  <td><strong>{{ page.title_en }}</strong></td>
+                  <td><strong>{{ h.render_datetime(page.created, date_format='%d/%m/%Y') }}</strong></td>
+                  <td><strong>{{ h.render_datetime(page.publish_date, date_format='%d/%m/%Y') }}</strong></td>
+                  <td><strong>{{ page.name }}</strong></td>
+                  <td><strong>
                     <a href="#" style="border: none; background: none; padding: 0;" data-id="{{ page.id }}" id="page-visibility-toggler">
                       <img src="{{ '/images/EYE3.png' if page.hidden else '/images/hide_icon.png' }}" alt="{{ _('View') if page.hidden else _('Hide') }}" style="width: 32px; height: 32px; cursor: pointer;">
                     </a>
@@ -94,7 +94,7 @@
                             </div>
                         </div>
                     </div>
-                  </td>
+                  </strong></td>
               </tr>
           {% endfor %}
       {% else %}

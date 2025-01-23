@@ -66,13 +66,13 @@
       {% if pages %}
           {% for event in pages %}
               <tr>
-                  <td>{{ event.title_en }}</td>
-                  <td>{{ h.render_datetime(event.created, date_format='%d/%m/%Y') }}</td>
-                  <td>{{ h.render_datetime(event.start_date, date_format='%d/%m/%Y') }}</td>
-                  <td>{{ h.render_datetime(event.end_date, date_format='%d/%m/%Y') }}</td>
-                  <td>{{ event.name }}</td>
-                  <td>{{ event.status }}</td>
-                  <td>
+                  <td><strong>{{ event.title_en }}</strong></td>
+                  <td><strong>{{ h.render_datetime(event.created, date_format='%d/%m/%Y') }}</strong></td>
+                  <td><strong>{{ h.render_datetime(event.start_date, date_format='%d/%m/%Y') }}</strong></td>
+                  <td><strong>{{ h.render_datetime(event.end_date, date_format='%d/%m/%Y') }}</strong></td>
+                  <td><strong>{{ event.name }}</strong></td>
+                  <td><strong>{{ event.status }}</strong></td>
+                  <td><strong>
                     <!-- Edit Button -->
                     <a href="/events_edit/{{ event.id }}">
                         <img src="/images/edit_icon.png" alt="Edit" style="width: 32px; height: 32px; cursor: pointer;">
@@ -104,7 +104,7 @@
                             </div>
                         </div>
                     </div>
-                  </td>
+                  </strong></td>
               </tr>
           {% endfor %}
       {% else %}
