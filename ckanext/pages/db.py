@@ -209,7 +209,79 @@ class News(DomainObject, BaseModel):
         except Exception as e:
             print("Error during saving:", str(e))  # Debug: Log errors
             raise e
-    
+
+class Header(DomainObject, BaseModel):
+    __tablename__ = "header"
+
+    id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
+    title_en = Column(types.UnicodeText, nullable=False)
+    title_ar = Column(types.UnicodeText, nullable=False)
+    link_en = Column(types.UnicodeText, nullable=False)
+    link_ar = Column(types.UnicodeText, nullable=False)
+    type = Column(types.UnicodeText, nullable=False)
+    parent_id = Column(types.UnicodeText, sa.ForeignKey("header.id"), nullable=True)
+    order = Column(types.Integer, nullable=False)
+    is_visible = Column(types.Boolean, default=True)
+    created = Column(types.DateTime, default=datetime.datetime.utcnow)
+    modified = Column(types.DateTime, default=datetime.datetime.utcnow)
+    parent = sa.orm.relationship("Header", remote_side=[id], backref="children")
+
+    @classmethod
+    def get(cls, id=None):
+        if id:
+            return Session.query(cls).filter_by(id=id).first()
+        return None
+
+    @classmethod
+    def get_all(cls, **kwargs):
+        query = Session.query(cls).filter_by(**kwargs)
+        return query.order_by(cls.order).all()
+
+    def save(self):
+        self.modified = datetime.datetime.utcnow()
+        Session.add(self)
+        Session.commit()
+
+    def delete(self):
+        Session.delete(self)
+        Session.commit()
+
+
+class Footer(DomainObject, BaseModel):
+    __tablename__ = "footer"
+
+    id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
+    column = Column(types.Integer, nullable=False)
+    title_en = Column(types.UnicodeText, nullable=False)
+    title_ar = Column(types.UnicodeText, nullable=False)  #
+    link_en = Column(types.UnicodeText, nullable=True)
+    link_ar = Column(types.UnicodeText, nullable=True)
+    target = Column(types.UnicodeText, nullable=True)
+    order = Column(types.Integer, nullable=False)
+    is_visible = Column(types.Boolean, default=True)
+    created = Column(types.DateTime, default=datetime.datetime.utcnow)
+    modified = Column(types.DateTime, default=datetime.datetime.utcnow)
+
+    @classmethod
+    def get(cls, id=None):
+        if id:
+            return Session.query(cls).filter_by(id=id).first()
+        return None
+
+    @classmethod
+    def get_all(cls, **kwargs):
+        query = Session.query(cls).filter_by(**kwargs)
+        return query.order_by(cls.order).all()
+
+    def save(self):
+        Session.add(self)
+        Session.commit()
+
+    def delete(self):
+        Session.delete(self)
+        Session.commit()
+
+
 
 def table_dictize(obj, context, **kw):
     '''Get any model object and represent it as a dict'''

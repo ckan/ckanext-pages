@@ -1,0 +1,49 @@
+{% extends 'ckanext_pages/edit_base.html' %}
+
+{% block primary_content_inner %}
+  <h1>{{ _('Edit Main Menu Item') if main_menu else _('Add Main Menu Item') }}</h1>
+  <form method="POST">
+    <div class="form-group">
+      <label for="title_en">{{ _('Title (EN)') }}</label>
+      <input type="text" class="form-control" id="title_en" name="title_en" value="{{ main_menu.title_en if main_menu }}">
+    </div>
+    <div class="form-group">
+      <label for="title_ar">{{ _('Title (AR)') }}</label>
+      <input type="text" class="form-control" id="title_ar" name="title_ar" value="{{ main_menu.title_ar if main_menu }}">
+    </div>
+    <div class="form-group">
+      <label for="link_en">{{ _('Link (EN)') }}</label>
+      <input type="text" class="form-control" id="link_en" name="link_en" value="{{ main_menu.link_en if main_menu }}">
+    </div>
+    <div class="form-group">
+      <label for="link_ar">{{ _('Link (AR)') }}</label>
+      <input type="text" class="form-control" id="link_ar" name="link_ar" value="{{ main_menu.link_ar if main_menu }}">
+    </div>
+    <div class="form-group">
+      <label for="type">{{ _('Type') }}</label>
+      <select class="form-control" id="type" name="type">
+        <option value="Link" {{ 'selected' if main_menu and main_menu.type == 'Link' }}>{{ _('Link') }}</option>
+        <option value="Menu" {{ 'selected' if main_menu and main_menu.type == 'Menu' }}>{{ _('Menu') }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="parent_id">{{ _('Parent') }}</label>
+      <select class="form-control" id="parent_id" name="parent_id">
+        <option value="">{{ _('None') }}</option>
+        {% for item in main_menu_items %}
+          <option value="{{ item.id }}" {{ 'selected' if main_menu and main_menu.parent_id == item.id }}>{{ item.title_en }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="order">{{ _('Order') }}</label>
+      <input type="number" class="form-control" id="order" name="order" value="{{ main_menu.order if main_menu }}">
+    </div>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="is_visible" name="is_visible" {{ 'checked' if main_menu and main_menu.is_visible }}>
+      <label class="form-check-label" for="is_visible">{{ _('Visible') }}</label>
+    </div>
+    <button type="submit" class="btn btn-primary">{{ _('Save') }}</button>
+    <a href="{{ h.url_for('header_management.index') }}" class="btn btn-secondary">{{ _('Cancel') }}</a>
+  </form>
+{% endblock %}

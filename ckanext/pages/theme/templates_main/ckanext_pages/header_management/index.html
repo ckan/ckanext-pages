@@ -1,0 +1,267 @@
+{% extends 'ckanext_pages/edit_base.html' %}
+
+{% block page_primary_action %}
+  {% if h.check_access('ckanext_pages_update', {}) %}
+    <div class="btn-group">
+      <a href="{{ h.url_for('header_management.edit_header_logo') }}" class="btn btn-primary">
+        <i class="fa fa-plus-square"></i> {{ _('Add Header Logo') }}
+      </a>
+      <a href="{{ h.url_for('header_management.edit_main_menu') }}" class="btn btn-primary">
+        <i class="fa fa-plus-square"></i> {{ _('Add Main Menu Item') }}
+      </a>
+      <a href="{{ h.url_for('header_management.edit_secondary_menu') }}" class="btn btn-primary">
+        <i class="fa fa-plus-square"></i> {{ _('Add Secondary Menu Item') }}
+      </a>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block primary_content_inner %}
+
+<!-- Sorting Section -->
+<div class="filters mb-3">
+  <style>
+    .small-select {
+        width: 175px;
+        font-size: 12px;
+        padding: 7px;
+        height: 30px;
+        line-height: 1.2;
+    }
+  </style>
+  <form method="get" class="form-inline sorting-section" data-module="select-switch">
+    <div class="form-group control-order-by">
+      <label for="field-order-by">{{ _('Order by') }}</label>
+      <select id="field-order-by" name="sort" class="form-control form-select small-select" onchange="this.form.submit()">
+        <option value="title_en asc" {% if request.args.get('sort', 'title_en asc') == 'title_en asc' %} selected {% endif %}>Title Ascending</option>
+        <option value="title_en desc" {% if request.args.get('sort') == 'title_en desc' %} selected {% endif %}>Title Descending</option>
+        <option value="created asc" {% if request.args.get('sort') == 'created asc' %} selected {% endif %}>Creation Date Ascending</option>
+        <option value="created desc" {% if request.args.get('sort') == 'created desc' %} selected {% endif %}>Creation Date Descending</option>
+      </select>
+    </div>
+  </form>
+</div>
+
+<!-- Header Logo Section -->
+<h2>Header Logo</h2>
+<table class="table" style="border-collapse: collapse; width: 100%; background-color: white;">
+  <thead>
+    <tr>
+      <th>Title (EN)</th>
+      <th>Title (AR)</th>
+      <th>Image URL</th>
+      <th>Visible</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if header_logo %}
+      {% for logo in header_logo %}
+        <tr>
+          <td><strong>{{ logo.title_en }}</strong></td>
+          <td><strong>{{ logo.title_ar }}</strong></td>
+          <td><strong>{{ logo.image_url }}</strong></td>
+          <td><strong>{{ _('Visible') if logo.is_visible else _('Hidden') }}</strong></td>
+          <td>
+            <!-- Toggle Visibility -->
+            <a href="#" style="border: none; background: none; padding: 0;" data-id="{{ logo.id }}" id="header-logo-visibility-toggler">
+              <img src="{{ '/images/EYE3.png' if not logo.is_visible else '/images/hide_icon.png' }}" alt="{{ _('Show') if not logo.is_visible else _('Hide') }}" style="width: 32px; height: 32px; cursor: pointer;">
+            </a>
+            <!-- Edit Button -->
+            <a href="{{ h.url_for('header_management.edit_header_logo', id=logo.id) }}">
+              <img src="/images/edit_icon.png" alt="Edit" style="width: 32px; height: 32px; cursor: pointer;">
+            </a>
+            <!-- Delete Button with Modal Trigger -->
+            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal-logo-{{ logo.id }}">
+              <img src="/images/remove_icon.png" alt="Delete">
+            </a>
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteModal-logo-{{ logo.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title" id="deleteModalLabel">{{ _('Please Confirm Action') }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {{ _('Are you sure you want to delete this header logo?') }}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <form action="{{ h.url_for('header_management.delete_header_logo', id=logo.id) }}" method="post">
+                      {{ h.csrf_input() }}
+                      <button class="btn btn-primary" type="submit" name="confirm">{{ _('Confirm') }}</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="5">No header logos found.</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+<!-- Main Menu Section -->
+<h2>Main Menu</h2>
+<table class="table" style="border-collapse: collapse; width: 100%; background-color: white;">
+  <thead>
+    <tr>
+      <th>Title (EN)</th>
+      <th>Title (AR)</th>
+      <th>Link (EN)</th>
+      <th>Link (AR)</th>
+      <th>Type</th>
+      <th>Parent</th>
+      <th>Order</th>
+      <th>Visible</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if main_menu %}
+      {% for item in main_menu %}
+        <tr>
+          <td><strong>{{ item.title_en }}</strong></td>
+          <td><strong>{{ item.title_ar }}</strong></td>
+          <td><strong>{{ item.link_en }}</strong></td>
+          <td><strong>{{ item.link_ar }}</strong></td>
+          <td><strong>{{ item.type }}</strong></td>
+          <td><strong>{{ item.parent_id }}</strong></td>
+          <td><strong>{{ item.order }}</strong></td>
+          <td><strong>{{ _('Visible') if item.is_visible else _('Hidden') }}</strong></td>
+          <td>
+            <!-- Toggle Visibility -->
+            <a href="#" style="border: none; background: none; padding: 0;" data-id="{{ item.id }}" id="main-menu-visibility-toggler">
+              <img src="{{ '/images/EYE3.png' if not item.is_visible else '/images/hide_icon.png' }}" alt="{{ _('Show') if not item.is_visible else _('Hide') }}" style="width: 32px; height: 32px; cursor: pointer;">
+            </a>
+            <!-- Edit Button -->
+            <a href="{{ h.url_for('header_management.edit_main_menu', id=item.id) }}">
+              <img src="/images/edit_icon.png" alt="Edit" style="width: 32px; height: 32px; cursor: pointer;">
+            </a>
+            <!-- Delete Button with Modal Trigger -->
+            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal-main-{{ item.id }}">
+              <img src="/images/remove_icon.png" alt="Delete">
+            </a>
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteModal-main-{{ item.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title" id="deleteModalLabel">{{ _('Please Confirm Action') }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {{ _('Are you sure you want to delete this main menu item?') }}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <form action="{{ h.url_for('header_management.delete_main_menu', id=item.id) }}" method="post">
+                      {{ h.csrf_input() }}
+                      <button class="btn btn-primary" type="submit" name="confirm">{{ _('Confirm') }}</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="9">No main menu items found.</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+<!-- Secondary Menu Section -->
+<h2>Secondary Menu</h2>
+<table class="table" style="border-collapse: collapse; width: 100%; background-color: white;">
+  <thead>
+    <tr>
+      <th>Title (EN)</th>
+      <th>Title (AR)</th>
+      <th>Link (EN)</th>
+      <th>Link (AR)</th>
+      <th>Type</th>
+      <th>Parent</th>
+      <th>Order</th>
+      <th>Visible</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if secondary_menu %}
+      {% for item in secondary_menu %}
+        <tr>
+          <td><strong>{{ item.title_en }}</strong></td>
+          <td><strong>{{ item.title_ar }}</strong></td>
+          <td><strong>{{ item.link_en }}</strong></td>
+          <td><strong>{{ item.link_ar }}</strong></td>
+          <td><strong>{{ item.type }}</strong></td>
+          <td><strong>{{ item.parent_id }}</strong></td>
+          <td><strong>{{ item.order }}</strong></td>
+          <td><strong>{{ _('Visible') if item.is_visible else _('Hidden') }}</strong></td>
+          <td>
+            <!-- Toggle Visibility -->
+            <a href="#" style="border: none; background: none; padding: 0;" data-id="{{ item.id }}" id="secondary-menu-visibility-toggler">
+              <img src="{{ '/images/EYE3.png' if not item.is_visible else '/images/hide_icon.png' }}" alt="{{ _('Show') if not item.is_visible else _('Hide') }}" style="width: 32px; height: 32px; cursor: pointer;">
+            </a>
+            <!-- Edit Button -->
+            <a href="{{ h.url_for('header_management.edit_secondary_menu', id=item.id) }}">
+              <img src="/images/edit_icon.png" alt="Edit" style="width: 32px; height: 32px; cursor: pointer;">
+            </a>
+            <!-- Delete Button with Modal Trigger -->
+            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal-secondary-{{ item.id }}">
+              <img src="/images/remove_icon.png" alt="Delete">
+            </a>
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteModal-secondary-{{ item.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title" id="deleteModalLabel">{{ _('Please Confirm Action') }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {{ _('Are you sure you want to delete this secondary menu item?') }}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <form action="{{ h.url_for('header_management.delete_secondary_menu', id=item.id) }}" method="post">
+                      {{ h.csrf_input() }}
+                      <button class="btn btn-primary" type="submit" name="confirm">{{ _('Confirm') }}</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="9">No secondary menu items found.</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+{% endblock %}
+
+{% block main_content %}
+   <div class="wrapper no-nav">
+     {{ self.primary_content() }}
+   </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="/js/header-management.js"></script>
+{% endblock %}

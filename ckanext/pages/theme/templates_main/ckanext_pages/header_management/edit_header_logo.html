@@ -1,0 +1,25 @@
+{% extends 'ckanext_pages/edit_base.html' %}
+
+{% block primary_content_inner %}
+  <h1>{{ _('Edit Header Logo') if header_logo else _('Add Header Logo') }}</h1>
+  <form method="POST">
+    <div class="form-group">
+      <label for="title_en">{{ _('Title (EN)') }}</label>
+      <input type="text" class="form-control" id="title_en" name="title_en" value="{{ header_logo.title_en if header_logo }}">
+    </div>
+    <div class="form-group">
+      <label for="title_ar">{{ _('Title (AR)') }}</label>
+      <input type="text" class="form-control" id="title_ar" name="title_ar" value="{{ header_logo.title_ar if header_logo }}">
+    </div>
+    <div class="form-group">
+      <label for="image_url">{{ _('Image URL') }}</label>
+      <input type="text" class="form-control" id="image_url" name="image_url" value="{{ header_logo.image_url if header_logo }}">
+    </div>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="is_visible" name="is_visible" {{ 'checked' if header_logo and header_logo.is_visible }}>
+      <label class="form-check-label" for="is_visible">{{ _('Visible') }}</label>
+    </div>
+    <button type="submit" class="btn btn-primary">{{ _('Save') }}</button>
+    <a href="{{ h.url_for('header_management.index') }}" class="btn btn-secondary">{{ _('Cancel') }}</a>
+  </form>
+{% endblock %}

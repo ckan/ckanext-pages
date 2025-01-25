@@ -5,7 +5,7 @@ import ckan.plugins.toolkit as tk
 import ckan.logic as logic
 import ckan.lib.helpers as helpers
 import ckan.model as model
-from ckanext.pages.db import MainPage,Page , News, Event
+from ckanext.pages.db import MainPage,Page , News, Event, Header
 from ckanext.pages.logic.schema import main_page_schema, update_pages_schema
 import ckan.lib.navl.dictization_functions as df
 from flask import request, flash
@@ -88,6 +88,131 @@ def events_list():
     )
 
     return tk.render('ckanext_pages/events.html', extra_vars={"pages": events_list})
+
+# header utils
+from ckan import model
+from ckanext.pages.db import Header
+import json
+
+def get_header_logo(id=None):
+    """Get header logo(s)."""
+    if id:
+        header_logo = Header.get(id=id)
+        if header_logo:
+            return json.loads(header_logo.json_data)
+        return None
+    return [json.loads(logo.json_data) for logo in Header.get_all(type='header_logo')]
+
+def create_header_logo(data):
+    """Create a new header logo."""
+    header_logo = Header(
+        id=make_uuid(),
+        type='header_logo',
+        json_data=json.dumps(data)
+    )
+    header_logo.save()
+
+def update_header_logo(id, data):
+    """Update an existing header logo."""
+    header_logo = Header.get(id=id)
+    if header_logo:
+        header_logo.json_data = json.dumps(data)
+        header_logo.save()
+
+def delete_header_logo(id):
+    """Delete a header logo."""
+    header_logo = Header.get(id=id)
+    if header_logo:
+        header_logo.delete()
+
+def toggle_header_logo_visibility(id):
+    """Toggle visibility of a header logo."""
+    header_logo = Header.get(id=id)
+    if header_logo:
+        data = json.loads(header_logo.json_data)
+        data['is_visible'] = not data['is_visible']
+        header_logo.json_data = json.dumps(data)
+        header_logo.save()
+
+def get_main_menu(id=None):
+    """Get main menu item(s)."""
+    if id:
+        menu_item = Header.get(id=id)
+        if menu_item:
+            return json.loads(menu_item.json_data)
+        return None
+    return [json.loads(item.json_data) for item in Header.get_all(type='main_menu')]
+
+def create_main_menu(data):
+    """Create a new main menu item."""
+    menu_item = Header(
+        id=make_uuid(),
+        type='main_menu',
+        json_data=json.dumps(data)
+    )
+    menu_item.save()
+
+def update_main_menu(id, data):
+    """Update an existing main menu item."""
+    menu_item = Header.get(id=id)
+    if menu_item:
+        menu_item.json_data = json.dumps(data)
+        menu_item.save()
+
+def delete_main_menu(id):
+    """Delete a main menu item."""
+    menu_item = Header.get(id=id)
+    if menu_item:
+        menu_item.delete()
+
+def toggle_main_menu_visibility(id):
+    """Toggle visibility of a main menu item."""
+    menu_item = Header.get(id=id)
+    if menu_item:
+        data = json.loads(menu_item.json_data)
+        data['is_visible'] = not data['is_visible']
+        menu_item.json_data = json.dumps(data)
+        menu_item.save()
+
+def get_secondary_menu(id=None):
+    """Get secondary menu item(s)."""
+    if id:
+        menu_item = Header.get(id=id)
+        if menu_item:
+            return json.loads(menu_item.json_data)
+        return None
+    return [json.loads(item.json_data) for item in Header.get_all(type='secondary_menu')]
+
+def create_secondary_menu(data):
+    """Create a new secondary menu item."""
+    menu_item = Header(
+        id=make_uuid(),
+        type='secondary_menu',
+        json_data=json.dumps(data)
+    )
+    menu_item.save()
+
+def update_secondary_menu(id, data):
+    """Update an existing secondary menu item."""
+    menu_item = Header.get(id=id)
+    if menu_item:
+        menu_item.json_data = json.dumps(data)
+        menu_item.save()
+
+def delete_secondary_menu(id):
+    """Delete a secondary menu item."""
+    menu_item = Header.get(id=id)
+    if menu_item:
+        menu_item.delete()
+
+def toggle_secondary_menu_visibility(id):
+    """Toggle visibility of a secondary menu item."""
+    menu_item = Header.get(id=id)
+    if menu_item:
+        data = json.loads(menu_item.json_data)
+        data['is_visible'] = not data['is_visible']
+        menu_item.json_data = json.dumps(data)
+        menu_item.save()
 
 class Form:
     # Input field method

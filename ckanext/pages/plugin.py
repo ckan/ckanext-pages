@@ -104,7 +104,7 @@ class PagesPlugin(PagesPluginBase):
         return cli.get_commands()
 
     def get_blueprint(self):
-        return [blueprint.pages]
+        return [blueprint.pages, blueprint.header_management]
 
     def update_config(self, config):
         self.organization_pages = tk.asbool(config.get('ckanext.pages.organization', False))

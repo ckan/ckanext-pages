@@ -1,16 +1,220 @@
-from flask import Blueprint
 from ckan import model
 import ckanext.pages.utils as utils
-from ckanext.pages.utils import validate_main_page, update_main_page
-from ckanext.pages.db import MainPage, Page
-from flask import jsonify
-
-import ckan.plugins.toolkit as tk 
+from ckanext.pages.db import MainPage
 from ckanext.pages.db import Page
-
-
-
+from ckan.plugins.toolkit import get_action, check_access, NotAuthorized
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import jsonify
+from ckan.common import _
+from ckan import model
+from ckan.lib import base
 pages = Blueprint('pages', __name__)
+header_management = Blueprint('header_management', __name__, url_prefix='/header_management')
+
+
+@header_management.route('/')
+def index():
+    """Display the header management page."""
+    # try:
+    #     check_access('sysadmin', {})
+    # except NotAuthorized:
+    #     return base.abort(401, _(u'Unauthorized to access'))
+
+    header_logo = utils.get_header_logo()
+    main_menu = utils.get_main_menu()
+    secondary_menu = utils.get_secondary_menu()
+
+    return render_template(
+        'ckanext_pages/header_management/index.html',
+        header_logo=header_logo,
+        main_menu=main_menu,
+        secondary_menu=secondary_menu
+    )
+
+@header_management.route('/header_logo/edit/<id>', methods=['GET', 'POST'])
+def edit_header_logo(id=None):
+    """Edit or create a header logo."""
+    try:
+        check_access('sysadmin', {})
+    except NotAuthorized:
+        return base.abort(403, _(u'Unauthorized to access'))
+
+    if request.method == 'POST':
+        data = {
+            'title_en': request.form.get('title_en'),
+            'title_ar': request.form.get('title_ar'),
+            'image_url': request.form.get('image_url'),
+            'is_visible': request.form.get('is_visible') == 'on',
+            'page_type': 'header_logo'
+        }
+
+        if id:
+            # Update existing header logo
+            utils.update_header_logo(id, data)
+            flash('Header logo updated successfully!', 'success')
+        else:
+            # Create new header logo
+            utils.create_header_logo(data)
+            flash('Header logo created successfully!', 'success')
+
+        return redirect(url_for('header_management.index'))
+
+    header_logo = None
+    if id:
+        header_logo = utils.get_header_logo(id)
+
+    return render_template('ckanext_pages/header_management/edit_header_logo.html', header_logo=header_logo)
+
+@header_management.route('/header_logo/delete/<id>', methods=['POST'])
+def delete_header_logo(id):
+    """Delete a header logo."""
+    try:
+        check_access('sysadmin', {})
+    except NotAuthorized:
+        return render_template('403.html')
+
+    utils.delete_header_logo(id)
+    flash('Header logo deleted successfully!', 'success')
+
+    return redirect(url_for('header_management.index'))
+
+@header_management.route('/header_logo/toggle_visibility/<id>', methods=['POST'])
+def toggle_header_logo_visibility(id):
+    """Toggle visibility of a header logo."""
+    try:
+        check_access('sysadmin', {})
+    except NotAuthorized:
+        return render_template('403.html')
+
+    utils.toggle_header_logo_visibility(id)
+    return redirect(url_for('header_management.index'))
+
+@header_management.route('/main_menu/edit/<id>', methods=['GET', 'POST'])
+def edit_main_menu(id=None):
+    """Edit or create a main menu item."""
+    try:
+        check_access('sysadmin', {})
+    except NotAuthorized:
+        return render_template('403.html')
+
+    if request.method == 'POST':
+        data = {
+            'title_en': request.form.get('title_en'),
+            'title_ar': request.form.get('title_ar'),
+            'link_en': request.form.get('link_en'),
+            'link_ar': request.form.get('link_ar'),
+            'type': request.form.get('type'),
+            'parent_id': request.form.get('parent_id'),
+            'order': request.form.get('order'),
+            'is_visible': request.form.get('is_visible') == 'on',
+            'page_type': 'main_menu'
+        }
+
+        if id:
+            # Update existing main menu item
+            utils.update_main_menu(id, data)
+            flash('Main menu item updated successfully!', 'success')
+        else:
+            # Create new main menu item
+            utils.create_main_menu(data)
+            flash('Main menu item created successfully!', 'success')
+
+        return redirect(url_for('header_management.index'))
+
+    # Fetch main menu data for editing
+    main_menu = None
+    if id:
+        main_menu = utils.get_main_menu(id)
+
+    return render_template('ckanext_pages/header_management/edit_main_menu.html', main_menu=main_menu)
+
+@header_management.route('/main_menu/delete/<id>', methods=['POST'])
+def delete_main_menu(id):
+    """Delete a main menu item."""
+    try:
+        check_access('sysadmin', {})
+    except NotAuthorized:
+        return render_template('403.html')
+
+    utils.delete_main_menu(id)
+    flash('Main menu item deleted successfully!', 'success')
+
+    return redirect(url_for('header_management.index'))
+
+@header_management.route('/main_menu/toggle_visibility/<id>', methods=['POST'])
+def toggle_main_menu_visibility(id):
+    """Toggle visibility of a main menu item."""
+    try:
+        check_access('sysadmin', {})
+    except NotAuthorized:
+        return render_template('403.html')
+
+    utils.toggle_main_menu_visibility(id)
+    return redirect(url_for('header_management.index'))
+
+@header_management.route('/secondary_menu/edit/<id>', methods=['GET', 'POST'])
+def edit_secondary_menu(id=None):
+    """Edit or create a secondary menu item."""
+    try:
+        check_access('sysadmin', {})
+    except NotAuthorized:
+        return render_template('403.html')
+
+    if request.method == 'POST':
+        data = {
+            'title_en': request.form.get('title_en'),
+            'title_ar': request.form.get('title_ar'),
+            'link_en': request.form.get('link_en'),
+            'link_ar': request.form.get('link_ar'),
+            'type': request.form.get('type'),
+            'parent_id': request.form.get('parent_id'),
+            'order': request.form.get('order'),
+            'is_visible': request.form.get('is_visible') == 'on',
+            'page_type': 'secondary_menu'
+        }
+
+        if id:
+            # Update existing secondary menu item
+            utils.update_secondary_menu(id, data)
+            flash('Secondary menu item updated successfully!', 'success')
+        else:
+            # Create new secondary menu item
+            utils.create_secondary_menu(data)
+            flash('Secondary menu item created successfully!', 'success')
+
+        return redirect(url_for('header_management.index'))
+
+    # Fetch secondary menu data for editing
+    secondary_menu = None
+    if id:
+        secondary_menu = utils.get_secondary_menu(id)
+
+    return render_template('ckanext_pages/header_management/edit_secondary_menu.html', secondary_menu=secondary_menu)
+
+@header_management.route('/secondary_menu/delete/<id>', methods=['POST'])
+def delete_secondary_menu(id):
+    """Delete a secondary menu item."""
+    try:
+        check_access('sysadmin', {})
+    except NotAuthorized:
+        return render_template('403.html')
+
+    utils.delete_secondary_menu(id)
+    flash('Secondary menu item deleted successfully!', 'success')
+
+    return redirect(url_for('header_management.index'))
+
+@header_management.route('/secondary_menu/toggle_visibility/<id>', methods=['POST'])
+def toggle_secondary_menu_visibility(id):
+    """Toggle visibility of a secondary menu item."""
+    try:
+        check_access('sysadmin', {})
+    except NotAuthorized:
+        return render_template('403.html')
+
+    utils.toggle_secondary_menu_visibility(id)
+    return redirect(url_for('header_management.index'))
+
 
 def index(page_type='page'):
     return utils.pages_list_pages(page_type)
