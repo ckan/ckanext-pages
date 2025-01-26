@@ -28,6 +28,7 @@ def upgrade():
         sa.Column("parent_id", sa.UnicodeText, sa.ForeignKey("header.id"), nullable=True),  # Recursive foreign key
         sa.Column("order", sa.Integer, nullable=False),
         sa.Column("is_visible", sa.Boolean, default=True),
+        sa.Column("extras", JSONB, nullable=False, default=dict),
         sa.Column("created", sa.DateTime, default=sa.func.now()),
         sa.Column("modified", sa.DateTime, default=sa.func.now()),
     )

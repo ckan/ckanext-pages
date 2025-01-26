@@ -99,16 +99,16 @@ def get_header_logo(id=None):
     if id:
         header_logo = Header.get(id=id)
         if header_logo:
-            return json.loads(header_logo.json_data)
+            return json.loads(header_logo.extras)
         return None
-    return [json.loads(logo.json_data) for logo in Header.get_all(type='header_logo')]
+    return [json.loads(logo.extras) for logo in Header.get_all(type='header_logo')]
 
 def create_header_logo(data):
     """Create a new header logo."""
     header_logo = Header(
         id=make_uuid(),
         type='header_logo',
-        json_data=json.dumps(data)
+        extras=json.dumps(data)
     )
     header_logo.save()
 
@@ -116,7 +116,7 @@ def update_header_logo(id, data):
     """Update an existing header logo."""
     header_logo = Header.get(id=id)
     if header_logo:
-        header_logo.json_data = json.dumps(data)
+        header_logo.extras = json.dumps(data)
         header_logo.save()
 
 def delete_header_logo(id):
@@ -129,9 +129,9 @@ def toggle_header_logo_visibility(id):
     """Toggle visibility of a header logo."""
     header_logo = Header.get(id=id)
     if header_logo:
-        data = json.loads(header_logo.json_data)
+        data = json.loads(header_logo.extras)
         data['is_visible'] = not data['is_visible']
-        header_logo.json_data = json.dumps(data)
+        header_logo.extras = json.dumps(data)
         header_logo.save()
 
 def get_main_menu(id=None):
@@ -139,16 +139,16 @@ def get_main_menu(id=None):
     if id:
         menu_item = Header.get(id=id)
         if menu_item:
-            return json.loads(menu_item.json_data)
+            return json.loads(menu_item.extras)
         return None
-    return [json.loads(item.json_data) for item in Header.get_all(type='main_menu')]
+    return [json.loads(item.extras) for item in Header.get_all(type='main_menu')]
 
 def create_main_menu(data):
     """Create a new main menu item."""
     menu_item = Header(
         id=make_uuid(),
         type='main_menu',
-        json_data=json.dumps(data)
+        extras=json.dumps(data)
     )
     menu_item.save()
 
@@ -156,7 +156,7 @@ def update_main_menu(id, data):
     """Update an existing main menu item."""
     menu_item = Header.get(id=id)
     if menu_item:
-        menu_item.json_data = json.dumps(data)
+        menu_item.extras = json.dumps(data)
         menu_item.save()
 
 def delete_main_menu(id):
@@ -169,9 +169,9 @@ def toggle_main_menu_visibility(id):
     """Toggle visibility of a main menu item."""
     menu_item = Header.get(id=id)
     if menu_item:
-        data = json.loads(menu_item.json_data)
+        data = json.loads(menu_item.extras)
         data['is_visible'] = not data['is_visible']
-        menu_item.json_data = json.dumps(data)
+        menu_item.extras = json.dumps(data)
         menu_item.save()
 
 def get_secondary_menu(id=None):
@@ -179,16 +179,16 @@ def get_secondary_menu(id=None):
     if id:
         menu_item = Header.get(id=id)
         if menu_item:
-            return json.loads(menu_item.json_data)
+            return json.loads(menu_item.extras)
         return None
-    return [json.loads(item.json_data) for item in Header.get_all(type='secondary_menu')]
+    return [json.loads(item.extras) for item in Header.get_all(type='secondary_menu')]
 
 def create_secondary_menu(data):
     """Create a new secondary menu item."""
     menu_item = Header(
         id=make_uuid(),
         type='secondary_menu',
-        json_data=json.dumps(data)
+        extras=json.dumps(data)
     )
     menu_item.save()
 
@@ -196,7 +196,7 @@ def update_secondary_menu(id, data):
     """Update an existing secondary menu item."""
     menu_item = Header.get(id=id)
     if menu_item:
-        menu_item.json_data = json.dumps(data)
+        menu_item.extras = json.dumps(data)
         menu_item.save()
 
 def delete_secondary_menu(id):
@@ -209,9 +209,9 @@ def toggle_secondary_menu_visibility(id):
     """Toggle visibility of a secondary menu item."""
     menu_item = Header.get(id=id)
     if menu_item:
-        data = json.loads(menu_item.json_data)
+        data = json.loads(menu_item.extras)
         data['is_visible'] = not data['is_visible']
-        menu_item.json_data = json.dumps(data)
+        menu_item.extras = json.dumps(data)
         menu_item.save()
 
 class Form:

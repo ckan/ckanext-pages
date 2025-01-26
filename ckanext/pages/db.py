@@ -7,6 +7,7 @@ import sqlalchemy as sa
 from sqlalchemy import Column, types
 from sqlalchemy.orm import class_mapper
 from ckan.model import Session
+from sqlalchemy.dialects.postgresql import JSONB
 
 try:
     from sqlalchemy.engine import Row
@@ -222,6 +223,7 @@ class Header(DomainObject, BaseModel):
     parent_id = Column(types.UnicodeText, sa.ForeignKey("header.id"), nullable=True)
     order = Column(types.Integer, nullable=False)
     is_visible = Column(types.Boolean, default=True)
+    extras = Column(JSONB, nullable=False, default=dict)
     created = Column(types.DateTime, default=datetime.datetime.utcnow)
     modified = Column(types.DateTime, default=datetime.datetime.utcnow)
     parent = sa.orm.relationship("Header", remote_side=[id], backref="children")
