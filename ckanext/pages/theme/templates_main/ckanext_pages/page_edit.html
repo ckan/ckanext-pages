@@ -1,6 +1,18 @@
-{% extends 'ckanext_pages/edit_base.html' %}
+{% extends 'page.html' %}
+{% set lang = h.lang() %}
 {% import 'macros/form.html' as form %}
+{% import 'macros/wysiwyg.html' as wysiwyg %}
+
 {% block subtitle %}{{ _('Edit Page') }}{% endblock %}
+
+{% block breadcrumb_content %}
+  <li class="breadcrumb-item home">
+    <a href="{{ h.url_for('pages.pages_index') }}">{{ _('Pages') }}</a>
+  </li>
+  <li>
+    <span>{{ _('Pages Edit') }}</span>
+    </li>
+{% endblock %}
 
 {% block primary_content_inner %}
 <div class="container">

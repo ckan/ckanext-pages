@@ -1,6 +1,17 @@
-{% extends 'ckanext_pages/edit_base.html' %}
+{% extends 'page.html' %}
+{% set lang = h.lang() %}
 {% import 'macros/form.html' as form %}
-{% block subtitle %}{{ _('Edit News') }}{% endblock %}
+{% import 'macros/wysiwyg.html' as wysiwyg %}
+
+{% block breadcrumb_content %}
+  <li class="breadcrumb-item">
+    <a href="{{ h.url_for('pages.news') }}" aria-label="{{ _('News') }}">
+        <span>{{ _('News') }}</span>
+    </a>
+  </li>
+  <li>{{ _('News Edit') }}</li>
+{% endblock %}
+
 
 {% block primary_content_inner %}
 <div class="container">

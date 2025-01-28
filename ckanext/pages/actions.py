@@ -13,6 +13,8 @@ from ckanext.pages.logic.schema import update_events_schema, update_pages_schema
 from ckanext.pages import db
 from ckanext.pages.db import MainPage,Page , Event, News
 from ckanext.pages.logic.schema import main_page_schema
+from collections import OrderedDict
+
 
 class HTMLFirstImage(HTMLParser):
     def __init__(self):
@@ -118,9 +120,6 @@ def _news_list(context, data_dict):
     query = model.Session.query(News)
 
     sort = data_dict.get('sort', 'title_en asc')  # Default sorting
-    print(f"DEBUG: Received sort option: {sort}")  # Debugging the sort value
-
-    # Apply sorting logic
     if sort == 'created asc':
         query = query.order_by(News.created.asc())
     elif sort == 'created desc':
@@ -134,20 +133,15 @@ def _news_list(context, data_dict):
     elif sort == 'news_date desc':
         query = query.order_by(News.news_date.desc())
     else:
-        print(f"DEBUG: Invalid sort value provided: {sort}, defaulting to title_en asc")
         query = query.order_by(News.title_en.asc())
 
-    print(f"DEBUG: Query before execution: {query}")  # Debugging the query
-
-    # Execute query
     news = query.all()
-    print(f"DEBUG: Query returned {len(news)} records")  # Debugging the number of results
-
-    out_list = []
     today = datetime.datetime.now()
+    out_list = []
+    # Build the response list
     for pg in news:
         status = "Disabled"
-        if not pg.private:
+        if not pg.hidden:
             status = "Upcoming" if pg.news_date > today else "Posted"
         news_dict = {
             'title_en': pg.title_en,
@@ -155,12 +149,10 @@ def _news_list(context, data_dict):
             'news_date': pg.news_date.isoformat() if pg.news_date else None,
             'name': pg.name,
             'status': status,
-            'group_id': pg.group_id,
-            'private': pg.private,
+            'hidden': pg.hidden,
         }
         out_list.append(news_dict)
 
-    print(f"DEBUG: Final output list: {out_list}")  # Debugging the output list
     return out_list
 
 def news_toggle_visibility(context, data_dict):
@@ -175,6 +167,7 @@ def news_toggle_visibility(context, data_dict):
         model.Session.commit()
         return news.as_dict()
     return {'success': False}
+
 
 def _events_list(context, data_dict):
 
@@ -207,9 +200,12 @@ def _events_list(context, data_dict):
     today = datetime.datetime.now()
     
     for pg in events:
-        status = "Disabled"
-        if not pg.private:
-            status = "Upcoming" if pg.start_date > today else "Posted"
+        status = "Past Event"
+        if pg.start_date <= today and pg.end_date > today:
+            status = "Currently Happening"
+        elif pg.start_date > today:
+            status = "Upcoming"
+
         events_dict = ({
             'title_en': pg.title_en,
             'created': pg.created.isoformat(),
@@ -217,9 +213,6 @@ def _events_list(context, data_dict):
             'end_date': pg.end_date.isoformat() if pg.end_date else None,
             'name': pg.name,
             'status': status,
-            'group_id': pg.group_id,
-            'private': pg.private,
-            'hidden': pg.hidden
         })
         out_list.append(events_dict)
 
@@ -393,7 +386,7 @@ def pages_upload(context, data_dict):
     max_image_size = uploader.get_max_image_size()
 
     try:
-        upload.upload(max_imddxage_size)
+        upload.upload(max_image_size)
     except p.toolkit.ValidationError:
         message = (
             "Can't upload the file, size is too large. "
@@ -692,46 +685,6 @@ def main_page_show(context, data_dict):
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _main_page_show(context, data_dict)
-
-def events_list(context, data_dict):
-    query = model.Session.query(Event)
-    sort = data_dict.get('sort', 'start_date asc')
-    if sort == 'start_date asc':
-        query = query.order_by(Event.start_date.asc())
-    elif sort == 'start_date desc':
-        query = query.order_by(Event.start_date.desc())
-    if sort == 'end_date asc':
-        query = query.order_by(Event.end_date.asc())
-    elif sort == 'end_date desc':
-        query = query.order_by(Event.end_date.desc())
-    elif sort == 'title_en asc':
-        query = query.order_by(Event.title_en.asc())
-    elif sort == 'title_en desc':
-        query = query.order_by(Event.title_en.desc())
-    elif sort == 'created asc':
-        query = query.order_by(Event.created.asc())
-    else:
-        query = query.order_by(News.created.desc())
-    return [event.as_dict() for event in query.all()]
-
-def news_list(context, data_dict):
-    query = model.Session.query(News)
-    sort = data_dict.get('sort', 'news_date asc')
-    if sort == 'news_date asc':
-        query = query.order_by(News.news_date.asc())
-    elif sort == 'news_date desc':
-        query = query.order_by(News.news_date.desc())
-    elif sort == 'title_en asc':
-        query = query.order_by(News.title_en.asc())
-    elif sort == 'title_en desc':
-        query = query.order_by(News.title_en.desc())
-    elif sort == 'created asc':
-        query = query.order_by(News.created.asc())
-    else:
-        query = query.order_by(News.created.desc())
-
-    return [news.as_dict() for news in query.all()]
-
 
 def pages_list(context, data_dict):
     query = model.Session.query(Page)

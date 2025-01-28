@@ -1,10 +1,16 @@
-{% extends "page.html" %}
+{% extends 'page.html' %}
 {% import 'macros/form.html' as form %}
-{% import 'macros/wysiwyg.html' as wysiwyg %}
 
 {% block subtitle %}{{ section_title}}{% endblock %}
 {% set data = data or {} %}
 {% set errors = errors or {} %}
+
+{% block breadcrumb_content %}
+  <li class="breadcrumb-item ">
+    <a href="{{ h.url_for('pages.main_page') }}">{{ _('Main Page') }}</a>
+  </li>
+  <li>{{ _('Edit Section') }}</li>
+{% endblock %}
 
 {% block primary %}
 <section class="module-content">

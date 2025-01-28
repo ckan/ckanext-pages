@@ -1,6 +1,14 @@
-{% extends 'ckanext_pages/edit_base.html' %}
+{% extends 'page.html' %}
+{% set lang = h.lang() %}
 {% import 'macros/form.html' as form %}
 {% block subtitle %}{{ _('Edit Event') }}{% endblock %}
+
+{% block breadcrumb_content %}
+  <li class="breadcrumb-item">
+    <a href="{{ h.url_for('pages.events') }}">{{ _('Events') }}</a>
+  </li>
+  <li>{{ _('Events Edit') }}</li>
+{% endblock %}
 
 {% block primary_content_inner %}
 <div class="container">

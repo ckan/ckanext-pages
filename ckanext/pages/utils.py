@@ -15,7 +15,7 @@ _ = tk._
 
 
 def _parse_form_data(request):
-    return logic.clean_dicrrt(
+    return logic.clean_dict(
         dict_fns.unflatten(
             logic.tuplize_dict(
                 logic.parse_params(request.form)
@@ -48,14 +48,16 @@ def pages_list_pages(page_type):
 def news_list():
     data_dict = {
         'org_id': None,
-        'sort': request.args.get('sort', 'title_en asc')  # Default to 'title_en asc'
+        'sort': request.args.get('sort', 'title_en asc')  # Default sorting
     }
 
-    # Call the action to fetch news items
+    # Fetch news items
     news_list = tk.get_action('ckanext_news_list')(
         context={}, data_dict=data_dict
     )
 
+    print(f"DEBUG: News items sent to template: {news_list}")
+    # Paginate results
     tk.g.page = helpers.Page(
         collection=news_list,
         page=tk.request.args.get('page', 1),
@@ -63,7 +65,9 @@ def news_list():
         items_per_page=21
     )
 
+
     return tk.render('ckanext_pages/news.html', extra_vars={"pages": news_list})
+
 
 def news_toggle_visibility(news_id):
     data_dict = {'news_id': news_id}
@@ -101,7 +105,7 @@ def get_header_logo(id=None):
         if header_logo:
             return json.loads(header_logo.extras)
         return None
-    return [json.loads(logo.extras) for logo in Header.get_all(type='header_logo')]
+    return [logo.extras for logo in Header.get_all(type='header_logo')]
 
 def create_header_logo(data):
     """Create a new header logo."""
@@ -114,34 +118,28 @@ def create_header_logo(data):
 
 def update_header_logo(id, data):
     """Update an existing header logo."""
-    header_logo = Header.get(id=id)
-    if header_logo:
+    if header_logo := Header.get(id=id):
         header_logo.extras = json.dumps(data)
         header_logo.save()
 
 def delete_header_logo(id):
     """Delete a header logo."""
-    header_logo = Header.get(id=id)
-    if header_logo:
+    if header_logo := Header.get(id=id):
         header_logo.delete()
 
 def toggle_header_logo_visibility(id):
     """Toggle visibility of a header logo."""
-    header_logo = Header.get(id=id)
-    if header_logo:
-        data = json.loads(header_logo.extras)
-        data['is_visible'] = not data['is_visible']
-        header_logo.extras = json.dumps(data)
+    if header_logo := Header.get(id=id):
+        header_logo.is_visible = not header_logo.is_visible
         header_logo.save()
 
 def get_main_menu(id=None):
     """Get main menu item(s)."""
     if id:
-        menu_item = Header.get(id=id)
-        if menu_item:
+        if menu_item := Header.get(id=id):
             return json.loads(menu_item.extras)
         return None
-    return [json.loads(item.extras) for item in Header.get_all(type='main_menu')]
+    return [item.extras for item in Header.get_all(type='main_menu')]
 
 def create_main_menu(data):
     """Create a new main menu item."""
@@ -154,24 +152,19 @@ def create_main_menu(data):
 
 def update_main_menu(id, data):
     """Update an existing main menu item."""
-    menu_item = Header.get(id=id)
-    if menu_item:
+    if menu_item := Header.get(id=id):
         menu_item.extras = json.dumps(data)
         menu_item.save()
 
 def delete_main_menu(id):
     """Delete a main menu item."""
-    menu_item = Header.get(id=id)
-    if menu_item:
+    if menu_item := Header.get(id=id):
         menu_item.delete()
 
 def toggle_main_menu_visibility(id):
     """Toggle visibility of a main menu item."""
-    menu_item = Header.get(id=id)
-    if menu_item:
-        data = json.loads(menu_item.extras)
-        data['is_visible'] = not data['is_visible']
-        menu_item.extras = json.dumps(data)
+    if menu_item := Header.get(id=id):
+        menu_item.is_visible = not menu_item.is_visible
         menu_item.save()
 
 def get_secondary_menu(id=None):
@@ -181,7 +174,7 @@ def get_secondary_menu(id=None):
         if menu_item:
             return json.loads(menu_item.extras)
         return None
-    return [json.loads(item.extras) for item in Header.get_all(type='secondary_menu')]
+    return [item.extras for item in Header.get_all(type='secondary_menu')]
 
 def create_secondary_menu(data):
     """Create a new secondary menu item."""
@@ -194,24 +187,19 @@ def create_secondary_menu(data):
 
 def update_secondary_menu(id, data):
     """Update an existing secondary menu item."""
-    menu_item = Header.get(id=id)
-    if menu_item:
+    if menu_item := Header.get(id=id):
         menu_item.extras = json.dumps(data)
         menu_item.save()
 
 def delete_secondary_menu(id):
     """Delete a secondary menu item."""
-    menu_item = Header.get(id=id)
-    if menu_item:
+    if menu_item := Header.get(id=id):
         menu_item.delete()
 
 def toggle_secondary_menu_visibility(id):
     """Toggle visibility of a secondary menu item."""
-    menu_item = Header.get(id=id)
-    if menu_item:
-        data = json.loads(menu_item.extras)
-        data['is_visible'] = not data['is_visible']
-        menu_item.extras = json.dumps(data)
+    if menu_item := Header.get(id=id):
+        menu_item.is_visible = not menu_item.is_visible
         menu_item.save()
 
 class Form:

@@ -2,6 +2,14 @@
 
 {% block subtitle %}{{ _('Main Page') }}{% endblock %}
 
+{% block breadcrumb_content %}
+  <li class="breadcrumb-item">
+    <a href="{{ h.url_for('pages.main_page') }}" aria-label="{{ _('Main Page') }}">
+      <span> {{ _('Main Page') }}</span>
+    </a>
+  </li>
+{% endblock %}
+
 {% block primary %}
   <section class="module-content">
     <!-- Page Heading -->

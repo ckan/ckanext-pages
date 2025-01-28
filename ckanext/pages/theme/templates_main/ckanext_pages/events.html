@@ -1,7 +1,24 @@
-{% extends 'ckanext_pages/edit_base.html' %}
+{% extends 'page1.html' %}
 {% set lang = h.lang() %}
+{% import 'macros/form.html' as form %}
+
+{% block subtitle %}{{ _('Events') }}{% endblock %}
+{% block breadcrumb_content %}
+  <li class="breadcrumb-item">
+    <a href="{{ h.url_for('pages.events') }}" aria-label="{{ _('Events') }}">
+  <span>{{ _('Events') }}</span>
+   </a>
+  </li>
+
+{% endblock %}
 
 {% block page_primary_action %}
+<section>
+  <!-- Page Heading -->
+  <h1 class="page-heading" style="font-size: 24px; font-weight: bold; margin-bottom: 1px;">
+    {{ _('Events') }}
+  </h1>
+
   {% if h.check_access('ckanext_pages_update', {}) %}
   <a href="/events_edit" class="btn btn-primary">
     <i class="fa fa-plus-square"></i> {{ _('Add Events') }}
@@ -115,8 +132,6 @@
   </tbody>
 </table>
 {% endblock %}
-{% block main_content %}
    <div class="wrapper no-nav">
      {{ self.primary_content() }}
    </div>
-{% endblock %}
