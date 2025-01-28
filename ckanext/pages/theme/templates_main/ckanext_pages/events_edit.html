@@ -5,7 +5,9 @@
 
 {% block breadcrumb_content %}
   <li class="breadcrumb-item">
-    <a href="{{ h.url_for('pages.events') }}">{{ _('Events') }}</a>
+    <a href="{{ h.url_for('pages.events') }}" aria-label="{{ _('Events') }}">
+        <span>{{ _('Events') }}</span>
+    </a>
   </li>
   <li>{{ _('Events Edit') }}</li>
 {% endblock %}
