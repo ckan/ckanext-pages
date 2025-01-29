@@ -1,7 +1,8 @@
-{% extends 'page.html' %}
+{% extends 'page1.html' %}
 {% set lang = h.lang() %}
 {% import 'macros/form.html' as form %}
-{% block subtitle %}{{ _('Edit Event') }}{% endblock %}
+
+{% block title %}{{ _('Edit Event') }}{% endblock %}
 
 {% block breadcrumb_content %}
   <li class="breadcrumb-item">

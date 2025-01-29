@@ -1,6 +1,9 @@
-{% extends "page.html" %}
-
-{% block subtitle %}{{ _('Main Page') }}{% endblock %}
+{% extends "page1.html" %}
+{% set lang = h.lang() %}
+{% import 'macros/form.html' as form %}
+{% import 'macros/wysiwyg.html' as wysiwyg %}
+{% snippet 'snippets/home_breadcrumb_item.html' %}
+{% block title %}{{ _('Main Page') }}{% endblock %}
 
 {% block breadcrumb_content %}
   <li class="breadcrumb-item">
@@ -10,7 +13,7 @@
   </li>
 {% endblock %}
 
-{% block primary %}
+{% block primary_content_inner %}
   <section class="module-content">
     <!-- Page Heading -->
     <h1 class="page-heading" style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">

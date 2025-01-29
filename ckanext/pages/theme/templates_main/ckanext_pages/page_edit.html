@@ -1,13 +1,13 @@
-{% extends 'page.html' %}
+{% extends 'page1.html' %}
 {% set lang = h.lang() %}
 {% import 'macros/form.html' as form %}
-{% import 'macros/wysiwyg.html' as wysiwyg %}
-
-{% block subtitle %}{{ _('Edit Page') }}{% endblock %}
+{% block title %}{{ _('Edit Page') }}{% endblock %}
 
 {% block breadcrumb_content %}
-  <li class="breadcrumb-item home">
-    <a href="{{ h.url_for('pages.pages_index') }}">{{ _('Pages') }}</a>
+  <li class="breadcrumb-item">
+    <a href="{{ h.url_for('pages.pages_index') }}" aria-label="{{ _('Pages') }}">
+        <span>{{ _('Pages') }}</span>
+    </a>
   </li>
   <li>
     <span>{{ _('Pages Edit') }}</span>
@@ -16,7 +16,7 @@
 
 {% block primary_content_inner %}
 <div class="container">
-  <h1>Pages</h1>
+  <h1>Add Pages</h1>
   <form method="post" action="{{ h.url_for('pages.edit', page=data.id if data and data.id else '') }}" data-module="basic-form" enctype="multipart/form-data">
     {{ h.csrf_input() }}
     {% if data and data.id %}

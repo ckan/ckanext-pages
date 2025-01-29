@@ -8,9 +8,22 @@ from flask import jsonify
 from ckan.common import _
 from ckan import model
 from ckan.lib import base
+from flask import g
+
+
 pages = Blueprint('pages', __name__)
 header_management = Blueprint('header_management', __name__, url_prefix='/header_management')
 
+@pages.before_request
+def set_current_section():
+    if request.endpoint == 'pages.pages_index' or request.endpoint == 'pages.new' or request.endpoint == 'pages.edit':
+        g.current_section = 'pages'
+    elif request.endpoint == 'pages.news' or request.endpoint == 'pages.news_new':
+        g.current_section = 'news'
+    elif request.endpoint == 'pages.events' or request.endpoint == 'pages.events_new':
+        g.current_section = 'events'
+    elif request.endpoint == 'pages.main_page' or request.endpoint == 'pages.main_page_edit':
+        g.current_section = 'main_page'
 
 @header_management.route('/')
 def index():

@@ -2,7 +2,7 @@
 {% set lang = h.lang() %}
 {% import 'macros/form.html' as form %}
 
-{% block subtitle %}{{ _('Events') }}{% endblock %}
+{% block title %}{{ _('Events') }}{% endblock %}
 {% block breadcrumb_content %}
   <li class="breadcrumb-item">
     <a href="{{ h.url_for('pages.events') }}" aria-label="{{ _('Events') }}">

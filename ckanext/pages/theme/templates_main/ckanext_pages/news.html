@@ -1,6 +1,6 @@
 {% extends "page1.html" %}
-
-{% block subtitle %}{{ _('News') }}{% endblock %}
+{% set lang = h.lang() %}
+{% block title %}{{ _('News') }}{% endblock %}
 
 {% block breadcrumb_content %}
   <li class="breadcrumb-item">

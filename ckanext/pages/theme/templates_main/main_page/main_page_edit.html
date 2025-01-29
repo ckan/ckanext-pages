@@ -1,7 +1,7 @@
-{% extends 'page.html' %}
+{% extends 'page1.html' %}
+{% set lang = h.lang() %}
 {% import 'macros/form.html' as form %}
-
-{% block subtitle %}{{ section_title}}{% endblock %}
+{% block title %}{{ section_title}}{% endblock %}
 {% set data = data or {} %}
 {% set errors = errors or {} %}
 
@@ -12,7 +12,7 @@
   <li>{{ _('Edit Section') }}</li>
 {% endblock %}
 
-{% block primary %}
+{% block primary_content_inner %}
 <section class="module-content">
     <!-- Dynamic Page Heading -->
     <h1 class="page-heading" style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">

@@ -1,7 +1,7 @@
-{% extends 'page.html' %}
+{% extends 'page1.html' %}
 {% set lang = h.lang() %}
 {% import 'macros/form.html' as form %}
-{% import 'macros/wysiwyg.html' as wysiwyg %}
+{% block title %}{{ _('Edit News') }}{% endblock %}
 
 {% block breadcrumb_content %}
   <li class="breadcrumb-item">
