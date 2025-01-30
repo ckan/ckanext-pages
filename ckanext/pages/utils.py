@@ -68,10 +68,9 @@ def news_list():
 
     return tk.render('ckanext_pages/news.html', extra_vars={"pages": news_list})
 
-
 def news_toggle_visibility(news_id):
     data_dict = {'news_id': news_id}
-    return tk.get_action('ckanext_news_toggle_visibility')(context={}, data_dict=data_dict)
+    return tk.get_action('ckanext_news_toggle_visibility')({}, data_dict)  #
 
 def events_list():
 

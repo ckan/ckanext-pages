@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 from ckan import model
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
@@ -13,7 +14,6 @@ from ckanext.pages.logic.schema import update_events_schema, update_pages_schema
 from ckanext.pages import db
 from ckanext.pages.db import MainPage,Page , Event, News
 from ckanext.pages.logic.schema import main_page_schema
-from collections import OrderedDict
 
 
 class HTMLFirstImage(HTMLParser):
@@ -144,6 +144,7 @@ def _news_list(context, data_dict):
         if not pg.hidden:
             status = "Upcoming" if pg.news_date > today else "Posted"
         news_dict = {
+            'id': pg.id,
             'title_en': pg.title_en,
             'created': pg.created.isoformat(),
             'news_date': pg.news_date.isoformat() if pg.news_date else None,
@@ -155,18 +156,27 @@ def _news_list(context, data_dict):
 
     return out_list
 
+
+log = logging.getLogger(__name__)
+
+
 def news_toggle_visibility(context, data_dict):
     news_id = data_dict.get('news_id')
-    if news_id:
-        # Fetch the news entry from the database
-        news = model.Session.query(News).filter(News.id == news_id).first()
-        if not news:
-            raise p.toolkit.ObjectNotFound(f"News with ID {news_id} not found.")
 
-        news.hidden = not news.hidden
-        model.Session.commit()
-        return news.as_dict()
-    return {'success': False}
+    if not news_id:
+        raise p.toolkit.ValidationError("Missing 'news_id' in request.")
+
+    # Fetch the news entry from the database
+    news = model.Session.query(News).filter(News.id == news_id).first()
+    
+    if not news:
+        raise p.toolkit.ObjectNotFound(f"News with ID {news_id} not found.")
+
+    # Toggle visibility
+    news.hidden = not news.hidden
+    model.Session.commit()
+
+    return {'success': True, 'hidden': news.hidden}
 
 
 def _events_list(context, data_dict):

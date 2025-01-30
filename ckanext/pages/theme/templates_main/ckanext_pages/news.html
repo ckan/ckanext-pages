@@ -84,12 +84,11 @@
                   <td><strong>{{ item.name }}</strong></td>
                   <td><strong>{{item.status}}</strong></td>
                   <td><strong>
-                      <a href="#" style="border: none; background: none; padding: 0;" data-id="{{ item.id }}"
-                         id="news-visibility-toggler">
-                          <img src="{{ '/images/EYE3.png' if item.hidden else '/images/hide_icon.png' }}"
-                               alt="{{ _('View') if item.hidden else _('Hide') }}"
-                               style="width: 32px; height: 32px; cursor: pointer;">
-                      </a>
+                    <a href="#" style="border: none; background: none; padding: 0;" data-id="{{ item.id }}" class="news-visibility-toggler">
+                        <img src="{{ '/images/EYE3.png' if item.hidden else '/images/hide_icon.png' }}"
+                             alt="{{ _('View') if item.hidden else _('Hide') }}"
+                             style="width: 32px; height: 32px; cursor: pointer;">
+                    </a>
                     <!-- Edit Button -->
                     <a href="/news_edit/{{ item.id }}">
                       <img src="/images/edit_icon.png" alt="Edit" style="width: 32px; height: 32px; cursor: pointer;">
