@@ -5,7 +5,7 @@ import ckan.plugins.toolkit as tk
 import ckan.logic as logic
 import ckan.lib.helpers as helpers
 import ckan.model as model
-from ckanext.pages.db import MainPage,Page , News, Event, Header
+from ckanext.pages.db import MainPage,Page , News, Event, HeaderMainMenu, HeaderLogo, HeaderSecondaryMenu
 from ckanext.pages.logic.schema import main_page_schema, update_pages_schema
 import ckan.lib.navl.dictization_functions as df
 from flask import request, flash
@@ -92,114 +92,112 @@ def events_list():
 
     return tk.render('ckanext_pages/events.html', extra_vars={"pages": events_list})
 
-# header utils
-from ckan import model
-from ckanext.pages.db import Header
-import json
 
-def get_header_logo(id=None):
-    """Get header logo(s)."""
-    if id:
-        header_logo = Header.get(id=id)
-        if header_logo:
-            return json.loads(header_logo.extras)
-        return None
-    return [logo.extras for logo in Header.get_all(type='header_logo')]
+class HeaderLogoUtils:
+    @classmethod
+    def get_all(cls):
+        return HeaderLogo.get_all()
 
-def create_header_logo(data):
-    """Create a new header logo."""
-    header_logo = Header(
-        id=make_uuid(),
-        type='header_logo',
-        extras=json.dumps(data)
-    )
-    header_logo.save()
+    @classmethod
+    def create(cls, data):
+        logo = HeaderLogo(**data)
+        logo.save()
+        return logo
 
-def update_header_logo(id, data):
-    """Update an existing header logo."""
-    if header_logo := Header.get(id=id):
-        header_logo.extras = json.dumps(data)
-        header_logo.save()
+    @classmethod
+    def update(cls, logo_id, data):
+        logo = HeaderLogo.get(logo_id)
+        for key, value in data.items():
+            setattr(logo, key, value)
+        logo.save()
+        return logo
 
-def delete_header_logo(id):
-    """Delete a header logo."""
-    if header_logo := Header.get(id=id):
-        header_logo.delete()
+    @classmethod
+    def delete(cls, logo_id):
+        logo = HeaderLogo.get(logo_id)
+        if logo:
+            logo.delete()
+        return logo
 
-def toggle_header_logo_visibility(id):
-    """Toggle visibility of a header logo."""
-    if header_logo := Header.get(id=id):
-        header_logo.is_visible = not header_logo.is_visible
-        header_logo.save()
+    @classmethod
+    def toggle_visibility(cls, logo_id):
+        logo = HeaderLogo.get(logo_id)
+        if logo:
+            logo.is_visible = not logo.is_visible
+            logo.save()
+        return logo
 
-def get_main_menu(id=None):
-    """Get main menu item(s)."""
-    if id:
-        if menu_item := Header.get(id=id):
-            return json.loads(menu_item.extras)
-        return None
-    return [item.extras for item in Header.get_all(type='main_menu')]
+class HeaderMainMenuUtils:
+    @classmethod
+    def get_all(cls):
+        return HeaderMainMenu.get_all()
 
-def create_main_menu(data):
-    """Create a new main menu item."""
-    menu_item = Header(
-        id=make_uuid(),
-        type='main_menu',
-        extras=json.dumps(data)
-    )
-    menu_item.save()
+    @classmethod
+    def get_top_level(cls):
+        return HeaderMainMenu.get_top_level()
 
-def update_main_menu(id, data):
-    """Update an existing main menu item."""
-    if menu_item := Header.get(id=id):
-        menu_item.extras = json.dumps(data)
-        menu_item.save()
+    @classmethod
+    def create(cls, data):
+        menu = HeaderMainMenu(**data)
+        menu.save()
+        return menu
 
-def delete_main_menu(id):
-    """Delete a main menu item."""
-    if menu_item := Header.get(id=id):
-        menu_item.delete()
+    @classmethod
+    def update(cls, menu_id, data):
+        menu = HeaderMainMenu.get(menu_id)
+        for key, value in data.items():
+            setattr(menu, key, value)
+        menu.save()
+        return menu
 
-def toggle_main_menu_visibility(id):
-    """Toggle visibility of a main menu item."""
-    if menu_item := Header.get(id=id):
-        menu_item.is_visible = not menu_item.is_visible
-        menu_item.save()
+    @classmethod
+    def delete(cls, menu_id):
+        menu = HeaderMainMenu.get(menu_id)
+        if menu:
+            menu.delete()
+        return menu
 
-def get_secondary_menu(id=None):
-    """Get secondary menu item(s)."""
-    if id:
-        menu_item = Header.get(id=id)
-        if menu_item:
-            return json.loads(menu_item.extras)
-        return None
-    return [item.extras for item in Header.get_all(type='secondary_menu')]
+    @classmethod
+    def toggle_visibility(cls, menu_id):
+        menu = HeaderMainMenu.get(menu_id)
+        if menu:
+            menu.is_visible = not menu.is_visible
+            menu.save()
+        return menu
 
-def create_secondary_menu(data):
-    """Create a new secondary menu item."""
-    menu_item = Header(
-        id=make_uuid(),
-        type='secondary_menu',
-        extras=json.dumps(data)
-    )
-    menu_item.save()
+class HeaderSecondaryMenuUtils:
+    @classmethod
+    def get_all(cls):
+        return HeaderSecondaryMenu.get_all()
 
-def update_secondary_menu(id, data):
-    """Update an existing secondary menu item."""
-    if menu_item := Header.get(id=id):
-        menu_item.extras = json.dumps(data)
-        menu_item.save()
+    @classmethod
+    def create(cls, data):
+        menu = HeaderSecondaryMenu(**data)
+        menu.save()
+        return menu
 
-def delete_secondary_menu(id):
-    """Delete a secondary menu item."""
-    if menu_item := Header.get(id=id):
-        menu_item.delete()
+    @classmethod
+    def update(cls, menu_id, data):
+        menu = HeaderSecondaryMenu.get(menu_id)
+        for key, value in data.items():
+            setattr(menu, key, value)
+        menu.save()
+        return menu
 
-def toggle_secondary_menu_visibility(id):
-    """Toggle visibility of a secondary menu item."""
-    if menu_item := Header.get(id=id):
-        menu_item.is_visible = not menu_item.is_visible
-        menu_item.save()
+    @classmethod
+    def delete(cls, menu_id):
+        menu = HeaderSecondaryMenu.get(menu_id)
+        if menu:
+            menu.delete()
+        return menu
+
+    @classmethod
+    def toggle_visibility(cls, menu_id):
+        menu = HeaderSecondaryMenu.get(menu_id)
+        if menu:
+            menu.is_visible = not menu.is_visible
+            menu.save()
+        return menu
 
 class Form:
     # Input field method

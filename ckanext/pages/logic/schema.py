@@ -10,6 +10,7 @@ not_empty = p.toolkit.get_validator('not_empty')
 isodate = p.toolkit.get_validator('isodate')
 name_validator = p.toolkit.get_validator('name_validator')
 unicode_safe = p.toolkit.get_validator('unicode_safe')
+convert_to_extras = p.toolkit.get_converter('convert_to_extras')
 
 def default_pages_schema():
 
@@ -119,3 +120,32 @@ def update_events_schema(schema = default_events_schema, **kwargs):
     return schema
 
 
+def header_logo_schema():
+    return {
+        'id': [ignore_missing, unicode_safe],
+        'logo_en': [not_empty, unicode_safe],
+        'logo_ar': [not_empty, unicode_safe],
+    }
+
+def header_main_menu_schema():
+    return {
+        'id': [ignore_missing, unicode_safe],
+        'title_en': [not_empty, unicode_safe],
+        'title_ar': [not_empty, unicode_safe],
+        'link_en': [not_empty, unicode_safe],
+        'link_ar': [not_empty, unicode_safe],
+        'menu_type': [not_empty, unicode_safe],
+        'parent_id': [ignore_missing, unicode_safe],
+        'order': [ignore_missing, int],
+        'is_visible': [ignore_missing, boolean_validator],
+    }
+
+def header_secondary_menu_schema():
+    return {
+        'id': [ignore_missing, unicode_safe],
+        'title_en': [not_empty, unicode_safe],
+        'title_ar': [not_empty, unicode_safe],
+        'link_en': [not_empty, unicode_safe],
+        'link_ar': [not_empty, unicode_safe],
+        'is_visible': [ignore_missing, boolean_validator],
+    }

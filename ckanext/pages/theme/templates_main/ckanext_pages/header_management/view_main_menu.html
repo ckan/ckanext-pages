@@ -1,0 +1,40 @@
+{% extends "page.html" %}
+
+{% block primary_content %}
+  <div class="main-menu-view">
+    <h1>{{ _('Main Menu') }}</h1>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>{{ _('Title (English)') }}</th>
+          <th>{{ _('Title (Arabic)') }}</th>
+          <th>{{ _('Link (English)') }}</th>
+          <th>{{ _('Link (Arabic)') }}</th>
+          <th>{{ _('Type') }}</th>
+          <th>{{ _('Parent') }}</th>
+          <th>{{ _('Order') }}</th>
+          <th>{{ _('Visible') }}</th>
+          <th>{{ _('Actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in main_menu_items %}
+          <tr>
+            <td>{{ item.title_en }}</td>
+            <td>{{ item.title_ar }}</td>
+            <td>{{ item.link_en }}</td>
+            <td>{{ item.link_ar }}</td>
+            <td>{{ item.menu_type }}</td>
+            <td>{{ item.parent_id if item.parent_id else _('None') }}</td>
+            <td>{{ item.order }}</td>
+            <td>{{ _('Yes') if item.is_visible else _('No') }}</td>
+            <td>
+              <a href="{{ h.url_for('header_management.edit_main_menu', id=item.id) }}" class="btn btn-primary">{{ _('Edit') }}</a>
+              <a href="{{ h.url_for('header_management.delete_main_menu', id=item.id) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">{{ _('Delete') }}</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

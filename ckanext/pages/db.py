@@ -4,10 +4,12 @@ import json
 from ckan.model import DomainObject
 from six import text_type
 import sqlalchemy as sa
-from sqlalchemy import Column, types
+from sqlalchemy import Column, types, ForeignKey
 from sqlalchemy.orm import class_mapper
 from ckan.model import Session
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB
+
 
 try:
     from sqlalchemy.engine import Row
@@ -206,83 +208,59 @@ class News(DomainObject, BaseModel):
             self.modified = datetime.datetime.utcnow()
             model.Session.add(self)
             model.Session.commit()
-            print("Saved page with ID:", self.id)  # Debug: Confirm save
+            print("Saved page with ID:", self.id)
         except Exception as e:
-            print("Error during saving:", str(e))  # Debug: Log errors
+            print("Error during saving:", str(e))
             raise e
 
-class Header(DomainObject, BaseModel):
-    __tablename__ = "header"
+
+class HeaderLogo(DomainObject, BaseModel):
+    __tablename__ = 'header_logo'
+
+    id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
+    logo_en = Column(types.UnicodeText, nullable=False)
+    logo_ar = Column(types.UnicodeText, nullable=False)
+    created = Column(types.DateTime, default=datetime.datetime.utcnow)
+    modified = Column(types.DateTime, default=datetime.datetime.utcnow)
+
+    @classmethod
+    def get_all(cls):
+        return Session.query(cls).order_by(cls.order).all()
+
+
+class HeaderMainMenu(DomainObject, BaseModel):
+    __tablename__ = 'header_main_menu'
 
     id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
     title_en = Column(types.UnicodeText, nullable=False)
     title_ar = Column(types.UnicodeText, nullable=False)
     link_en = Column(types.UnicodeText, nullable=False)
     link_ar = Column(types.UnicodeText, nullable=False)
-    type = Column(types.UnicodeText, nullable=False)
-    parent_id = Column(types.UnicodeText, sa.ForeignKey("header.id"), nullable=True)
-    order = Column(types.Integer, nullable=False)
+    menu_type = Column(types.UnicodeText, nullable=False)  # Type: link/menu
+    parent_id = Column(types.UnicodeText, ForeignKey('header_main_menu.id'))  # Recursive relationship
+    order = Column(types.Integer, default=0)
     is_visible = Column(types.Boolean, default=True)
-    extras = Column(JSONB, nullable=False, default=dict)
     created = Column(types.DateTime, default=datetime.datetime.utcnow)
     modified = Column(types.DateTime, default=datetime.datetime.utcnow)
-    parent = sa.orm.relationship("Header", remote_side=[id], backref="children")
+    parent = relationship("HeaderMainMenu", remote_side=[id], backref="children")
 
     @classmethod
-    def get(cls, id=None):
-        if id:
-            return Session.query(cls).filter_by(id=id).first()
-        return None
-
-    @classmethod
-    def get_all(cls, **kwargs):
-        query = Session.query(cls).filter_by(**kwargs)
-        return query.order_by(cls.order).all()
-
-    def save(self):
-        self.modified = datetime.datetime.utcnow()
-        Session.add(self)
-        Session.commit()
-
-    def delete(self):
-        Session.delete(self)
-        Session.commit()
+    def get_all(cls):
+        return Session.query(cls).order_by(cls.order).all()
 
 
-class Footer(DomainObject, BaseModel):
-    __tablename__ = "footer"
+class HeaderSecondaryMenu(DomainObject, BaseModel):
+    __tablename__ = 'header_secondary_menu'
 
     id = Column(types.UnicodeText, primary_key=True, default=make_uuid)
-    column = Column(types.Integer, nullable=False)
     title_en = Column(types.UnicodeText, nullable=False)
-    title_ar = Column(types.UnicodeText, nullable=False)  #
-    link_en = Column(types.UnicodeText, nullable=True)
-    link_ar = Column(types.UnicodeText, nullable=True)
-    target = Column(types.UnicodeText, nullable=True)
-    order = Column(types.Integer, nullable=False)
+    title_ar = Column(types.UnicodeText, nullable=False)
+    link_en = Column(types.UnicodeText, nullable=False)
+    link_ar = Column(types.UnicodeText, nullable=False)
+    order = Column(types.Integer, default=0)
     is_visible = Column(types.Boolean, default=True)
     created = Column(types.DateTime, default=datetime.datetime.utcnow)
     modified = Column(types.DateTime, default=datetime.datetime.utcnow)
-
-    @classmethod
-    def get(cls, id=None):
-        if id:
-            return Session.query(cls).filter_by(id=id).first()
-        return None
-
-    @classmethod
-    def get_all(cls, **kwargs):
-        query = Session.query(cls).filter_by(**kwargs)
-        return query.order_by(cls.order).all()
-
-    def save(self):
-        Session.add(self)
-        Session.commit()
-
-    def delete(self):
-        Session.delete(self)
-        Session.commit()
-
 
 
 def table_dictize(obj, context, **kw):

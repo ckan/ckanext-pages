@@ -1,20 +1,25 @@
 import datetime
 import json
 import logging
-from ckan import model
-import ckan.plugins as p
+from html.parser import HTMLParser
+
+import ckan.lib.helpers as h
 import ckan.lib.navl.dictization_functions as df
 import ckan.lib.uploader as uploader
-import ckan.lib.helpers as h
+import ckan.plugins as p
+from ckan import model
+from ckan.lib.navl.dictization_functions import validate
+from ckan.logic import ValidationError
+from ckan.model import Session
 from ckan.plugins import toolkit as tk
-from html.parser import HTMLParser
-from ckanext.pages.logic.schema import update_events_schema, update_pages_schema ,update_news_schema
-
-
+from ckan.plugins.toolkit import get_validator, _, h
 from ckanext.pages import db
-from ckanext.pages.db import MainPage,Page , Event, News
+from ckanext.pages.db import MainPage, Page, Event, News, HeaderMainMenu, HeaderLogo, HeaderSecondaryMenu
 from ckanext.pages.logic.schema import main_page_schema
+from ckanext.pages.logic.schema import update_events_schema, update_pages_schema, update_news_schema
 
+from .logic.schema import header_logo_schema, header_main_menu_schema, header_secondary_menu_schema
+from .helpers import _validate_image_upload, _save_image
 
 class HTMLFirstImage(HTMLParser):
     def __init__(self):
@@ -770,3 +775,209 @@ def news_edit(context, data_dict):
     model.Session.add(news)
     model.Session.commit()
     return news.as_dict()
+
+# Create Actions
+def header_logo_create(context, data_dict):
+    schema = header_logo_schema()
+    data, errors = validate(data_dict, schema)
+    if errors:
+        raise ValidationError(errors)
+
+    # Handle logo_en upload
+    logo_en_file = request.files.get('logo_en')
+    logo_en_filename = _validate_image_upload(logo_en_file)
+    logo_en_path = _save_image(logo_en_file, logo_en_filename)
+
+    # Handle logo_ar upload
+    logo_ar_file = request.files.get('logo_ar')
+    logo_ar_filename = _validate_image_upload(logo_ar_file)
+    logo_ar_path = _save_image(logo_ar_file, logo_ar_filename)
+
+    logo = HeaderLogo()
+    logo.logo_en = logo_en_path
+    logo.logo_ar = logo_ar_path
+    logo.is_visible = data.get('is_visible', True)
+    Session.add(logo)
+    Session.commit()
+    return logo.id
+
+
+def header_main_menu_create(context, data_dict):
+    schema = header_main_menu_schema()
+    data, errors = validate_dict(data_dict, schema)
+
+    if not data.get('parent_id'):
+        count = Session.query(HeaderMainMenu).filter_by(parent_id=None).count()
+        if count >= 6:
+            errors['max_items'] = _('Not More Than 6 Items Can Be Added In The Header Menu Without Any Parent.')
+
+    if errors:
+        raise ValidationError(errors)
+
+    menu = HeaderMainMenu()
+    menu.title_en = data['title_en']
+    menu.title_ar = data['title_ar']
+    menu.link_en = data['link_en']
+    menu.link_ar = data['link_ar']
+    menu.menu_type = data['menu_type']
+    menu.parent_id = data.get('parent_id')
+    menu.order = data.get('order', 0)
+    menu.is_visible = data.get('is_visible', True)
+    Session.add(menu)
+    Session.commit()
+    return menu.id
+
+def header_secondary_menu_create(context, data_dict):
+    schema = header_secondary_menu_schema()
+    data, errors = validate(data_dict, schema)
+    if errors:
+        raise ValidationError(errors)
+
+    menu = HeaderSecondaryMenu()
+    menu.title_en = data['title_en']
+    menu.title_ar = data['title_ar']
+    menu.link_en = data['link_en']
+    menu.link_ar = data['link_ar']
+    menu.order = data.get('order', 0)
+    menu.is_visible = data.get('is_visible', True)
+    Session.add(menu)
+    Session.commit()
+    return menu.id
+
+# Update Actions
+def header_logo_update(context, data_dict):
+    schema = header_logo_schema()
+    data, errors = validate(data_dict, schema)
+    if errors:
+        raise ValidationError(errors)
+
+    logo = Session.query(HeaderLogo).get(data['id'])
+    if not logo:
+        raise ValidationError({'id': _('Logo not found')})
+
+    # Handle logo_en upload
+    if 'logo_en' in request.files:
+        logo_en_file = request.files['logo_en']
+        logo_en_filename = _validate_image_upload(logo_en_file)
+        logo.logo_en = _save_image(logo_en_file, logo_en_filename)
+
+    # Handle logo_ar upload
+    if 'logo_ar' in request.files:
+        logo_ar_file = request.files['logo_ar']
+        logo_ar_filename = _validate_image_upload(logo_ar_file)
+        logo.logo_ar = _save_image(logo_ar_file, logo_ar_filename)
+
+    logo.is_visible = data.get('is_visible', True)
+    logo.modified = datetime.datetime.utcnow()
+    Session.commit()
+    return logo.id
+
+
+def header_main_menu_update(context, data_dict):
+    schema = header_main_menu_schema()
+    data, errors = validate_dict(data_dict, schema)
+    if errors:
+        raise ValidationError(errors)
+
+    menu = Session.query(HeaderMainMenu).get(data['id'])
+    if not menu:
+        raise ValidationError({'id': _('Menu item not found')})
+
+    if not data.get('parent_id'):
+        count = Session.query(HeaderMainMenu).filter_by(parent_id=None).count()
+        if count >= 6:
+            errors['max_items'] = _('Not More Than 6 Items Can Be Added In The Header Menu Without Any Parent.')
+
+    if errors:
+        raise ValidationError(errors)
+
+    menu.title_en = data['title_en']
+    menu.title_ar = data['title_ar']
+    menu.link_en = data['link_en']
+    menu.link_ar = data['link_ar']
+    menu.menu_type = data['menu_type']
+    menu.parent_id = data.get('parent_id')
+    menu.order = data.get('order', 0)
+    menu.is_visible = data.get('is_visible', True)
+    menu.modified = datetime.datetime.utcnow()
+    Session.commit()
+    return menu.id
+
+def header_secondary_menu_update(context, data_dict):
+    schema = header_secondary_menu_schema()
+    data, errors = validate(data_dict, schema)
+    if errors:
+        raise ValidationError(errors)
+
+    menu = Session.query(HeaderSecondaryMenu).get(data['id'])
+    if not menu:
+        raise ValidationError({'id': _('Menu item not found')})
+
+    menu.title_en = data['title_en']
+    menu.title_ar = data['title_ar']
+    menu.link_en = data['link_en']
+    menu.link_ar = data['link_ar']
+    menu.order = data.get('order', 0)
+    menu.is_visible = data.get('is_visible', True)
+    menu.modified = datetime.datetime.utcnow()
+    Session.commit()
+    return menu.id
+
+# Delete Actions
+def header_logo_delete(context, data_dict):
+    logo = Session.query(HeaderLogo).get(data_dict['id'])
+    if not logo:
+        raise ValidationError({'id': _('Logo not found')})
+
+    Session.delete(logo)
+    Session.commit()
+    return True
+
+def header_main_menu_delete(context, data_dict):
+    menu = Session.query(HeaderMainMenu).get(data_dict['id'])
+    if not menu:
+        raise ValidationError({'id': _('Menu item not found')})
+
+    Session.delete(menu)
+    Session.commit()
+    return True
+
+def header_secondary_menu_delete(context, data_dict):
+    menu = Session.query(HeaderSecondaryMenu).get(data_dict['id'])
+    if not menu:
+        raise ValidationError({'id': _('Menu item not found')})
+
+    Session.delete(menu)
+    Session.commit()
+    return True
+
+# Toggle Visibility Actions
+def header_logo_toggle_visibility(context, data_dict):
+    logo = Session.query(HeaderLogo).get(data_dict['id'])
+    if not logo:
+        raise ValidationError({'id': _('Logo not found')})
+
+    logo.is_visible = not logo.is_visible
+    logo.modified = datetime.datetime.utcnow()
+    Session.commit()
+    return logo.is_visible
+
+def header_main_menu_toggle_visibility(context, data_dict):
+    menu = Session.query(HeaderMainMenu).get(data_dict['id'])
+    if not menu:
+        raise ValidationError({'id': _('Menu item not found')})
+
+    menu.is_visible = not menu.is_visible
+    menu.modified = datetime.datetime.utcnow()
+    Session.commit()
+    return menu.is_visible
+
+def header_secondary_menu_toggle_visibility(context, data_dict):
+    menu = Session.query(HeaderSecondaryMenu).get(data_dict['id'])
+    if not menu:
+        raise ValidationError({'id': _('Menu item not found')})
+
+    menu.is_visible = not menu.is_visible
+    menu.modified = datetime.datetime.utcnow()
+    Session.commit()
+    return menu.is_visible
