@@ -282,16 +282,15 @@ def edit_main_menu(id):
             # Check number of root items if no parent selected
             if not data_dict.get('parent_id'):
                 if len(parent_menus) >= 6:
-                    h.flash_error(
-                        tk._('Not More Than 6 Items Can Be Added to Main Header Without Any Parent.')
-                    )
                     return tk.render(
-                        'header_management/edit_main_menu.html',
+                        'ckanext_pages/header_management/edit_main_menu.html',
                         extra_vars={
                             'parent_menus': parent_menus,
                             'data': data_dict,
                             'errors': {'no_parent': True},
-                            'error_summary': tk._('Maximum root items reached')
+                            'error_summary': {
+                                "parent": tk._('Not More Than 6 Items Can Be Added to Main Header Without Any Parent.')
+                            }
                         }
                     )
 
