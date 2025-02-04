@@ -121,7 +121,7 @@ def delete_logo(id):
         tk.get_action('ckanext_header_logo_delete')(
             context, {'id': id}
         )
-        h.flash_success(tk._('Logo deleted'))
+        h.flash_success(tk._('Header logo deleted'))
     except tk.NotAuthorized:
         h.flash_error(tk._('Not authorized to delete logo'))
     except tk.ObjectNotFound:
@@ -130,7 +130,7 @@ def delete_logo(id):
     return h.redirect_to('header_management.index')
 
 
-@header_management.route('/logo/toggle-visibility/<id>', methods=['POST'])
+@header_management.route('/logo/toggle-visibility/<id>', methods=['GET'])
 def toggle_logo_visibility(id):
     context = _get_context()
 
@@ -138,7 +138,7 @@ def toggle_logo_visibility(id):
         tk.get_action('ckanext_header_logo_toggle_visibility')(
             context, {'id': id}
         )
-        h.flash_success(tk._('Logo visibility updated'))
+        h.flash_success(tk._('Header logo visibility updated'))
     except tk.NotAuthorized:
         h.flash_error(tk._('Not authorized to update logo'))
     except tk.ObjectNotFound:
@@ -150,9 +150,8 @@ def toggle_logo_visibility(id):
 @header_management.route('/logo/edit/<id>', methods=['GET', 'POST'])
 def edit_logo(id):
     context = {
-        'model': tk.model,
-               'user': tk.g.user,
-               'auth_user_obj': tk.g.userobj
+        'user': tk.g.user,
+        'auth_user_obj': tk.g.userobj
     }
 
     try:
@@ -182,12 +181,12 @@ def edit_logo(id):
                 if upload_ar or upload_en:
                     tk.h.flash_success(tk._('Header logo uploaded successfully'))
 
-                return tk.h.redirect_to('header_management.edit_logo', id=id)
+                return tk.h.redirect_to('header_management.index')
 
             except tk.ValidationError as e:
                 tk.h.flash_error(e.error_summary)
                 return tk.render(
-                    'header_management/edit_header_logo.html',
+                    'ckanext_pages/header_management/edit_header_logo.html',
                     extra_vars={
                         'data': data_dict,
                         'errors': e.error_dict,
@@ -197,7 +196,7 @@ def edit_logo(id):
 
         logo = tk.get_action('ckanext_header_logo_get')(context, {'id': id})
         return tk.render(
-            'header_management/edit_header_logo.html',
+            'ckanext_pages/header_management/edit_header_logo.html',
             extra_vars={
                 'data': logo,
                 'errors': {},

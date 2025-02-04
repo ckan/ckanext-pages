@@ -1,4 +1,5 @@
 import datetime
+import os
 import uuid
 import json
 from ckan.model import DomainObject
@@ -228,6 +229,13 @@ class HeaderLogo(DomainObject, BaseModel):
     def get(cls):
         return Session.query(cls).first()
 
+    @property
+    def logo_en_filename(self):
+        return self.logo_en.split('/')[-1]
+
+    @property
+    def logo_ar_filename(self):
+        return self.logo_ar.split('/')[-1]
 
 class HeaderMainMenu(DomainObject, BaseModel):
     __tablename__ = 'header_main_menu'

@@ -13,19 +13,20 @@
         {% if logo %}
             <tr>
                 <td>
-                    {{ logo.logo_ar }}
+                    {{ logo.logo_ar_filename }}
                 </td>
                 <td>
-                    {{ logo.logo_en }}
+                    {{ logo.logo_en_filename }}
                 </td>
                 <td>
                     <div class="d-flex flex-row">
                         <!-- Edit Button -->
                         <a href="{{ h.url_for('header_management.edit_logo', id=logo.id) }}" class="me-1">
-                            <img src="/images/edit_icon.png" alt="Edit" style="width: 32px; height: 32px; cursor: pointer;">
+                            <img src="/images/edit_icon.png" alt="Edit"
+                                 style="width: 32px; height: 32px; cursor: pointer;">
                         </a>
                         <!-- Delete Button with Modal Trigger -->
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ logo.id }}">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ logo.id }}" class="me-1">
                             <img src="/images/remove_icon.png" alt="Delete"
                                  style="width: 32px; height: 32px; cursor: pointer;">
                         </a>
@@ -58,18 +59,12 @@
                             </div>
                         </div>
                         <!-- Toggle Visibility -->
-                        <form method="POST"
-                              action="{{ h.url_for('header_management.toggle_logo_visibility', id=logo.id) }}"
-                              class="d-inline">
-                            {{ h.csrf_input() }}
-                            <button type="submit" class="btn-link p-0 me-1"
-                                    style="border: none; background: none; padding: 0;">
-                                <img src="{{ '/images/EYE3.png' if logo.is_visible else '/images/hide_icon.png' }}"
-                                     alt="{{ _('View') if logo.is_visible else _('Hide') }}"
-                                     style="width: 32px; height: 32px; cursor: pointer;"
-                                >
-                            </button>
-                        </form>
+                        <a href="{{ h.url_for('header_management.toggle_logo_visibility', id=logo.id) }}" class="me-1">
+                            <img src="{{ '/images/EYE3.png' if logo.is_visible else '/images/hide_icon.png' }}"
+                                 alt="{{ _('View') if logo.is_visible else _('Hide') }}"
+                                 style="width: 32px; height: 32px; cursor: pointer;"
+                            >
+                        </a>
                     </div>
                 </td>
             </tr>

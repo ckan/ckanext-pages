@@ -3,23 +3,21 @@ import json
 import logging
 from html.parser import HTMLParser
 
-import ckan.lib.helpers as h
 import ckan.lib.navl.dictization_functions as df
 import ckan.lib.uploader as uploader
 import ckan.plugins as p
 from ckan import model
-from ckan.lib.navl.dictization_functions import validate
 from ckan.logic import ValidationError
-from ckan.model import Session
 from ckan.plugins import toolkit as tk
-from ckan.plugins.toolkit import get_validator, _, h
+from ckan.plugins.toolkit import _, h
+from ckanext.comments.model.dictize import get_dictizer
 from ckanext.pages import db
 from ckanext.pages.db import MainPage, Page, Event, News, HeaderMainMenu, HeaderLogo, HeaderSecondaryMenu
 from ckanext.pages.logic.schema import main_page_schema, header_logo_upload_schema
 from ckanext.pages.logic.schema import update_events_schema, update_pages_schema, update_news_schema
 
-from .logic.schema import header_logo_schema, header_menu_schema
-from .helpers import _validate_image_upload, _save_image
+from .logic.schema import header_menu_schema
+
 
 class HTMLFirstImage(HTMLParser):
     def __init__(self):
@@ -776,32 +774,6 @@ def news_edit(context, data_dict):
     model.Session.commit()
     return news.as_dict()
 
-# Create Actions
-def header_logo_create(context, data_dict):
-    schema = header_logo_schema()
-    data, errors = validate(data_dict, schema)
-    if errors:
-        raise ValidationError(errors)
-
-    # Handle logo_en upload
-    logo_en_file = request.files.get('logo_en')
-    logo_en_filename = _validate_image_upload(logo_en_file)
-    logo_en_path = _save_image(logo_en_file, logo_en_filename)
-
-    # Handle logo_ar upload
-    logo_ar_file = request.files.get('logo_ar')
-    logo_ar_filename = _validate_image_upload(logo_ar_file)
-    logo_ar_path = _save_image(logo_ar_file, logo_ar_filename)
-
-    logo = HeaderLogo()
-    logo.logo_en = logo_en_path
-    logo.logo_ar = logo_ar_path
-    logo.is_visible = data.get('is_visible', True)
-    Session.add(logo)
-    Session.commit()
-    return logo.id
-
-
 # List Actions - Header Management
 @tk.side_effect_free
 def header_main_menu_list(context, data_dict):
@@ -847,10 +819,8 @@ def header_secondary_menu_list(context, data_dict):
 def header_logo_get(context, data_dict):
     """Get header logo."""
     tk.check_access('ckanext_header_management_access', context)
+    return model.Session.query(HeaderLogo).first()
 
-    logo = model.Session.query(HeaderLogo).first()
-
-    return logo.as_dict() if logo else None
 
 # Update Actions - Header Management
 def header_main_menu_toggle_visibility(context, data_dict):
@@ -896,13 +866,13 @@ def header_logo_update(context, data_dict):
     tk.check_access('ckanext_header_management_access', context)
 
     model = context['model']
-    logo = model.Session.query(model.HeaderLogo).get(data_dict['id'])
+    logo = model.Session.query(HeaderLogo).get(data_dict['id'])
 
     if not logo:
         raise tk.ObjectNotFound('Header logo not found')
 
     if data_dict.get('logo_ar_upload'):
-        upload_ar = tk.uploader.get_uploader('header_logos')
+        upload_ar = uploader.get_uploader('header_logos')
 
         upload_ar.update_data_dict(
             data_dict,
@@ -910,7 +880,7 @@ def header_logo_update(context, data_dict):
             'logo_ar_upload',
             'clear_logo_ar'
         )
-        upload_ar.upload(tk.uploader.get_max_image_size())
+        upload_ar.upload(uploader.get_max_image_size())
 
         logo_ar_url = data_dict.get('logo_ar_url')
         if logo_ar_url and logo_ar_url[0:6] not in {'http:/', 'https:'}:
@@ -921,7 +891,7 @@ def header_logo_update(context, data_dict):
             logo.logo_ar = logo_ar_url
 
     if data_dict.get('logo_en_upload'):
-        upload_en = tk.uploader.get_uploader('header_logos')
+        upload_en = uploader.get_uploader('header_logos')
 
         upload_en.update_data_dict(
             data_dict,
@@ -930,7 +900,7 @@ def header_logo_update(context, data_dict):
             'clear_logo_en'
         )
 
-        upload_en.upload(tk.uploader.get_max_image_size())
+        upload_en.upload(uploader.get_max_image_size())
 
         logo_en_url = data_dict.get('logo_en_url')
         if logo_en_url and logo_en_url[0:6] not in {'http:/', 'https:'}:

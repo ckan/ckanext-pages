@@ -18,9 +18,8 @@
                        name="logo_ar"
                        accept="image/*"
                        class="hidden-file-input"
-                       data-filename="{{ data.logo_ar or '' }}">
-                <label for="logo_ar" class="file-trigger">Choose File</label>
-                <span class="file-name">{{ data.logo_ar or 'No file chosen' }}</span>
+                       data-filename="{{ data.logo_en_filename or '' }}">
+                <span class="file-name">{{ data.logo_ar_filename or 'No file chosen' }}</span>
             </div>
         </div>
         <div class="col-md-3">
@@ -43,9 +42,8 @@
                        name="logo_en"
                        accept="image/*"
                        class="hidden-file-input"
-                       data-filename="{{ data.logo_en or '' }}">
-                <label for="logo_en" class="file-trigger">Choose File</label>
-                <span class="file-name">{{ data.logo_en or 'No file chosen' }}</span>
+                       data-filename="{{ data.logo_en_filename or '' }}">
+                <span class="file-name">{{ data.logo_en_filename or 'No file chosen' }}</span>
             </div>
         </div>
         <div class="col-md-3">
@@ -70,25 +68,17 @@
         border: 1px solid #cdd3da;
         padding: 4px 17px;
         background: white;
+        height: 40px; /* Maintain height */
     }
 
     .hidden-file-input {
         display: none;
     }
 
-    .file-trigger {
-        background: #f8f9fa;
-        border: 1px solid #ddd;
-        padding: 2px 12px;
-        margin-right: 8px;
-        border-radius: 2px;
-        cursor: pointer;
-        font-size: 13px;
-    }
-
     .file-name {
         color: #555;
         font-size: 13px;
+        margin-left: 10px; /* Adjust margin to keep space */
     }
 
     .Recomndation {
@@ -137,7 +127,7 @@
         document.querySelectorAll('.hidden-file-input').forEach(input => {
             input.addEventListener('change', function () {
                 const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
-                this.nextElementSibling.nextElementSibling.textContent = fileName;
+                this.nextElementSibling.textContent = fileName;
             });
         });
     });
