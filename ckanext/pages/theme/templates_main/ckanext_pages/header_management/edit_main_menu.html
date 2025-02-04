@@ -1,8 +1,8 @@
-{% extends "page.html" %}
+{% extends "ckanext_pages/header_management/base.html" %}
 
 {% block primary_content %}
-  <div class="main-menu-edit">
-    <h1>{{ _('Edit Main Menu Item') }}</h1>
-    {% snippet 'ckanext_pages/header_management/snippets/main_menu_form.html', data=data, errors=errors, parent_options=parent_options %}
+  <div class="main-menu-edit m-4">
+    <h4>{{ _('Edit Main Menu Item') if data.get('id') else _('Add Main Menu Item') }} </h4>
+    {% snippet 'ckanext_pages/header_management/snippets/main_menu_form.html', data=data, errors=errors, error_summary=error_summary, parent_menus=parent_menus %}
   </div>
 {% endblock %}
