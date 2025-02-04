@@ -149,36 +149,55 @@ def toggle_logo_visibility(id):
 
 @header_management.route('/logo/edit/<id>', methods=['GET', 'POST'])
 def edit_logo(id):
-    context = _get_context()
+    context = {
+        'model': tk.model,
+               'user': tk.g.user,
+               'auth_user_obj': tk.g.userobj
+    }
 
     try:
         tk.check_access('ckanext_header_management_access', context)
 
         if tk.request.method == 'POST':
-            data_dict = dict(tk.request.form)
-            data_dict.update(tk.request.files.to_dict())
-            data_dict['id'] = id
+            data_dict = {
+                'id': id,
+                '__extras': {}
+            }
+
+            # Handle file uploads
+            upload_ar = tk.request.files.get('logo_ar')
+            upload_en = tk.request.files.get('logo_en')
+
+            if upload_ar:
+                data_dict['logo_ar_upload'] = upload_ar
+                data_dict['clear_logo_ar'] = False
+
+            if upload_en:
+                data_dict['logo_en_upload'] = upload_en
+                data_dict['clear_logo_en'] = False
 
             try:
                 tk.get_action('ckanext_header_logo_update')(context, data_dict)
-                h.flash_success(tk._('Logo updated successfully'))
-                return h.redirect_to('header_management.index')
-            except tk.ValidationError as e:
-                errors = e.error_dict
-                error_summary = e.error_summary
 
+                if upload_ar or upload_en:
+                    tk.h.flash_success(tk._('Header logo uploaded successfully'))
+
+                return tk.h.redirect_to('header_management.edit_logo', id=id)
+
+            except tk.ValidationError as e:
+                tk.h.flash_error(e.error_summary)
                 return tk.render(
-                    'ckanext_pages/header_management/edit_header_logo.html',
+                    'header_management/edit_header_logo.html',
                     extra_vars={
                         'data': data_dict,
-                        'errors': errors,
-                        'error_summary': error_summary
+                        'errors': e.error_dict,
+                        'error_summary': e.error_summary
                     }
                 )
 
         logo = tk.get_action('ckanext_header_logo_get')(context, {'id': id})
         return tk.render(
-            'ckanext_pages/header_management/edit_header_logo.html',
+            'header_management/edit_header_logo.html',
             extra_vars={
                 'data': logo,
                 'errors': {},
@@ -188,7 +207,8 @@ def edit_logo(id):
 
     except tk.NotAuthorized:
         tk.abort(403, tk._('Not authorized to edit logo'))
-
+    except tk.ObjectNotFound:
+        tk.abort(404, tk._('Logo not found'))
 
 @header_management.route('/main-menu/new', methods=['GET', 'POST'])
 def new_main_menu():

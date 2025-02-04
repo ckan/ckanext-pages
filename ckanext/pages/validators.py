@@ -22,3 +22,24 @@ def not_empty_if_blog(key, data, errors, context):
     if data.get(('page_type',), '') == 'blog':
         if value is df.missing or not value:
             errors[key].append('Publish Date Must be supplied')
+
+
+def validate_logo_upload(key, data, errors, context, file_size=2):
+    """Validator for logo uploads."""
+    value = data.get(key)
+    if not value:
+        return
+
+    # Check file type
+    if value.type not in ['image/jpeg', 'image/png', 'image/gif']:
+        errors[key].append(
+            'File must be a valid image file (JPEG, PNG, or GIF)'
+        )
+        return
+
+    # Check file size (2MB max)
+    if value.content_length > file_size * 1024 * 1024:
+        errors[key].append(
+            'File size must be less than 2MB'
+        )
+        return

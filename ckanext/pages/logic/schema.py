@@ -1,5 +1,5 @@
 import ckan.plugins as p
-from ckanext.pages.validators import page_name_validator, not_empty_if_blog
+from ckanext.pages.validators import page_name_validator, not_empty_if_blog, validate_logo_upload
 from ckanext.pages.interfaces import IPagesSchema
 from ckan.plugins.toolkit import get_validator
 
@@ -122,44 +122,30 @@ def update_events_schema(schema = default_events_schema, **kwargs):
 
 def header_logo_schema():
     return {
-        'id': [tk.get_validator('ignore_missing'),
-               tk.get_validator('unicode_safe')],
-        'logo_en': [tk.get_validator('ignore_missing'),
-                   tk.get_validator('unicode_safe')],
-        'logo_ar': [tk.get_validator('ignore_missing'),
-                   tk.get_validator('unicode_safe')]
+        'id': [ignore_missing, unicode_safe],
+        'logo_en': [ignore_missing, unicode_safe],
+        'logo_ar': [ignore_missing, unicode_safe]
     }
+
 
 def header_menu_schema():
     return {
-        'id': [tk.get_validator('ignore_missing'),
-               tk.get_validator('unicode_safe')],
-        'title_en': [tk.get_validator('not_empty'),
-                    tk.get_validator('unicode_safe')],
-        'title_ar': [tk.get_validator('not_empty'),
-                    tk.get_validator('unicode_safe')],
-        'link_en': [tk.get_validator('not_empty'),
-                   tk.get_validator('unicode_safe')],
-        'link_ar': [tk.get_validator('not_empty'),
-                   tk.get_validator('unicode_safe')],
-        'menu_type': [tk.get_validator('not_empty'),
-                     tk.get_validator('unicode_safe'),
-                     tk.get_validator('one_of')(['link', 'menu'])],
-        'parent_id': [tk.get_validator('ignore_missing'),
-                     tk.get_validator('unicode_safe')],
-        'order': [tk.get_validator('ignore_missing'),
-                 tk.get_validator('int_validator')],
-        'is_visible': [tk.get_validator('ignore_missing'),
-                      tk.get_validator('boolean_validator')]
+        'id': [ignore_missing, unicode_safe],
+        'title_en': [not_empty, unicode_safe],
+        'title_ar': [not_empty, unicode_safe],
+        'link_en': [not_empty, unicode_safe],
+        'link_ar': [not_empty, unicode_safe],
+        'menu_type': [not_empty, unicode_safe, p.toolkit.get_validator('one_of')(['link', 'menu'])],
+        'parent_id': [ignore_missing, unicode_safe],
+        'order': [ignore_missing, p.toolkit.get_validator('int_validator')],
+        'is_visible': [ignore_missing, p.toolkit.get_validator('boolean_validator')]
     }
+
 
 def header_logo_upload_schema():
     """Schema for logo upload validation."""
     return {
-        'logo_en_upload': [tk.get_validator('ignore_missing'),
-                          tk.get_validator('unicode_safe')],
-        'logo_ar_upload': [tk.get_validator('ignore_missing'),
-                          tk.get_validator('unicode_safe')],
-        'clear_upload': [tk.get_validator('ignore_missing'),
-                        tk.get_validator('boolean_validator')]
+        'logo_en_upload': [ignore_missing, unicode_safe, validate_logo_upload],
+        'logo_ar_upload': [ignore_missing, unicode_safe, validate_logo_upload],
+        'clear_upload': [ignore_missing, p.toolkit.get_validator('boolean_validator')]
     }

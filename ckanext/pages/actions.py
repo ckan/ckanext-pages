@@ -890,18 +890,57 @@ def header_main_menu_delete(context, data_dict):
 
     return {'message': 'Menu item deleted'}
 
+
 def header_logo_update(context, data_dict):
     """Update a header logo."""
     tk.check_access('ckanext_header_management_access', context)
 
-    logo = model.Session.query(HeaderLogo).get(data_dict['id'])
+    model = context['model']
+    logo = model.Session.query(model.HeaderLogo).get(data_dict['id'])
 
     if not logo:
-        raise tk.ObjectNotFound('Logo not found')
+        raise tk.ObjectNotFound('Header logo not found')
 
-    for key, value in data_dict.items():
-        setattr(logo, key, value)
+    if data_dict.get('logo_ar_upload'):
+        upload_ar = tk.uploader.get_uploader('header_logos')
 
+        upload_ar.update_data_dict(
+            data_dict,
+            'logo_ar_url',
+            'logo_ar_upload',
+            'clear_logo_ar'
+        )
+        upload_ar.upload(tk.uploader.get_max_image_size())
+
+        logo_ar_url = data_dict.get('logo_ar_url')
+        if logo_ar_url and logo_ar_url[0:6] not in {'http:/', 'https:'}:
+            logo_ar_url = tk.h.url_for_static(
+                'uploads/header_logos/{}'.format(logo_ar_url),
+                qualified=True
+            )
+            logo.logo_ar = logo_ar_url
+
+    if data_dict.get('logo_en_upload'):
+        upload_en = tk.uploader.get_uploader('header_logos')
+
+        upload_en.update_data_dict(
+            data_dict,
+            'logo_en_url',
+            'logo_en_upload',
+            'clear_logo_en'
+        )
+
+        upload_en.upload(tk.uploader.get_max_image_size())
+
+        logo_en_url = data_dict.get('logo_en_url')
+        if logo_en_url and logo_en_url[0:6] not in {'http:/', 'https:'}:
+            logo_en_url = tk.h.url_for_static(
+                'uploads/header_logos/{}'.format(logo_en_url),
+                qualified=True
+            )
+            logo.logo_en = logo_en_url
+
+    logo.modified = datetime.datetime.utcnow()
     model.Session.commit()
 
     return logo.as_dict()
