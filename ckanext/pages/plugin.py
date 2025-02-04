@@ -129,6 +129,7 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_header_secondary_menu_create': actions.header_secondary_menu_create,
             'ckanext_header_main_menu_list': actions.header_main_menu_list,
             'ckanext_header_main_menu_parent_list': actions.header_main_menu_parent_list,
+            'ckanext_header_secondary_menu_parent_list': actions.header_secondary_menu_parent_list,
             'ckanext_header_secondary_menu_list': actions.header_secondary_menu_list,
             'ckanext_header_logo_get': actions.header_logo_get,
             'ckanext_header_main_menu_show': actions.header_main_menu_show,
@@ -138,7 +139,10 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_header_secondary_menu_toggle_visibility': actions.header_secondary_menu_toggle_visibility,
             'ckanext_header_logo_update': actions.header_logo_update,
             'ckanext_header_logo_delete': actions.header_logo_delete,
-            'ckanext_header_logo_toggle_visibility': actions.header_logo_toggle_visibility
+            'ckanext_header_logo_toggle_visibility': actions.header_logo_toggle_visibility,
+            'ckanext_header_secondary_menu_show': actions.header_secondary_menu_show,
+            'ckanext_header_secondary_menu_edit': actions.header_secondary_menu_edit,
+            'ckanext_header_secondary_menu_delete': actions.header_secondary_menu_delete
         }
         return actions_dict
 

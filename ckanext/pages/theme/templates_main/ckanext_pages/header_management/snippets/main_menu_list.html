@@ -1,5 +1,3 @@
-{# ckanext/pages/theme/templates_main/header_management/snippets/main_menu_list.html #}
-
 <h5 class="mt-5">{{ _('Main Menu') }}</h5>
 
 <div class="d-flex flex-row justify-content-between mt-3">
@@ -36,7 +34,11 @@
         <tbody>
         {% for item in main_menu %}
             <tr>
-                <th scope="row">{{ item.title_en }}</th>
+                <th scope="row">
+                    <a href="{{ h.url_for('header_management.menu_item_details', id=item.id) }}" class="custom-link">
+                        {{ item.title_en }}
+                    </a>
+                </th>
                 <td>{{ item.link_en }}</td>
                 <td>{{ item.menu_type }}</td>
                 <td>{{ item.parent.title_en if item.parent else '-' }}</td>
@@ -102,3 +104,16 @@
         </tbody>
     </table>
 </div>
+
+
+<style>
+    .custom-link {
+        text-decoration: none !important;
+        color: inherit !important;
+    }
+
+    .custom-link:hover {
+        text-decoration: underline !important;
+        color: #0d6efd !important;
+    }
+</style>

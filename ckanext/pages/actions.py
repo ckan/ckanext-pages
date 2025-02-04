@@ -7,7 +7,6 @@ import ckan.lib.navl.dictization_functions as df
 import ckan.lib.uploader as uploader
 import ckan.plugins as p
 from ckan import model
-from ckan.logic import ValidationError
 from ckan.plugins import toolkit as tk
 from ckan.plugins.toolkit import _, h
 from ckanext.comments.model.dictize import get_dictizer
@@ -789,11 +788,21 @@ def header_main_menu_list(context, data_dict):
 
     return query.all()
 
+
 def header_main_menu_parent_list(context, data_dict):
     """List all main menu parent items."""
     tk.check_access('ckanext_header_management_access', context)
 
     return model.Session.query(HeaderMainMenu).filter_by(parent_id=None).order_by(HeaderMainMenu.order).all()
+
+
+def header_secondary_menu_parent_list(context, data_dict):
+    """List all secondary menu parent items."""
+    tk.check_access('ckanext_header_management_access', context)
+
+    return model.Session.query(HeaderSecondaryMenu).filter_by(parent_id=None).order_by(HeaderSecondaryMenu.order).all()
+
+
 @tk.side_effect_free
 def header_secondary_menu_list(context, data_dict):
     """List all secondary menu items."""
@@ -1071,7 +1080,9 @@ def header_main_menu_show(context, data_dict):
     if not menu_item:
         raise tk.ObjectNotFound('Menu item not found')
 
-    return menu_item.as_dict()
+    menu_item_dict = menu_item.as_dict()
+    menu_item_dict['parent'] = menu_item.parent.as_dict() if menu_item.parent else None
+    return menu_item_dict
 
 def header_main_menu_edit(context, data_dict):
     """Edit a main menu item."""
@@ -1132,11 +1143,15 @@ def header_main_menu_edit(context, data_dict):
     model.Session.commit()
     return menu_item.as_dict()
 
-def header_secondary_menu_create(context, data_dict):
-    """Create a new secondary menu item with validation."""
+def header_secondary_menu_edit(context, data_dict):
+    """Edit a secondary menu item."""
     tk.check_access('ckanext_header_management_access', context)
 
-    # Validate the data
+    menu_item = model.Session.query(HeaderSecondaryMenu).get(data_dict['id'])
+
+    if not menu_item:
+        raise tk.ObjectNotFound('Menu item not found')
+
     data, errors = tk.navl_validate(
         data_dict,
         header_menu_schema(),
@@ -1146,16 +1161,108 @@ def header_secondary_menu_create(context, data_dict):
     if errors:
         raise tk.ValidationError(errors)
 
-    # Create the menu item
+    if parent_id := data.get('parent_id'):
+        parent = model.Session.query(HeaderSecondaryMenu).get(parent_id)
+        errors = []
+
+        if not parent:
+            errors.append('Parent menu item not found')
+        if parent_id == menu_item.id:
+            errors.append('Cannot set parent to self')
+        if parent.menu_type != 'menu':
+            errors.append('Parent must be a menu type item')
+        if parent.parent_id:
+            errors.append('Maximum nesting level exceeded')
+
+        if model.Session.query(HeaderSecondaryMenu).filter(
+                HeaderSecondaryMenu.parent_id == parent_id, HeaderSecondaryMenu.id != menu_item.id
+        ).first():
+            errors.append('Parent is parent of another menu item')
+
+        if errors:
+            raise tk.ValidationError({'parent_id': errors})
+
+        menu_item.parent_id = parent_id
+
+    if order:= data.get('order'):
+        if order != menu_item.order and model.Session.query(HeaderSecondaryMenu).filter_by(order=order).first():
+            raise tk.ValidationError({'order': ['Order already taken']})
+
+    else:
+        menu_item.parent_id = None
+
+    menu_item.title_en = data['title_en']
+    menu_item.title_ar = data['title_ar']
+    menu_item.link_en = data['link_en']
+    menu_item.link_ar = data['link_ar']
+    menu_item.menu_type = data['menu_type']
+    menu_item.order = data.get('order', 0)
+    menu_item.is_visible = data.get('is_visible', True)
+
+    model.Session.commit()
+    return menu_item.as_dict()
+
+def header_secondary_menu_show(context, data_dict):
+    """Show a secondary menu item."""
+    tk.check_access('ckanext_header_management_access', context)
+
+    menu_item = model.Session.query(HeaderSecondaryMenu).get(data_dict['id'])
+
+    if not menu_item:
+        raise tk.ObjectNotFound('Menu item not found')
+
+    return menu_item.as_dict()
+
+def header_secondary_menu_create(context, data_dict):
+    """Create a new secondary menu item with validation."""
+    tk.check_access('ckanext_header_management_access', context)
+
+    data, errors = tk.navl_validate(
+        data_dict,
+        header_menu_schema(),
+        context
+    )
+
+    if errors:
+        raise tk.ValidationError(errors)
+
     menu_item = HeaderSecondaryMenu(
         title_en=data['title_en'],
         title_ar=data['title_ar'],
         link_en=data['link_en'],
         link_ar=data['link_ar'],
         menu_type=data['menu_type'],
+        parent_id=data.get('parent_id') or None,
+        order=data.get('order', 0),
         is_visible=data.get('is_visible', True)
     )
 
-    # Save the menu item
+    if parent_id := data.get('parent_id'):
+        parent = model.Session.query(HeaderSecondaryMenu).get(parent_id)
+        errors = []
+
+        if not parent:
+            errors.append('Parent menu item not found')
+        if parent_id == menu_item.id:
+            errors.append('Cannot set parent to self')
+        if parent.menu_type != 'menu':
+            errors.append('Parent must be a menu type item')
+        if parent.parent_id:
+            errors.append('Maximum nesting level exceeded')
+
+        if model.Session.query(HeaderSecondaryMenu).filter(
+                HeaderSecondaryMenu.parent_id == parent_id, HeaderSecondaryMenu.id != menu_item.id
+        ).first():
+            errors.append('Parent is parent of another menu item')
+
+        if errors:
+            raise tk.ValidationError({'parent_id': errors})
+
+        menu_item.parent_id = parent_id
+
+    if order:= data.get('order'):
+        if order != menu_item.order and model.Session.query(HeaderSecondaryMenu).filter_by(order=order).first():
+            raise tk.ValidationError({'order': ['Order already taken']})
+
     menu_item.save()
     return menu_item.as_dict()

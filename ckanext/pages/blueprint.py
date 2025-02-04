@@ -97,7 +97,7 @@ def delete_main_menu(id):
     return h.redirect_to('header_management.index')
 
 
-@header_management.route('/secondary-menu/toggle-visibility/<id>', methods=['POST'])
+@header_management.route('/secondary-menu/toggle-visibility/<id>', methods=['GET'])
 def toggle_secondary_menu_visibility(id):
     context = _get_context()
 
@@ -330,10 +330,26 @@ def edit_main_menu(id):
         tk.abort(404, tk._('Menu item not found'))
 
 
-@header_management.route('/main-menu/new', methods=['GET', 'POST'])
-def new_secondary_menu():
+@header_management.route('/menu-item/details/<id>', methods=['GET'])
+def menu_item_details(id):
     context = _get_context()
 
+    try:
+        tk.check_access('ckanext_header_management_access', context)
+
+        menu_item = tk.get_action('ckanext_header_main_menu_show')(context, {'id': id})
+        return tk.render('ckanext_pages/header_management/menu_item_details.html', extra_vars={'menu_item': menu_item})
+
+    except tk.NotAuthorized:
+        tk.abort(403, tk._('Not authorized to view menu item details'))
+    except tk.ObjectNotFound:
+        tk.abort(404, tk._('Menu item not found'))
+
+
+@header_management.route('/secondary-menu/new', methods=['GET', 'POST'])
+def new_secondary_menu():
+    context = _get_context()
+    parent_menus = tk.get_action('ckanext_header_secondary_menu_parent_list')(context, {})
     try:
         tk.check_access('ckanext_header_management_access', context)
 
@@ -346,12 +362,91 @@ def new_secondary_menu():
                 h.flash_success(tk._('Menu item created successfully'))
                 return h.redirect_to('header_management.index')
             except tk.ValidationError as e:
-                h.flash_error(e.error_summary)
+                return tk.render(
+                    'ckanext_pages/header_management/edit_secondary_menu.html',
+                    extra_vars={
+                        'parent_menus': parent_menus,
+                        'data': data_dict,
+                        'errors': e.error_dict,
+                        'error_summary': e.error_summary
+                    }
+                )
 
-        return tk.render('header_management/edit_header_secondary_menu.html')
+        return tk.render(
+            'ckanext_pages/header_management/edit_secondary_menu.html',
+            extra_vars={
+                'parent_menus': parent_menus,
+                'data': {},
+                'errors': {},
+                'error_summary': {}
+            }
+        )
 
     except tk.NotAuthorized:
         tk.abort(403, tk._('Not authorized to create menu items'))
+
+
+
+@header_management.route('/secondary-menu/edit/<id>', methods=['GET', 'POST'])
+def edit_secondary_menu(id):
+    context = _get_context()
+    parent_menus = tk.get_action('ckanext_header_secondary_menu_parent_list')(context, {})
+    try:
+        tk.check_access('ckanext_header_management_access', context)
+
+        if tk.request.method == 'POST':
+            data_dict = dict(tk.request.form)
+            data_dict['id'] = id
+
+            try:
+                tk.get_action('ckanext_header_secondary_menu_edit')(context, data_dict)
+                h.flash_success(tk._('Menu item updated'))
+                return h.redirect_to('header_management.index')
+            except tk.ValidationError as e:
+                return tk.render(
+                    'ckanext_pages/header_management/edit_secondary_menu.html',
+                    extra_vars={
+                        'parent_menus': parent_menus,
+                        'data': data_dict,
+                        'errors': e.error_dict,
+                        'error_summary': e.error_summary
+                    }
+                )
+
+        menu_item = tk.get_action('ckanext_header_secondary_menu_show')(context, {'id': id})
+        return tk.render(
+            'ckanext_pages/header_management/edit_secondary_menu.html',
+            extra_vars={
+                'parent_menus': parent_menus,
+                'data': menu_item,
+                'errors': {},
+                'error_summary': {}
+            }
+        )
+
+    except tk.NotAuthorized:
+        tk.abort(403, tk._('Not authorized to edit menu items'))
+    except tk.ObjectNotFound:
+        tk.abort(404, tk._('Menu item not found'))
+
+
+@header_management.route('/secondary-menu/delete/<id>', methods=['POST'])
+def delete_secondary_menu(id):
+    context = _get_context()
+
+    try:
+        tk.get_action('ckanext_header_secondary_menu_delete')(
+            context, {'id': id}
+        )
+        h.flash_success(tk._('Menu item deleted'))
+    except tk.NotAuthorized:
+        h.flash_error(tk._('Not authorized to delete menu items'))
+    except tk.ObjectNotFound:
+        h.flash_error(tk._('Menu item not found'))
+    except tk.ValidationError as e:
+        h.flash_error(e.error_dict['id'])
+
+    return h.redirect_to('header_management.index')
 
 
 def index(page_type='page'):

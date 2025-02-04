@@ -1,0 +1,45 @@
+{% extends "ckanext_pages/header_management/base.html" %}
+
+{% block primary_content %}
+    <div class="m-3">
+        <h4 class="mt-4">{{ _('Menu Item Details') }}</h4>
+        <table class="tablebody table mt-4">
+            <thead>
+            <tr>
+                <th scope="col" style="font-weight: bold !important;">{{ _('Title En') }}</th>
+                <th scope="col" style="font-weight: bold !important;">{{ _('Value') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row" style="font-weight: bold !important;">{{ _('Title En') }}</th>
+                <td style="font-weight: bold !important;">{{ menu_item.title_en }}</td>
+            </tr>
+            <tr>
+                <th scope="row" style="font-weight: bold !important;">{{ _('Title Ar') }}</th>
+                <td style="font-weight: bold !important;">{{ menu_item.title_ar }}</td>
+            </tr>
+            <tr>
+                <th scope="row" style="font-weight: bold !important;">{{ _('Link Ar') }}</th>
+                <td style="font-weight: bold !important;">{{ menu_item.link_ar }}</td>
+            </tr>
+            <tr>
+                <th scope="row" style="font-weight: bold !important;">{{ _('Link En') }}</th>
+                <td style="font-weight: bold !important;">{{ menu_item.link_en }}</td>
+            </tr>
+            <tr>
+                <th scope="row" style="font-weight: bold !important;">{{ _('Type') }}</th>
+                <td style="font-weight: bold !important;">{{ menu_item.menu_type }}</td>
+            </tr>
+            <tr>
+                <th scope="row" style="font-weight: bold !important;">{{ _('Parent') }}</th>
+                <td style="font-weight: bold !important;">{{ menu_item.parent.title_en if menu_item.parent else '-' }}</td>
+            </tr>
+            <tr>
+                <th scope="row" style="font-weight: bold !important;">{{ _('Order') }}</th>
+                <td style="font-weight: bold !important;">{{ menu_item.order }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

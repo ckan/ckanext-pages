@@ -275,6 +275,8 @@ class HeaderSecondaryMenu(DomainObject, BaseModel):
     title_ar = Column(types.UnicodeText, nullable=False)
     link_en = Column(types.UnicodeText, nullable=False)
     link_ar = Column(types.UnicodeText, nullable=False)
+    menu_type = Column(types.UnicodeText, nullable=False)  # Type: link/menu
+    parent_id = Column(types.UnicodeText, ForeignKey('header_secondary_menu.id'))  # Recursive relationship
     order = Column(types.Integer, default=0)
     is_visible = Column(types.Boolean, default=True)
     created = Column(types.DateTime, default=datetime.datetime.utcnow)

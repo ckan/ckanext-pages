@@ -58,6 +58,8 @@ def upgrade():
         sa.Column("title_ar", sa.UnicodeText, nullable=False),
         sa.Column("link_en", sa.UnicodeText, nullable=False),
         sa.Column("link_ar", sa.UnicodeText, nullable=False),
+        sa.Column("menu_type", sa.UnicodeText, nullable=False),  # Type: link/menu
+        sa.Column("parent_id", sa.UnicodeText, sa.ForeignKey("header_secondary_menu.id")),
         sa.Column("order", sa.Integer, default=0),
         sa.Column("is_visible", sa.Boolean, default=True),
         sa.Column("created", sa.DateTime, default=datetime.datetime.utcnow),
