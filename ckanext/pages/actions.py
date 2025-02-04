@@ -884,10 +884,7 @@ def header_logo_update(context, data_dict):
 
         logo_ar_url = data_dict.get('logo_ar_url')
         if logo_ar_url and logo_ar_url[0:6] not in {'http:/', 'https:'}:
-            logo_ar_url = tk.h.url_for_static(
-                'uploads/header_logos/{}'.format(logo_ar_url),
-                qualified=True
-            )
+            logo_ar_url = 'uploads/header_logos/{}'.format(logo_ar_url)
             logo.logo_ar = logo_ar_url
 
     if data_dict.get('logo_en_upload'):
@@ -904,10 +901,7 @@ def header_logo_update(context, data_dict):
 
         logo_en_url = data_dict.get('logo_en_url')
         if logo_en_url and logo_en_url[0:6] not in {'http:/', 'https:'}:
-            logo_en_url = tk.h.url_for_static(
-                'uploads/header_logos/{}'.format(logo_en_url),
-                qualified=True
-            )
+            logo_en_url = 'uploads/header_logos/{}'.format(logo_en_url)
             logo.logo_en = logo_en_url
 
     logo.modified = datetime.datetime.utcnow()
