@@ -781,7 +781,13 @@ def header_main_menu_list(context, data_dict):
 
     menu_type = data_dict.get('menu_type')
 
-    query = model.Session.query(HeaderMainMenu).order_by(HeaderMainMenu.order)
+    query = model.Session.query(
+        HeaderMainMenu
+    ).order_by(
+        HeaderMainMenu.created.asc(),
+        HeaderMainMenu.order
+    )
+
 
     if menu_type:
         query = query.filter_by(menu_type=menu_type)
@@ -1053,9 +1059,13 @@ def header_main_menu_create(context, data_dict):
         if errors:
             raise tk.ValidationError({'parent_id': errors})
 
-    if order := data.get('order'):
-        if model.Session.query(HeaderMainMenu).filter_by(order=order).first():
-            raise tk.ValidationError({'order': ['Order already taken']})
+    if (order := data.get('order')) and (menu_type := data.get('menu_type')):
+        if menu_type == 'menu':
+            if model.Session.query(HeaderMainMenu).filter_by(order=order).first():
+                raise tk.ValidationError({'order': ['Order already taken']})
+        elif menu_type == 'link':
+            if model.Session.query(HeaderMainMenu).filter_by(order=order, parent_id=parent_id).first():
+                raise tk.ValidationError({'order': ['Order already taken']})
 
     menu_item = HeaderMainMenu(
         title_en=data['title_en'],
@@ -1115,22 +1125,19 @@ def header_main_menu_edit(context, data_dict):
         if parent.parent_id:
             errors.append('Maximum nesting level exceeded')
 
-        if model.Session.query(HeaderMainMenu).filter(
-                HeaderMainMenu.parent_id == parent_id, HeaderMainMenu.id != menu_item.id
-        ).first():
-            errors.append('Parent is parent of another menu item')
-
         if errors:
             raise tk.ValidationError({'parent_id': errors})
 
         menu_item.parent_id = parent_id
 
-    if order:= data.get('order'):
-        if order != menu_item.order and model.Session.query(HeaderMainMenu).filter_by(order=order).first():
-            raise tk.ValidationError({'order': ['Order already taken']})
+    if (order := data.get('order')) and (order != menu_item.order) and (menu_type := data.get('menu_type')):
+        if menu_type == 'menu':
+            if model.Session.query(HeaderMainMenu).filter_by(order=order).first():
+                raise tk.ValidationError({'order': ['Order already taken']})
+        elif menu_type == 'link':
+            if model.Session.query(HeaderMainMenu).filter_by(order=order, parent_id=parent_id).first():
+                raise tk.ValidationError({'order': ['Order already taken']})
 
-    else:
-        menu_item.parent_id = None
 
     menu_item.title_en = data['title_en']
     menu_item.title_ar = data['title_ar']
@@ -1173,11 +1180,6 @@ def header_secondary_menu_edit(context, data_dict):
             errors.append('Parent must be a menu type item')
         if parent.parent_id:
             errors.append('Maximum nesting level exceeded')
-
-        if model.Session.query(HeaderSecondaryMenu).filter(
-                HeaderSecondaryMenu.parent_id == parent_id, HeaderSecondaryMenu.id != menu_item.id
-        ).first():
-            errors.append('Parent is parent of another menu item')
 
         if errors:
             raise tk.ValidationError({'parent_id': errors})
@@ -1250,18 +1252,13 @@ def header_secondary_menu_create(context, data_dict):
         if parent.parent_id:
             errors.append('Maximum nesting level exceeded')
 
-        if model.Session.query(HeaderSecondaryMenu).filter(
-                HeaderSecondaryMenu.parent_id == parent_id, HeaderSecondaryMenu.id != menu_item.id
-        ).first():
-            errors.append('Parent is parent of another menu item')
-
         if errors:
             raise tk.ValidationError({'parent_id': errors})
 
         menu_item.parent_id = parent_id
 
     if order:= data.get('order'):
-        if order != menu_item.order and model.Session.query(HeaderSecondaryMenu).filter_by(order=order).first():
+        if model.Session.query(HeaderSecondaryMenu).filter_by(order=order).first():
             raise tk.ValidationError({'order': ['Order already taken']})
 
     menu_item.save()

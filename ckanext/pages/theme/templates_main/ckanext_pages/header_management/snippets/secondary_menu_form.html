@@ -29,8 +29,8 @@
                         id='field-link-ar',
                         value=data.link_ar,
                         error=errors.link_ar,
-                        classes=['w-100']
-                        ) }}
+                        classes=['w-100'],
+                         is_required=data.menu_type == 'link' or data.parent_id) }}
 
                 {# Link English #}
                 {{ form.input('link_en',
@@ -38,12 +38,13 @@
                         id='field-link-en',
                         value=data.link_en,
                         error=errors.link_en,
-                        classes=['w-100']) }}
+                        classes=['w-100'],
+                         is_required=data.menu_type == 'link' or data.parent_id) }}
 
                 {# Order #}
                 <p class="boldfont mt-3">{{ _('Order') }}</p>
                 <select name="order" id="orderDropdown" class="form-control">
-                    {% for i in range(1, 7) %}
+                    {% for i in range(1, 11) %}
                         <option value="{{ i }}" {% if data.order == i %}selected{% endif %}>{{ i }}</option>
                     {% endfor %}
                 </select>

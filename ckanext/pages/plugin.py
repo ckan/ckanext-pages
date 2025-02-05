@@ -1,5 +1,7 @@
 import logging
 from html import escape as html_escape
+
+from ckanext.pages.helpers import get_header_data
 from six.moves.urllib.parse import quote
 from ckan.plugins import toolkit as tk
 import ckan.plugins as p
@@ -155,4 +157,9 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_pages_upload': auth.pages_upload,
             # Header Management Auth Functions
             'ckanext_header_management_access': auth.header_management_access
+        }
+
+    def get_helpers(self):
+        return {
+            'get_header_data': get_header_data,
         }

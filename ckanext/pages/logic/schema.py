@@ -128,13 +128,22 @@ def header_logo_schema():
     }
 
 
+def link_required_if_link_type_or_menu_child(key, data, errors, context):
+    menu_type = data.get(('menu_type',))
+    parent = data.get(('parent_id',))
+    value = data.get(key)
+
+    if (menu_type == 'link' or bool(parent)) and not value:
+        errors[key].append('Missing value')
+
+
 def header_menu_schema():
     return {
         'id': [ignore_missing, unicode_safe],
         'title_en': [not_empty, unicode_safe],
         'title_ar': [not_empty, unicode_safe],
-        'link_en': [not_empty, unicode_safe],
-        'link_ar': [not_empty, unicode_safe],
+        'link_en': [ignore_missing, unicode_safe, link_required_if_link_type_or_menu_child],
+        'link_ar': [ignore_missing, unicode_safe, link_required_if_link_type_or_menu_child],
         'menu_type': [not_empty, unicode_safe, p.toolkit.get_validator('one_of')(['link', 'menu'])],
         'parent_id': [ignore_missing, unicode_safe],
         'order': [ignore_missing, p.toolkit.get_validator('int_validator')],
