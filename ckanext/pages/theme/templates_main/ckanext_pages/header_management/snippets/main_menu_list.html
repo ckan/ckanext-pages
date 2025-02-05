@@ -4,16 +4,20 @@
     <button class="redbtn" onclick="window.location='{{ h.url_for('header_management.new_main_menu') }}'">
         <i class="fa fa-plus-square"></i> {{ _('Add New') }}
     </button>
-    <div class="d-flex flex-row">
-        <p class="semibold mt-1 me-2">{{ _('Filter By Type') }}</p>
-        <div class="dropdown">
+    <div class="d-flex flex-row align-items-center">
+        <p class="semibold my-auto mx-2">{{ _('Filter By Type') }}</p>
+        <div class="dropdown" style="border: 1px solid #ccc; border-radius: 4px;">
             <a class="btn btn-white dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                data-bs-toggle="dropdown" aria-expanded="false">
-                Link
+                {{ _('Select Type') if not menu_type else _(menu_type.capitalize()) }}
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                <li><a class="dropdown-item" href="#">Link</a></li>
-                <li><a class="dropdown-item" href="#">Menu</a></li>
+                <li><a class="dropdown-item"
+                       href="{{ h.url_for('header_management.index') }}">{{ _('Select Type') }}</a></li>
+                <li><a class="dropdown-item"
+                       href="{{ h.url_for('header_management.index', menu_type='link') }}">{{ _('Link') }}</a></li>
+                <li><a class="dropdown-item"
+                       href="{{ h.url_for('header_management.index', menu_type='menu') }}">{{ _('Menu') }}</a></li>
             </ul>
         </div>
     </div>
