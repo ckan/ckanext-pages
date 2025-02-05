@@ -1,6 +1,7 @@
 import ckan.lib.helpers as h
 from ckan import model
 from ckanext.pages.db import HeaderLogo, HeaderMainMenu, HeaderSecondaryMenu
+from sqlalchemy import case
 
 
 def get_header_data():
@@ -13,7 +14,13 @@ def get_header_data():
     main_menu_items = (
         session.query(HeaderMainMenu)
         .filter_by(is_visible=True).
-        order_by(HeaderMainMenu.order)
+        order_by(
+            HeaderMainMenu.order,
+            case(
+                (HeaderMainMenu.menu_type == 'link', 0),
+                (HeaderMainMenu.menu_type == 'menu', 1),
+            ),
+        )
         .all())
 
     secondary_menu_items = (

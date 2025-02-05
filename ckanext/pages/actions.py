@@ -799,7 +799,7 @@ def header_main_menu_parent_list(context, data_dict):
     """List all main menu parent items."""
     tk.check_access('ckanext_header_management_access', context)
 
-    return model.Session.query(HeaderMainMenu).filter_by(parent_id=None).order_by(HeaderMainMenu.order).all()
+    return model.Session.query(HeaderMainMenu).filter_by(parent_id=None, menu_type='menu').order_by(HeaderMainMenu.order).all()
 
 
 def header_secondary_menu_parent_list(context, data_dict):
@@ -1061,10 +1061,10 @@ def header_main_menu_create(context, data_dict):
 
     if (order := data.get('order')) and (menu_type := data.get('menu_type')):
         if menu_type == 'menu':
-            if model.Session.query(HeaderMainMenu).filter_by(order=order).first():
+            if model.Session.query(HeaderMainMenu).filter_by(order=order, parent_id=parent_id).first():
                 raise tk.ValidationError({'order': ['Order already taken']})
         elif menu_type == 'link':
-            if model.Session.query(HeaderMainMenu).filter_by(order=order, parent_id=parent_id).first():
+            if model.Session.query(HeaderMainMenu).filter_by(order=order).first():
                 raise tk.ValidationError({'order': ['Order already taken']})
 
     menu_item = HeaderMainMenu(
@@ -1130,12 +1130,11 @@ def header_main_menu_edit(context, data_dict):
 
         menu_item.parent_id = parent_id
 
-    if (order := data.get('order')) and (order != menu_item.order) and (menu_type := data.get('menu_type')):
-        if menu_type == 'menu':
-            if model.Session.query(HeaderMainMenu).filter_by(order=order).first():
-                raise tk.ValidationError({'order': ['Order already taken']})
-        elif menu_type == 'link':
+    if (order := data.get('order')) and (order != menu_item.order):
+        if parent_id:
             if model.Session.query(HeaderMainMenu).filter_by(order=order, parent_id=parent_id).first():
+                raise tk.ValidationError({'order': ['Order already taken']})
+        elif model.Session.query(HeaderMainMenu).filter_by(order=order).first():
                 raise tk.ValidationError({'order': ['Order already taken']})
 
 
@@ -1186,12 +1185,13 @@ def header_secondary_menu_edit(context, data_dict):
 
         menu_item.parent_id = parent_id
 
-    if order:= data.get('order'):
-        if order != menu_item.order and model.Session.query(HeaderSecondaryMenu).filter_by(order=order).first():
-            raise tk.ValidationError({'order': ['Order already taken']})
+    if (order := data.get('order')) and (order != menu_item.order):
+        if parent_id:
+            if model.Session.query(HeaderSecondaryMenu).filter_by(order=order, parent_id=parent_id).first():
+                raise tk.ValidationError({'order': ['Order already taken']})
+        elif model.Session.query(HeaderSecondaryMenu).filter_by(order=order).first():
+                raise tk.ValidationError({'order': ['Order already taken']})
 
-    else:
-        menu_item.parent_id = None
 
     menu_item.title_en = data['title_en']
     menu_item.title_ar = data['title_ar']
@@ -1257,8 +1257,11 @@ def header_secondary_menu_create(context, data_dict):
 
         menu_item.parent_id = parent_id
 
-    if order:= data.get('order'):
-        if model.Session.query(HeaderSecondaryMenu).filter_by(order=order).first():
+    if order := data.get('order'):
+        if parent_id:
+            if model.Session.query(HeaderSecondaryMenu).filter_by(order=order, parent_id=parent_id).first():
+                raise tk.ValidationError({'order': ['Order already taken']})
+        elif model.Session.query(HeaderSecondaryMenu).filter_by(order=order).first():
             raise tk.ValidationError({'order': ['Order already taken']})
 
     menu_item.save()

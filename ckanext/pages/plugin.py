@@ -10,8 +10,6 @@ from ckanext.pages import actions
 from ckanext.pages import auth
 from ckanext.pages import blueprint
 from ckan.lib.plugins import DefaultTranslation
-from ckan.plugins import SingletonPlugin, implements, IConfigurer
-from ckanext.pages import cli
 from ckanext.pages.db import MainPage
 
 
@@ -157,9 +155,4 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_pages_upload': auth.pages_upload,
             # Header Management Auth Functions
             'ckanext_header_management_access': auth.header_management_access
-        }
-
-    def get_helpers(self):
-        return {
-            'get_header_data': get_header_data,
         }
