@@ -73,6 +73,7 @@ def get_helpers():
         'footer_column3_items': footer_column3_items,
         'footer_social_items': footer_social_items,
         'footer_banner_items': footer_banner_items,
+        'get_header_data': get_header_data,
     }
 
 
