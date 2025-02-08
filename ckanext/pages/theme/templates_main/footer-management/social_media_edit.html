@@ -1,0 +1,55 @@
+{% extends "base_cms.html" %}
+{% set lang = h.lang() %}
+{% import 'macros/form.html' as form %}
+
+{% block title %}{{ _('CMS Footer Social Media Link') }}{% endblock %}
+
+{% block breadcrumb_content %}
+<li>{% link_for _('Content Management System'), named_route='header_management.index' %}</li>
+<li>{% link_for _('Footer Management'), named_route='cms_footer.index_main' %}</li>
+{% if action == 'new' %}
+<li class="active">{% link_for _('Social Media Add'), named_route='cms_footer.social_media_add' %}</li>
+{% else %}
+<li class="active">{% link_for _('Social Media Edit'), named_route='cms_footer.social_media_edit', id=data.id %}</li>
+{% endif %}
+{% endblock %}
+
+{% block primary_content_inner %}
+<form action="" method="post" class="module-content" data-module="basic-form", enctype="multipart/form-data">
+    {{ h.csrf_input() }}
+
+    {{ form.input('title_en', id='field-title_en', label=_('Title En'), placeholder=_('eg. A descriptive title in English'), value=data.title_en, error=errors.title_en, classes=['control-full', 'control-large']) }}
+    {{ form.input('title_ar', id='field-title_ar', label=_('Title Ar'), placeholder=_('eg. A descriptive title in Arabic'), value=data.title_ar, error=errors.title_ar, classes=['control-full', 'control-large']) }}
+    
+    {{ form.input('link_en', id='field-link_en', label=_('Link En'), placeholder=_('eg. https://www.example.com/en'), value=data.link_en, error=errors.link_en, classes=['control-full', 'control-large']) }}
+    {{ form.input('link_ar', id='field-link_ar', label=_('Link Ar'), placeholder=_('eg. https://www.example.com/ar'), value=data.link_ar, error=errors.link_ar, classes=['control-full', 'control-large']) }}
+    
+    {{ form.input('order', id='field-order', label=_('Order'), placeholder=_('eg. 1 or 2'), value=data.order, error=errors.order, classes=['control-full', 'control-large']) }}
+    
+    {% set is_upload = data.image_url and not data.image_url.startswith('http') %}
+    {% set is_url = data.image_url and data.image_url.startswith('http') %}
+
+    {{ form.image_upload(data, errors, is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload, url_label=_('Social Media Icon (42 x 42 pixels)'), upload_label=_('Social Media Icon (42 x 42 pixels)') ) }}
+
+
+    <div class="form-actions pull-right">
+        <button 
+        class="btn btn-secondary mx-2 px-5"
+        type="button"
+        onclick="window.history.back()" 
+      >
+        {{ _('Back') }}
+      </button>
+
+        <button 
+            class="btn btn-primary px-5 " 
+            type="submit" 
+            name="save" 
+            value=''
+            >
+            {{ _('Save') }}
+        </button>
+        </div>
+    </div>
+  </form>
+{% endblock %}

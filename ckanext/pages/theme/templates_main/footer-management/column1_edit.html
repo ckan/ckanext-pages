@@ -1,0 +1,77 @@
+{% extends "base_cms.html" %}
+{% set lang = h.lang() %}
+{% import 'macros/form.html' as form %}
+
+{% block title %}{{ _('CMS Footer Column 1') }}{% endblock %}
+
+{% block breadcrumb_content %}
+<li>{% link_for _('Content Management System'), named_route='header_management.index' %}</li>
+<li>{% link_for _('Footer Management'), named_route='cms_footer.index_main' %}</li>
+<li class="active">{% link_for _('Column 1 Update'), named_route='cms_footer.column1_edit' %}</li>
+{% endblock %}
+
+{% block primary_content_inner %}
+<form action="" method="post" class="module-content" data-module="basic-form", enctype="multipart/form-data">
+    {{ h.csrf_input() }}
+
+    {% set is_upload = data.logo_en and not data.logo_en.startswith('http') %}
+    {% set is_url = data.logo_en and data.logo_en.startswith('http') %}
+    
+    {{ 
+        form.image_upload(
+            data, 
+            errors, 
+            is_upload_enabled=h.uploads_enabled(), 
+            is_url=is_url, 
+            is_upload=is_upload, 
+            url_label=_('Footer Logo En (260 x 110 pixels)'), 
+            upload_label=_('Footer Logo En (260 x 110 pixels)'),
+            field_url='logo_en', 
+            field_upload='logo_en_upload', 
+            field_clear='clear_logo_en_upload',
+            field_name='logo_en'
+            ) 
+    }}
+
+    {% set is_upload = data.logo_ar and not data.logo_ar.startswith('http') %}
+    {% set is_url = data.logo_ar and data.logo_ar.startswith('http') %}
+    
+    {{ 
+        form.image_upload(
+            data, 
+            errors, 
+            is_upload_enabled=h.uploads_enabled(), 
+            is_url=is_url, 
+            is_upload=is_upload, 
+            url_label=_('Footer Logo Ar (260 x 110 pixels)'), 
+            upload_label=_('Footer Logo Ar (260 x 110 pixels)'),
+            field_url='logo_ar', 
+            field_upload='logo_ar_upload', 
+            field_clear='clear_logo_ar_upload',
+            field_name='logo_ar'
+            ) 
+    }}
+    
+    {{ form.input('phone_number', id='field-phone_number', label=_('Phone Number'), placeholder=_('eg. 962778000004'), value=data.phone_number, error=errors.phone_number, classes=['control-full', 'control-large']) }}
+
+    <div class="form-actions pull-right">
+        <button 
+        class="btn btn-secondary mx-2 px-5"
+        type="button"
+        onclick="window.history.back()" 
+      >
+        {{ _('Back') }}
+      </button>
+
+        <button 
+            class="btn btn-primary px-5 " 
+            type="submit" 
+            name="save" 
+            value=''
+            >
+            {{ _('Save') }}
+        </button>
+        </div>
+    </div>
+  </form>
+{% endblock %}

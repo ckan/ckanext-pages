@@ -1,0 +1,41 @@
+<div class="tablebody table-responsive mt-3 mb-3">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" style="font-weight: bold !important;">{{_('Title')}} {{ h.lang() | capitalize }}</th>
+          <th scope="col" style="font-weight: bold !important;">{{_('Link')}} {{ h.lang() | capitalize }}</th>
+          <th scope="col" style="font-weight: bold !important;">{{_('Target')}}</th>
+          <th scope="col" style="font-weight: bold !important;">{{_('Order')}}</th>
+          <th scope="col" style="font-weight: bold !important;">{{_('Actions')}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in data %}
+            <tr>
+            <td>{{ item.display_title }}</td>
+            <td>{{ item.display_link }}</td>
+            <td>{{ h.target_display(item.target) }}</td>
+            <td>{{ item.order }}</td>
+            <td>
+                <div class="d-flex flex-row" style="gap:2px;"> 
+                    <a 
+                    title="{{ _('Edit Link') }}" 
+                    href="{{ h.url_for('cms_footer.link_edit', id=item.id, col=item.column_number) }}">
+                    <img src="/images/edit_icon.png"> 
+                    </a>
+                    <a 
+                    title="{{ _('Delete Link') }}"
+                    href="{{ h.url_for('cms_footer.link_delete', id=item.id) }}" 
+                    data-module="confirm-action" 
+                    data-module-content="{{ _('Are you sure you want to delete this link?') }}"
+                    >
+                    <img src="/images/remove_icon.png"> 
+                    </a>
+                </div>
+            </td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>

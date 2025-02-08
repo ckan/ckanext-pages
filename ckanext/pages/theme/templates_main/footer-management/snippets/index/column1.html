@@ -1,0 +1,29 @@
+<div class="tablebody table-responsive my-3">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" style="font-weight: bold !important;">{{_('Logo En')}}</th>
+          <th scope="col" style="font-weight: bold !important;">{{_('Logo Ar')}}</th>
+          <th scope="col" style="font-weight: bold !important;">{{_('Phone Number')}}</th>
+          <th scope="col" style="font-weight: bold !important;">{{_('Actions')}}</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr>
+                <td>{{ data.logo_en }}</td>
+                <td>{{ data.logo_ar }}</td>
+                <td>{{ data.phone_number }}</td>
+                <td>
+                    <div class="d-flex flex-row" > 
+                        <a 
+                            title="{{ _('Edit Link') }}" 
+                            href="{{ h.url_for('cms_footer.column1_edit') }}">
+                            <img src="/images/edit_icon.png"> 
+                        </a>
+                    </div>
+                </td>
+            </tr>
+      </tbody>
+    </table>
+
+  </div>

@@ -12,6 +12,11 @@ from ckanext.pages import blueprint
 from ckan.lib.plugins import DefaultTranslation
 from ckanext.pages.db import MainPage
 
+from ckanext.pages.footer.action import get_actions as footer_get_actions
+from ckanext.pages.footer.auth import get_auth_functions as footer_get_auth_functions
+from ckanext.pages.footer.views import get_blueprints as footer_get_blueprints
+from ckanext.pages import helpers 
+
 
 log = logging.getLogger(__name__)
 
@@ -99,8 +104,10 @@ class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IBlueprint)
 
+
     def get_blueprint(self):
-        return [blueprint.pages, blueprint.header_management]
+        return [blueprint.pages, blueprint.header_management, *footer_get_blueprints()]
+
 
     def update_config(self, config):
         self.organization_pages = tk.asbool(config.get('ckanext.pages.organization', False))
@@ -143,6 +150,7 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_header_secondary_menu_show': actions.header_secondary_menu_show,
             'ckanext_header_secondary_menu_edit': actions.header_secondary_menu_edit,
             'ckanext_header_secondary_menu_delete': actions.header_secondary_menu_delete
+            **footer_get_actions()
         }
         return actions_dict
 
@@ -154,5 +162,9 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_pages_list': auth.pages_list,
             'ckanext_pages_upload': auth.pages_upload,
             # Header Management Auth Functions
-            'ckanext_header_management_access': auth.header_management_access
+            'ckanext_header_management_access': auth.header_management_access,
+            **footer_get_auth_functions(),
         }
+    
+    def get_helpers(self):
+        return helpers.get_helpers()
