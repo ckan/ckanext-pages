@@ -1,7 +1,6 @@
 import logging
 from html import escape as html_escape
 
-from ckanext.pages.helpers import get_header_data
 from six.moves.urllib.parse import quote
 from ckan.plugins import toolkit as tk
 import ckan.plugins as p
@@ -122,6 +121,7 @@ class PagesPlugin(PagesPluginBase):
         tk.add_public_directory(config, 'assets/')
         tk.add_public_directory(config, 'assets/vendor/ckeditor/')
 
+
     def get_actions(self):
         actions_dict = {
             'ckanext_pages_edit': actions.pages_edit_action,
@@ -159,6 +159,7 @@ class PagesPlugin(PagesPluginBase):
         }
         return actions_dict
 
+
     def get_auth_functions(self):
         return {
             'ckanext_pages_show': auth.pages_show,
@@ -171,11 +172,13 @@ class PagesPlugin(PagesPluginBase):
             **footer_get_auth_functions(),
         }
     
+
     def get_helpers(self):
         return {
             **helpers.get_helpers(),
             'pages_get_wysiwyg_editor': get_wysiwyg_editor,
             }
     
+
     def get_commands(self):
         return cli.get_commands()
