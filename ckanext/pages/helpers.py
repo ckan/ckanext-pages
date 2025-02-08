@@ -65,6 +65,7 @@ TARGET_VALUES_DICT = {
 
 def get_helpers():
     return {
+        'get_header_data': get_header_data,
         'target_display': target_display,
         'footer_column1_data': footer_column1_data,
         'footer_column_titles_data': footer_column_titles_data,
