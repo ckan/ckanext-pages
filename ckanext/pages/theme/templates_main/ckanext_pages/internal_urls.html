@@ -1,0 +1,74 @@
+{% extends 'base_cms.html' %}
+{% set lang = h.lang() %}
+{% import 'macros/form.html' as form %}
+{% block title %}{{ _('System Pages Urls') }}{% endblock %}
+
+
+{% block breadcrumb_content %}
+<li>{% link_for _('Content Management System'), named_route='header_management.index' %}</li>
+<li class="active">{% link_for _('System Pages'), named_route='pages.internal_urls' %}</li>
+{% endblock %}
+
+
+{% block primary_content_inner %}
+<div class="tablebody table-responsive mt-3 mb-3">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" style="font-weight: bold !important;">{{_('Title')}}</th>
+          <th scope="col" style="font-weight: bold !important;">{{_('Link En')}}</th>
+          <th scope="col" style="font-weight: bold !important;">{{_('Link Ar')}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in data %}
+            <tr>
+                <td><strong>{{ item.title }}</strong></td>
+                <td>
+                    <span>{{ item.link_en }}</span>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyToClipboard('{{ item.link_en }}', this)"></i>
+                    <span class="copy-message">Copied!</span>
+                </td>
+                <td>
+                    <span>{{ item.link_ar }}</span>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyToClipboard('{{ item.link_ar }}', this)"></i>
+                    <span class="copy-message">Copied!</span>
+                </td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+<script>
+    function copyToClipboard(text, element) {
+        navigator.clipboard.writeText(text).then(() => {
+            let message = element.nextElementSibling;
+            message.classList.add("show");
+            setTimeout(() => message.classList.remove("show"), 1500);
+        }).catch(err => console.error('Failed to copy: ', err));
+    }
+</script>
+
+<style>
+    .copy-icon {
+        cursor: pointer;
+        margin-left: 5px;
+        color: #007bff;
+    }
+    .copy-icon:hover {
+        color: #0056b3;
+    }
+    .copy-message {
+        display: none;
+        margin-left: 5px;
+        color: green;
+        font-weight: bold;
+    }
+    .copy-message.show {
+        display: inline;
+    }
+</style>
+
+{% endblock %}
+

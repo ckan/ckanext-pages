@@ -567,6 +567,70 @@ def news_toggle_visibility(news_id):
 def pages_delete(id):
     return utils.pages_delete(id)
 
+_ = tk._
+config = tk.config
+
+def internal_urls():
+    current_lang = h.lang()
+    data = [{
+            'title': _('Datasets'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('dataset.search').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('dataset.search').replace('/' + current_lang + '/', '/'),
+        },
+        {
+            'title': _('Government Entities'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('organization.index').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('organization.index').replace('/' + current_lang + '/', '/'),
+        },
+        {
+            'title': _('Sectors'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('group.index').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('group.index').replace('/' + current_lang + '/', '/'),
+        },
+        {
+            'title': _('Dashboard'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('dataset.search').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('dataset.search').replace('/' + current_lang + '/', '/'),
+        },
+        {
+            'title': _('Reuses'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('showcase_blueprint.index').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('showcase_blueprint.index').replace('/' + current_lang + '/', '/'),
+        },
+        {
+            'title': _('Request New Dataset'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('requests.new').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('requests.new').replace('/' + current_lang + '/', '/'),
+        },
+        {
+            'title': _('Report an Error'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('issues.new').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('issues.new').replace('/' + current_lang + '/', '/'),
+        },
+        {
+            'title': _('API Guide'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('home_page.api_guide').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('home_page.api_guide').replace('/' + current_lang + '/', '/'),
+        },
+        {
+            'title': _('Submit new Reuse'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('showcase_blueprint.new').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('showcase_blueprint.new').replace('/' + current_lang + '/', '/'),
+        },
+        {
+            'title': _('News List'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('home_page.news').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('home_page.news').replace('/' + current_lang + '/', '/'),
+        },
+        {
+            'title': _('Events List'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('home_page.events').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('home_page.events').replace('/' + current_lang + '/', '/'),
+        },
+    ]
+    return tk.render('ckanext_pages/internal_urls.html', {'data': data})
+    
+
 
 pages.add_url_rule('/events_edit', view_func=events_edit, endpoint='events_new', methods=['GET', 'POST'])
 pages.add_url_rule('/events_edit/', view_func=events_edit, endpoint='events_new', methods=['GET', 'POST'])
@@ -654,7 +718,8 @@ pages.add_url_rule("/group/pages_edit/<id>/<page>", view_func=group_edit, endpoi
 pages.add_url_rule("/group/pages_delete/<id>/<page>", view_func=group_delete, endpoint='group_pages_delete',
                    methods=['GET', 'POST'])
 
-
+pages.add_url_rule("/internal-urls", view_func=internal_urls, endpoint='internal_urls',
+                   methods=['GET'])
 # blueprints
 
 def get_blueprints():
