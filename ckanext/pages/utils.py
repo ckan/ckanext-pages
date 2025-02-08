@@ -275,7 +275,7 @@ def news_edit(page=None, data=None, errors=None, error_summary=None):
                 news_id = new_news.id  # Retrieve the newly created ID
 
             # Redirect back to the news edit page
-            return tk.redirect_to('pages.news_edit', page=news_id)
+            return tk.redirect_to('pages.news_index')
         except tk.ValidationError as e:
             model.Session.rollback()
             return tk.render(

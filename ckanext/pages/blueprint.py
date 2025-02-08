@@ -8,8 +8,8 @@ from flask import jsonify
 from ckan.plugins import toolkit as tk
 import ckan.lib.helpers as h
 
-pages = Blueprint('pages', __name__)
-header_management = Blueprint('header_management', __name__, url_prefix='/header-management')
+pages = Blueprint('pages', __name__, url_prefix="/cms")
+header_management = Blueprint('header_management', __name__, url_prefix='/cms/header')
 
 
 @pages.before_request
@@ -575,8 +575,7 @@ pages.add_url_rule('/events_edit/<page>', view_func=events_edit, endpoint='event
 pages.add_url_rule('/events_delete/<id>', view_func=events_delete, endpoint='events_delete', methods=['POST', 'GET'])
 
 # News Editing
-pages.add_url_rule('/news_edit', view_func=news_edit, endpoint='news_new', methods=['GET', 'POST'])
-pages.add_url_rule('/news_edit/', view_func=news_edit, endpoint='news_new', methods=['GET', 'POST'])
+pages.add_url_rule('/news_new', view_func=news_edit, endpoint='news_new', methods=['GET', 'POST'])
 pages.add_url_rule('/news_edit/<page>', view_func=news_edit, endpoint='news_edit', methods=['GET', 'POST'])
 pages.add_url_rule('/news_delete/<id>', view_func=news_delete, endpoint='news_delete', methods=['POST', 'GET'])
 

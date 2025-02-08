@@ -9,14 +9,14 @@
         <span>{{ _('News') }}</span>
     </a>
   </li>
-  <li>{{ _('News Edit') }}</li>
+  <li>{{ _('Edit News') if data and data.id else _('Add News') }}</li>
 {% endblock %}
 
 
 {% block primary_content_inner %}
 <div class="container">
-  <h1>Edit News</h1>
-<form method="post" action="{{ h.url_for('pages.news_edit', page=data.id if data and data.id else '') }}" data-module="basic-form" enctype="multipart/form-data">
+  <h1> {{ _('Edit News') if data and data.id else _('Add News') }}</h1>
+<form method="post" data-module="basic-form" enctype="multipart/form-data">
     {{ h.csrf_input() }}
     {% if data and data.id %}
         <input type="hidden" name="id" value="{{ data.id }}">
