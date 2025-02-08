@@ -5,7 +5,7 @@ $(document).ready(function(){
         console.log("Toggling visibility for news ID:", newsId);
 
         $.ajax({
-            url: '/news_toggle_visibility/' + newsId,
+            url: '/cms/news_toggle_visibility/' + newsId,
             method: 'POST',
             success: function (data) {
                 console.log("Success:", data);

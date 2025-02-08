@@ -1,7 +1,7 @@
 {% extends 'base_cms.html' %}
 {% set lang = h.lang() %}
 {% import 'macros/form.html' as form %}
-{% block title %}{{ _('Edit News') }}{% endblock %}
+{% block title %}{{ _('Edit News') if data and data.id else _('Add News') }}{% endblock %}
 
 {% block breadcrumb_content %}
   <li class="breadcrumb-item">
