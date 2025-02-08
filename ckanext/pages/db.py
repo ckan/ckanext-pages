@@ -350,32 +350,46 @@ except Exception as e:
 
 def setup():
     inspector = inspect(engine)
-    if not inspector.has_table('ckanext_pages'):
-        BaseModel.metadata.tables['ckanext_pages'].create(engine)
-        log.debug('pages table created')
-    else:
-        log.debug('pages table already exists')
-
-        # Ensure the image_url column is of the correct type
-        with engine.connect() as conn:
-            result = conn.execute("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'ckanext_pages' AND column_name = 'image_url'")
-            column = result.fetchone()
-            if column and column[1] != 'text':
-                conn.execute("ALTER TABLE ckanext_pages ALTER COLUMN image_url TYPE TEXT USING image_url::TEXT")
-                log.debug('image_url column type updated to TEXT')
+    table_names = [
+        'ckanext_pages', 
+        'header_secondary_menu', 
+        'header_main_menu', 
+        'header_logo', 
+        'news', 
+        'events',
+        'main_page',
+        ]
+    
+    for tn in table_names:
+        if not inspector.has_table(tn):
+            BaseModel.metadata.tables[tn].create(engine)
+            log.debug('%s table created' %tn)
+        else:
+            log.debug('%s table already exists' %tn)
 
 
 
 def teardown():
     inspector = inspect(engine)
-    if inspector.has_table('ckanext_pages'):
-        table = BaseModel.metadata.tables.get('ckanext_pages')
-        if table is not None:
-            table.drop(engine)
-            log.debug('pages table dropped')
+    table_names = [
+        'ckanext_pages', 
+        'header_secondary_menu', 
+        'header_main_menu', 
+        'header_logo', 
+        'news', 
+        'events',
+        'main_page',
+        ]
+    
+    for tn in table_names:
+        if inspector.has_table(tn):
+            table = BaseModel.metadata.tables.get(tn)
+            if table is not None:
+                table.drop(engine)
+                log.debug('%s table dropped' %tn)
+            else:
+                log.error('%s table not found in metadata' %tn)
         else:
-            log.error('pages table not found in metadata')
-    else:
-        log.debug('pages table does not exist')
+            log.debug('%s table does not exist' %tn)
 
 

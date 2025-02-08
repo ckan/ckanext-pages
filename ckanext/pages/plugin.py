@@ -16,7 +16,7 @@ from ckanext.pages.footer.action import get_actions as footer_get_actions
 from ckanext.pages.footer.auth import get_auth_functions as footer_get_auth_functions
 from ckanext.pages.footer.views import get_blueprints as footer_get_blueprints
 from ckanext.pages import helpers 
-
+from ckanext.pages import cli
 
 log = logging.getLogger(__name__)
 
@@ -103,6 +103,7 @@ class PagesPlugin(PagesPluginBase):
     p.implements(p.IAuthFunctions, inherit=True)
     p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IBlueprint)
+    p.implements(p.IClick)
 
 
     def get_blueprint(self):
@@ -149,7 +150,7 @@ class PagesPlugin(PagesPluginBase):
             'ckanext_header_logo_toggle_visibility': actions.header_logo_toggle_visibility,
             'ckanext_header_secondary_menu_show': actions.header_secondary_menu_show,
             'ckanext_header_secondary_menu_edit': actions.header_secondary_menu_edit,
-            'ckanext_header_secondary_menu_delete': actions.header_secondary_menu_delete
+            'ckanext_header_secondary_menu_delete': actions.header_secondary_menu_delete,
             **footer_get_actions()
         }
         return actions_dict
@@ -167,4 +168,10 @@ class PagesPlugin(PagesPluginBase):
         }
     
     def get_helpers(self):
-        return helpers.get_helpers()
+        return {
+            **helpers.get_helpers(),
+            'pages_get_wysiwyg_editor': get_wysiwyg_editor,
+            }
+    
+    def get_commands(self):
+        return cli.get_commands()
