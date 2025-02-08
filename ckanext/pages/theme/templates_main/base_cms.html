@@ -1,37 +1,10 @@
 {% extends 'page1.html' %}
-    {% block content_primary_nav %}
-      <article class="module">
-        {% block page_header %}
-          <header class="module-content page-header">
-              <ul class="nav nav-tabs">
-                  <li class="nav-item">
-                      <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">{{ _('Header') }}</a>
-                  </li>
-                  <li class="nav-item">
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">{{ _('Footer') }}</a>
-                  <li class="nav-item">
-                      <a class="nav-link {% if g.current_section == 'pages' %}active{% endif %}" href="{{ h.url_for('pages.pages_index') }}">
-                          {{ _('Pages') }}
-                      </a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link {% if g.current_section == 'news' %}active{% endif %}" href="{{ h.url_for('pages.news') }}">
-                          {{ _('News') }}
-                      </a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link {% if g.current_section == 'events' %}active{% endif %}" href="{{ h.url_for('pages.events') }}">
-                          {{ _('Events') }}
-                      </a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link {% if g.current_section == 'main_page' %}active{% endif %}" href="{{ h.url_for('pages.main_page') }}">
-                          {{ _('Main Page') }}
-                      </a>
-                  </li>
-              </ul>
-          </header>
 
-        {% endblock %}
-    {% endblock %}    
-    
+{% block content_primary_nav %}
+  {{ h.build_nav_icon('header_management.index', _('Header')) }}
+  {{ h.build_nav_icon('cms_footer.index_main', _('Footer')) }}
+  {{ h.build_nav_icon('pages.main_page', _('Main Page')) }}
+  {{ h.build_nav_icon('pages.pages_index', _('Pages')) }}
+  {{ h.build_nav_icon('pages.news', _('News')) }}
+  {{ h.build_nav_icon('pages.events', _('Events')) }}
+{% endblock %}    

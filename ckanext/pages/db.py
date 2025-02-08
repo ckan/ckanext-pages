@@ -341,10 +341,12 @@ from ckan.common import config
 
 log = logging.getLogger(__name__)
 
-
-engine = sa.create_engine(config.get('sqlalchemy.url'))
-Session = sessionmaker(bind=engine)()
-BaseModel.metadata.create_all(engine)
+try:
+    engine = sa.create_engine(config.get('sqlalchemy.url'))
+    Session = sessionmaker(bind=engine)()
+    BaseModel.metadata.create_all(engine)
+except Exception as e:
+    log.error(str(e))
 
 def setup():
     inspector = inspect(engine)

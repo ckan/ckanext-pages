@@ -1,0 +1,59 @@
+{% extends "base_cms.html" %}
+{% set lang = h.lang() %}
+{% import 'macros/form.html' as form %}
+
+{% block title %}{{ _('CMS Footer Column Link') }}{% endblock %}
+
+{% block breadcrumb_content %}
+<li>{% link_for _('Content Management System'), named_route='header_management.index' %}</li>
+<li>{% link_for _('Footer Management'), named_route='cms_footer.index_main' %}</li>
+{% if action == 'new' %}
+<li class="active">{% link_for _('Column Link Add'), named_route='cms_footer.link_add', col=data.column_number %}</li>
+{% else %}
+<li class="active">{% link_for _('Column Link Edit'), named_route='cms_footer.link_edit', col=data.column_number, id=data.id %}</li>
+{% endif %}
+{% endblock %}
+
+{% block primary_content_inner %}
+<form action="" method="post" class="module-content" data-module="basic-form">
+    {{ h.csrf_input() }}
+
+    {{ form.input('title_en', id='field-title_en', label=_('Title En'), placeholder=_('eg. A descriptive title in English'), value=data.title_en, error=errors.title_en, classes=['control-full', 'control-large']) }}
+    {{ form.input('title_ar', id='field-title_ar', label=_('Title Ar'), placeholder=_('eg. A descriptive title in Arabic'), value=data.title_ar, error=errors.title_ar, classes=['control-full', 'control-large']) }}
+    
+    {{ form.input('link_en', id='field-link_en', label=_('Link En'), placeholder=_('eg. https://www.example.com/en'), value=data.link_en, error=errors.link_en, classes=['control-full', 'control-large']) }}
+    {{ form.input('link_ar', id='field-link_ar', label=_('Link Ar'), placeholder=_('eg. https://www.example.com/ar'), value=data.link_ar, error=errors.link_ar, classes=['control-full', 'control-large']) }}
+    
+    {{ form.input('order', id='field-order', label=_('Order'), placeholder=_('eg. 1 or 2'), value=data.order, error=errors.order, classes=['control-full', 'control-large']) }}
+    
+    {% set target_options = [
+        {'text': _('Select Target'), 'value': ''},
+        {'text': _('Same Tab'), 'value': '_self'},
+        {'text': _('New Tab'), 'value': '_blank'},
+        ] 
+    %}
+
+    {{ form.select('target', id='field-target', label=_('Link Target'), options=target_options, selected=data.target or '', error=errors.target, classes=['control-full', 'control-large']) }}
+
+
+    <div class="form-actions pull-right">
+        <button 
+        class="btn btn-secondary mx-2 px-5"
+        type="button"
+        onclick="window.history.back()" 
+      >
+        {{ _('Back') }}
+      </button>
+
+        <button 
+            class="btn btn-primary px-5 " 
+            type="submit" 
+            name="save" 
+            value=''
+            >
+            {{ _('Save') }}
+        </button>
+        </div>
+    </div>
+  </form>
+{% endblock %}

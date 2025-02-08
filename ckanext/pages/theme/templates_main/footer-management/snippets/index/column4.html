@@ -1,0 +1,20 @@
+<h2>{{ _('Social Media') }}</h2>
+
+{% if h.check_access('footer_social_media_item_create') %}
+<div class="page_primary_action">
+  {% link_for _('Add New'), named_route='cms_footer.social_media_add', class_='btn btn-primary', icon='plus-square' %}
+</div>
+{% endif %}
+
+{% snippet "footer-management/snippets/index/image_links_table.html", data=data.social_media, type='social_media' %}
+
+
+<h2>{{ _('Footer Banner') }}</h2>
+
+{% if h.check_access('footer_banner_item_create') %}
+<div class="page_primary_action">
+  {% link_for _('Add New'), named_route='cms_footer.banner_add', class_='btn btn-primary', icon='plus-square' %}
+</div>
+{% endif %}
+
+{% snippet "footer-management/snippets/index/image_links_table.html", data=data.banner, type='banner' %}

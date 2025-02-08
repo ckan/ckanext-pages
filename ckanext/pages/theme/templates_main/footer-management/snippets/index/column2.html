@@ -1,0 +1,31 @@
+{% import 'macros/form.html' as form %}
+
+<form action="" method="post" class="module-content" data-module="basic-form">
+    {{ h.csrf_input() }}
+    <div class="row">
+        <div class="col-12 col-md-5">
+            {{ form.input('column2_en', id='field-column2_en', label=_('Column Title En'), placeholder=_('eg. A descriptive title in English'), value=form_data.column2_en, error=errors.column2_en, classes=['control-full', 'control-large']) }}
+        </div>
+        <div class="col-12 col-md-5">
+            {{ form.input('column2_ar', id='field-column2_ar', label=_('Column Title Ar'), placeholder=_('eg. A descriptive title in Arabic'), value=form_data.column2_ar, error=errors.column2_ar, classes=['control-full', 'control-large']) }}
+        </div>
+        <div class="col-12 col-md-2 align-self-center text-start form-actions">
+            <button 
+              class="btn btn-primary px-5" 
+              type="submit" 
+              name="save" 
+              value=''
+              >
+                {{ _('Update') }}
+            </button>
+        </div>
+    </div>
+  </form>
+
+{% if h.check_access('footer_column_link_create', {'column_number': 2}) %}
+<div class="page_primary_action">
+  {% link_for _('Add New'), named_route='cms_footer.link_add', col=2, class_='btn btn-primary', icon='plus-square' %}
+</div>
+{% endif %}
+
+{% snippet "footer-management/snippets/index/links_table.html", data=data %}

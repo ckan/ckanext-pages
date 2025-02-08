@@ -1,0 +1,29 @@
+{% extends "base_cms.html" %}
+{% set lang = h.lang() %}
+{% import 'macros/form.html' as form %}
+
+{% block title %}{{ _('CMS Footer') }}{% endblock %}
+
+
+
+{% block breadcrumb_content %}
+<li>{% link_for _('Content Management System'), named_route='header_management.index' %}</li>
+<li class="active">{% link_for _('Footer Management'), named_route='cms_footer.index_main' %}</li>
+{% endblock %}
+
+{% block primary_content_inner %}
+
+{% block errors %}{{ form.errors(error_summary) }}{% endblock %}
+
+<h2>{{ _('Edit Footer Column 1') }}</h2>
+{% snippet "footer-management/snippets/index/column1.html", data=column1 %}
+
+<h2>{{ _('Edit Footer Column 2') }}</h2>
+{% snippet "footer-management/snippets/index/column2.html", data=column2, form_data=data, errors=errors %}
+
+<h2>{{ _('Edit Footer Column 3') }}</h2>
+{% snippet "footer-management/snippets/index/column3.html", data=column3, form_data=data, errors=errors %}
+
+{% snippet "footer-management/snippets/index/column4.html", data=column4 %}
+
+{% endblock %}
