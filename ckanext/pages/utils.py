@@ -342,15 +342,17 @@ def events_edit(page=None, data=None, errors=None, error_summary=None):
                 "error_summary": error_summary or {},
             },
         )
+    
 def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type='pages'):
     if request.method == 'POST':
         form_data = _parse_form_data(request)
+
         try:
             result = tk.get_action("ckanext_pages_edit")({}, form_data)
             page_id = result.get("id")
             if not page_id:
                 raise ValueError("Page ID is missing for redirect")
-            return tk.redirect_to("pages.edit", page=page_id)
+            return tk.redirect_to("pages.pages_index")
 
         except tk.ValidationError as e:
             return tk.render(

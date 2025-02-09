@@ -699,6 +699,7 @@ def main_page_show(context, data_dict):
     return _main_page_show(context, data_dict)
 
 def pages_list(context, data_dict):
+    p.toolkit.check_access('ckanext_pages_list', context, data_dict)
     query = model.Session.query(Page)
     sort = data_dict.get('sort', 'publish_date asc')
     if sort == 'publish_date asc':

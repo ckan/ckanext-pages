@@ -589,8 +589,8 @@ def internal_urls():
         },
         {
             'title': _('Dashboard'),
-            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('dataset.search').replace('/' + current_lang + '/', '/'),
-            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('dataset.search').replace('/' + current_lang + '/', '/'),
+            'link_en': config.get('ckan.site_url') + '/en' +  h.url_for('ogddashboard.router').replace('/' + current_lang + '/', '/'),
+            'link_ar': config.get('ckan.site_url') + '/ar' +  h.url_for('ogddashboard.router').replace('/' + current_lang + '/', '/'),
         },
         {
             'title': _('Reuses'),

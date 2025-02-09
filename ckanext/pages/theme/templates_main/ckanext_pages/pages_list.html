@@ -13,15 +13,17 @@
 
 {% block page_primary_action %}
 <section>
-  <!-- Page Heading -->
-  <h1 class="page-heading" style="font-size: 24px; font-weight: bold; margin-bottom: 1px;">
-    {{ _('Pages') }}
-  </h1>
+
   {% if h.check_access('ckanext_pages_update', {}) %}
-  <a href="/pages_edit" class="btn btn-primary">
+  <a href="{{ h.url_for('pages.new') }}" class="btn btn-primary">
     <i class="fa fa-plus-square"></i> {{ _('Add Page') }}
   </a>  
   {% endif %}
+
+  <!-- Page Heading -->
+  <h1 class="page-heading mt-4" style="font-size: 24px; font-weight: bold; margin-bottom: 1px;">
+    {{ _('Pages') }}
+  </h1>
 {% endblock %}
 
 {% block primary_content_inner %}
@@ -63,10 +65,10 @@
 <table class="table" style="border-collapse: collapse; width: 100%; background-color: white;">
   <thead>
       <tr>
-          <th>{{ _('Title En') }}</th>
+          <th>{{ _('Title') }} {{lang | capitalize}}</th>
           <th>{{ _('Date Of Creation') }}</th>
           <th>{{ _('Publish Date') }}</th>
-          <th>{{ _('Page Url') }}</th>
+          <th>{{ _('Page Urls') }}</th>
           <th>{{ _('Actions') }}</th>
       </tr>
 </thead>
@@ -74,20 +76,23 @@
       {% if pages %}
           {% for page in pages %}
               <tr>
-                  <td><strong>{{ page.title_en }}</strong></td>
-                  <td><strong>{{ h.render_datetime(page.created, date_format='%d/%m/%Y') }}</strong></td>
-                  <td><strong>{{ h.render_datetime(page.publish_date, date_format='%d/%m/%Y') }}</strong></td>
-                  <td><strong>{{ page.name }}</strong></td>
                   <td><strong>
-                    <a href="#" style="border: none; background: none; padding: 0;" data-id="{{ page.id }}"
-                       class="page-visibility-toggler">
-                        <img src="{{ '/images/EYE3.png' if page.hidden else '/images/hide_icon.png' }}"
-                             alt="{{ _('View') if page.hidden else _('Hide') }}"
-                             style="width: 32px; height: 32px; cursor: pointer;">
-                    </a>
-
-                    <a href="/pages_edit/{{ page.id }}">
-                      <img src="/images/edit_icon.png" alt="Edit" style="width: 32px; height: 32px; cursor: pointer;">
+                    {% if lang == 'ar' %}
+                      {{ page.title_ar }}
+                      {% else %}
+                      {{ page.title_en }}
+                    {% endif %}
+                  </strong></td>
+                  <td>{{ h.render_datetime(page.created, date_format='%d/%m/%Y') }}</td>
+                  <td>{{ h.render_datetime(page.publish_date, date_format='%d/%m/%Y') }}</td>
+                  <td>
+                    {{ config['ckan.site_url'] + '/en' +  h.url_for('home_page.pages_detail', id = page.name).replace('/' + lang + '/', '/') }}
+                    <br>
+                    {{ config['ckan.site_url'] + '/ar' + h.url_for('home_page.pages_detail', id = page.name).replace('/' + lang + '/', '/') }}
+                  </td>
+                  <td>
+                    <a href="{{ h.url_for('pages.edit', page = page.id) }}">
+                      <img src="/images/edit_icon.png" alt="{{_('Edit')}}" style="width: 32px; height: 32px; cursor: pointer;">
                     </a>
 
                     <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ page.id }}">
@@ -113,7 +118,7 @@
                             </div>
                         </div>
                     </div>
-                  </strong></td>
+                  </td>
               </tr>
           {% endfor %}
       {% else %}
