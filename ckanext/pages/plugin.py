@@ -24,6 +24,7 @@ def build_pages_nav_main(*args):
     about_menu = tk.asbool(tk.config.get('ckanext.pages.about_menu', True))
     group_menu = tk.asbool(tk.config.get('ckanext.pages.group_menu', True))
     org_menu = tk.asbool(tk.config.get('ckanext.pages.organization_menu', True))
+    root_path = tk.config.get('ckan.root_path', '/')
 
     new_args = []
     for arg in args:
@@ -50,7 +51,7 @@ def build_pages_nav_main(*args):
         type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
         name = quote(page['name'])
         title = html_escape(page['title'])
-        link = tk.h.literal(u'<a href="/{}/{}">{}</a>'.format(type_, name, title))
+        link = tk.h.literal(u'<a href="{}/{}/{}">{}</a>'.format(root_path, type_, name, title))
         if page['name'] == page_name:
             li = tk.literal('<li class="active">') + link + tk.literal('</li>')
         else:
