@@ -30,9 +30,9 @@ def build_pages_nav_main(*args):
     for arg in args:
         if arg[0] in 'home.about' and not about_menu:
             continue
-        if arg[0] in 'home.group_index' and not org_menu:
+        if arg[0] in 'group.index' and not group_menu:
             continue
-        if arg[0] in 'home.organizations_index' and not group_menu:
+        if arg[0] in 'organization.index' and not org_menu:
             continue
         new_args.append(arg)
 
