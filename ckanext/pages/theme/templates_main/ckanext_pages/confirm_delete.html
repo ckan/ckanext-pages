@@ -8,9 +8,9 @@
   <section class="module span6 offset3">
     <div class="module-content">
       {% block form %}
-      <p>{{ _('Are you sure you want to delete page - {name}?').format(name=c.page_dict.name) }}</p>
+      <p>{{ _('Are you sure you want to delete page - {name}?').format(name=g.page_dict.name) }}</p>
       <p class="form-actions">
-      {% set action = form_action or h.url_for('organization_pages_delete', id=c.group_dict.name, page='/' + page) %}
+      {% set action = form_action or h.url_for('organization_pages_delete', id=g.group_dict.name, page='/' + page) %}
       <form action="{{ action }}" method="post">
         <button class="btn" type="submit" name="cancel" >{{ _('Cancel') }}</button>
         <button class="btn btn-primary" type="submit" name="delete" >{{ _('Confirm Delete') }}</button>

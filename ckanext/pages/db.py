@@ -3,7 +3,6 @@ import uuid
 import json
 
 from collections import OrderedDict
-from six import text_type
 import sqlalchemy as sa
 from sqlalchemy import Column, types
 from sqlalchemy.orm import class_mapper
@@ -34,7 +33,7 @@ pages_table = None
 
 
 def make_uuid():
-    return text_type(uuid.uuid4())
+    return str(uuid.uuid4())
 
 
 class Page(DomainObject, BaseModel):
@@ -120,7 +119,7 @@ def table_dictize(obj, context, **kw):
         elif isinstance(value, list):
             result_dict[name] = value
         else:
-            result_dict[name] = text_type(value)
+            result_dict[name] = str(value)
 
     result_dict.update(kw)
 

@@ -8,9 +8,7 @@ This extension gives you an easy way to add simple pages to CKAN.
 
 By default you can add pages to the main CKAN menu.
 
-Tested on CKAN 2.9 and 2.10.
-
-Note: For CKAN 2.7 and 2.8 use v0.3.7 or older versions.
+Tested on CKAN 2.10 and newer.
 
 ## Installation
 
@@ -175,4 +173,3 @@ Released under the GNU Affero General Public License (AGPL) v3.0. See the file `
 ## History
 
 See the file [CHANGELOG.md](CHANGELOG.md).
-
