@@ -14,7 +14,7 @@ from ckanext.pages.logic.schema import update_pages_schema
 
 import ckan.authz as authz
 
-from ckanext.pages import db
+from ckanext.pages import db, config as cfg
 
 
 class HTMLFirstImage(HTMLParser):
@@ -106,8 +106,8 @@ def _pages_update(context, data_dict):
     schema = update_pages_schema()
 
     # +1 is the Current state by default while ckanext.pages.revisions_limit is the amounf of previous states
-    revisions_limit = tk.asint(tk.config.get('ckanext.pages.revisions_limit', '3')) + 1
-    force_revisions_limit = tk.asbool(tk.config.get('ckanext.pages.revisions_force_limit', False))
+    revisions_limit = cfg.revisions_limit() + 1
+    force_revisions_limit = cfg.force_revisions_limit()
 
     data, errors = df.validate(data_dict, schema, context)
 

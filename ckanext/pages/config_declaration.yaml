@@ -1,0 +1,56 @@
+version: 1
+groups:
+  - annotation: ckanext-pages
+    options:
+      - key: ckanext.pages.about_menu
+        type: bool
+        default: true
+        description: |
+          Show About page in the main site navigation.
+
+      - key: ckanext.pages.group_menu
+        type: bool
+        default: true
+        description: |
+          Show Groups page in the main site navigation.
+
+      - key: ckanext.pages.organization_menu
+        type: bool
+        default: true
+        description: |
+          Show Organizations page in the main site navigation.
+
+      - key: ckanext.pages.allow_html
+        type: bool
+        description: |
+          Allow HTML in pages. If false, only Markdown is allowed.
+
+      - key: ckanext.pages.editor
+        description: |
+          The text editor to use for pages(ckeditor, markdown, etc.).
+
+      - key: ckanext.pages.organization
+        type: bool
+        description: |
+          Allow organizations to have pages.
+
+      - key: ckanext.pages.group
+        type: bool
+        description: |
+          Allow groups to have pages.
+
+      - key: ckanext.pages.revisions_limit
+        type: int
+        default: 3
+        description: |
+          The maximum number of revisions to keep for a page. If set to 0, all revisions will be kept.
+
+      - key: ckanext.pages.revisions_force_limit
+        type: bool
+        description: |
+          If true, the revisions limit will be enforced. If false, the limit will be advisory only.
+
+      - key: ckanext.pages.form
+        default: "ckanext_pages/base_form.html"
+        description: |
+          The template to use for the page form. This can be overridden by extensions to provide custom forms.
