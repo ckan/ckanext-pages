@@ -1,15 +1,19 @@
 {% ckan_extends %}
 
 {% block header_account_logged %}
-  <li>
-    <a href="{{ h.url_for('pages.pages_index') }}" title="{{ _('Pages') }}">
-      <i class="fa fa-file icon-file"></i>
-    </a>
-  </li>
-  <li>
-    <a href="{{ h.url_for('pages.blog_index') }}" title="{{ _('Blog') }}">
-      <i class="fa fa-pencil icon-pencil"></i>
-    </a>
-  </li>
+  {% block header_pages %}
+    <li>
+      <a href="{{ h.url_for('pages.pages_index') }}" title="{{ _('Pages') }}">
+        <i class="fa fa-file icon-file"></i>
+      </a>
+    </li>
+  {% endblock %}
+  {% block header_blog %}
+    <li>
+      <a href="{{ h.url_for('pages.blog_index') }}" title="{{ _('Blog') }}">
+        <i class="fa fa-pencil icon-pencil"></i>
+      </a>
+    </li>
+  {% endblock %}
   {{ super() }}
 {% endblock %}
